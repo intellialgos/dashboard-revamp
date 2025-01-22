@@ -1,8 +1,8 @@
 import { Divider, Space, Typography } from "antd";
 import type { ColumnType } from "antd/es/table";
 
-import type { AlarmLevel, DeviceEvent } from "../../types/device-event";
-import { getFormattedDateTime } from "../../utils/get-formatted-date-time";
+import type { AlarmLevel, DeviceEvent } from "@/types/device-event";
+import { getFormattedDateTime } from "@/utils/get-formatted-date-time";
 import { AlarmLevelTag } from "../alarm-level-tag";
 
 const { Link } = Typography;

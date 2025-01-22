@@ -1,26 +1,24 @@
 import { type FC, useCallback, useState } from "react";
 import { Spin, Table } from "antd";
 
-import { useAppDispatch } from "../../hooks/use-app-dispatch";
-import { ProcessAlarmModal } from "../../modals/process-alarm-modal";
+import { useAppDispatch } from "@/hooks/use-app-dispatch";
 import {
   setSelectedEvents,
   setSelectedEventsId,
   setShowProcesslarmModal,
   setShowSiteInfoModal,
-} from "../../store/slices/events";
-import type { DeviceEvent } from "../../types/device-event";
+} from "@/store/slices/events";
+import type { DeviceEvent } from "@/types/device-event";
 
 import { generateColumns } from "./config";
-import { data } from "./mock";
-import { useAppSelector } from "../../hooks/use-app-selector";
+import { useAppSelector } from "@/hooks/use-app-selector";
 import {
   getAlarmRecordEvents,
-  getEvents,
   getSelectedRowIds,
-} from "../../store/selectors/events";
+} from "@/store/selectors/events";
 import { LoadingOutlined } from "@ant-design/icons";
-import { SiteInfoModal } from "../../modals/site-info-modal";
+import { SiteInfoModal } from "@/modals/site-info-modal";
+import { OrganisationSite } from "@/types/organisation";
 
 type Props = {
   className: string;
@@ -31,12 +29,12 @@ type Props = {
   totalAlerts: number;
   handlePageChange: () => void;
   loading: boolean;
+  sites: OrganisationSite[]
 };
-const tableData= data;
 export const SiteMapTable: FC<Props> = ({
   className,
   dataTestId,
-  data,
+  sites,
   pageIndex,
   pageSize,
   totalAlerts,
@@ -81,14 +79,10 @@ export const SiteMapTable: FC<Props> = ({
     <>
       <Table
         rowKey="eventId"
-        // headerBg="#fff"
         className={className}
-        // dataSource={event.find((item) => item.pageIndex === pageIndex)?.data}
-        dataSource={tableData}
-        // headerBg={"#0000FF"}
+        dataSource={sites}
         sticky={true}
         columns={columns}
-        // rowSelection={rowSelection}
         showSorterTooltip={false}
         loading={{
           indicator: <Spin indicator={antIcon} />,

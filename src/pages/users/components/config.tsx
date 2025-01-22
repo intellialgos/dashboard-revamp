@@ -1,50 +1,48 @@
-import { Typography } from "antd";
+import { Button, Space } from "antd";
 import type { ColumnType } from "antd/es/table";
+import { User } from "@/types/user";
+// import { decodeBase64 } from "@/utils/decodeBase64";
+import UserStatus from "./UserStatus";
+import AccountType from "./AccountType";
+import DeleteUserButton from "./DeleteUserButtons";
+import { QueryActionCreatorResult, QueryDefinition } from "@reduxjs/toolkit/query";
 
-import type { AlarmLevel, DeviceEvent } from "../../../types/device-event";
-import { getFormattedDateTime } from "../../../utils/get-formatted-date-time";
-import { AlarmLevelTag } from "../../../components/alarm-level-tag";
+type Props = {
+  refetch: () => QueryActionCreatorResult<QueryDefinition<any, any, any, any, any>>;
+  onEdit: React.Dispatch<React.SetStateAction<User | false>>;
+}
 
-const { Link } = Typography;
-
-type ColumnParams = {
-  onProcess: (event: DeviceEvent) => void;
-};
-
-export const generateColumns = ({
-  onProcess,
-}: ColumnParams): ColumnType<DeviceEvent>[] => [
+export const generateColumns = ({refetch, onEdit}: Props): ColumnType<User>[] => [
   {
     title: "Username",
     sorter: true,
-    dataIndex: "username",
-    width: 130
+    dataIndex: "userName",
   },
   {
     title: "Nick Name",
-     sorter: true,
-    dataIndex: "nickname",
+    sorter: true,
+    dataIndex: "nickName",
   },
   {
     title: "Account Type",
     sorter: true,
-    dataIndex: "accountType",
-    sorter: true,
-    width: 192,
+    render: (_, record) => <AccountType user={record} />
   },
   {
-    title: "Permission",
+    title: "Status",
     sorter: false,
-    dataIndex: "permissions",
+    dataIndex: "status",
+    render: (value) => <UserStatus status={value} />
   },
   {
     title: "Actions",
-    dataIndex: "eventId",
     sorter: false,
-    width: 130,
     fixed: "right",
-    render(_, event) {
-      return <Link onClick={() => onProcess(event)}>Acknowledge</Link>;
+    render(_, user) {
+      return <Space>
+        <Button size="small" onClick={() => onEdit(user)} type="primary">Edit</Button>
+        <DeleteUserButton refetch={refetch} user={user} />
+      </Space>
     },
-  },
+  }
 ];

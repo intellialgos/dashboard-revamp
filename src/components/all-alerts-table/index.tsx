@@ -1,20 +1,22 @@
 import { type FC, useCallback, useState, useEffect } from "react";
 import { Spin, Table, message, type TableProps } from "antd";
 
-import { ProcessAlarmModal } from "../../modals/process-alarm-modal";
+import { ProcessAlarmModal } from "@/modals/process-alarm-modal";
 import {
   setSelectedEvents,
   setSelectedEventsId,
   setShowProcesslarmModal,
-} from "../../store/slices/events";
+} from "@/store/slices/events";
 import { useDispatch } from "react-redux";
 import { generateColumns } from "./config";
-import { DeviceEvent } from "../../types/device-event";
+import { DeviceEvent } from "@/types/device-event";
 import { LoadingOutlined } from "@ant-design/icons";
-import { useProcessEventMutation } from "../../services";
-import { ReqProcessEvent } from "../../types/process-event";
-import { useAppSelector } from "../../hooks/use-app-selector";
-import { getEvents, getSelectedRowIds } from "../../store/selectors/events";
+import { useProcessEventMutation } from "@/services";
+import { ReqProcessEvent } from "@/types/process-event";
+import { useAppSelector } from "@/hooks/use-app-selector";
+import { getEvents, getSelectedRowIds } from "@/store/selectors/events";
+import { MutationTrigger } from "@reduxjs/toolkit/dist/query/react/buildHooks";
+import { MutationDefinition } from "@reduxjs/toolkit/query";
 type Props = {
   className: string;
   dataTestId: string;
@@ -24,6 +26,7 @@ type Props = {
   totalAlerts: number;
   handlePageChange: () => void;
   loading: boolean;
+  refetch: MutationTrigger<MutationDefinition<any, any, any, any, any>>
 };
 
 export const AllAlertsTable: FC<Props> = ({
@@ -35,6 +38,7 @@ export const AllAlertsTable: FC<Props> = ({
   totalAlerts,
   handlePageChange,
   loading,
+  refetch
 }: Props) => {
   const dispatch = useDispatch();
   const event = useAppSelector(getEvents); //needs to be passed from parents
@@ -136,7 +140,7 @@ export const AllAlertsTable: FC<Props> = ({
         // preserveSelectedRowKeys={true}
       />
 
-      <ProcessAlarmModal dataTestId="process-alarm" />
+      <ProcessAlarmModal refetch={refetch} dataTestId="process-alarm" />
     </>
   );
 };

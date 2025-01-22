@@ -3,13 +3,13 @@ import { Empty, Spin, theme } from "antd";
 import { Bar, CartesianGrid, LabelList, XAxis, YAxis } from "recharts";
 import { ContentType } from "recharts/types/component/Label";
 
-import { BaseBarChart } from "../../charts/base-bar-chart";
+import { BaseBarChart } from "@/charts/base-bar-chart";
 import {
   ChartContainer,
   type ChartContainerProps,
-} from "../../charts/chart-container";
+} from "@/charts/chart-container";
 
-import { HorizontalBarGraphDataType } from "../../types/graph-data";
+import { HorizontalBarGraphDataType } from "@/types/graph-data";
 import { LoadingOutlined } from "@ant-design/icons";
 import styles from "./index.module.css";
 

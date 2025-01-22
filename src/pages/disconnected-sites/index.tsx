@@ -1,7 +1,7 @@
 import { Col, Row } from "antd";
 import  { type FC,useContext } from "react";
-import { ThemeContext } from "../../theme";
-import { DisconnectedSitesTable } from "../../components/disconnected-sites-table";
+import { ThemeContext } from "@/theme";
+import { DisconnectedSitesTable } from "@/components/disconnected-sites-table";
 
 
 export const DisconnectedSites: FC = () => {

@@ -1,11 +1,11 @@
 import type { FC } from "react";
 
-import { BasePieChart } from "../../charts/base-pie-chart";
+import { BasePieChart } from "@/charts/base-pie-chart";
 import {
   ChartContainer,
   type ChartContainerProps,
-} from "../../charts/chart-container";
-import { PieGraphDataType } from "../../types/graph-data";
+} from "@/charts/chart-container";
+import { PieGraphDataType } from "@/types/graph-data";
 import { LoadingOutlined } from "@ant-design/icons";
 import { Empty, Spin } from "antd";
 import styles from "./index.module.css";
@@ -18,6 +18,7 @@ type Props = Pick<
   data?: PieGraphDataType[];
   isLoading?: boolean;
   colors?: string[];
+  legend?: boolean;
 };
 
 export const AlertsByPriority: FC<Props> = ({
@@ -28,6 +29,7 @@ export const AlertsByPriority: FC<Props> = ({
   centerText,
   data,
   isLoading,
+  legend = true,
   colors = ["#FF0000", "#FFA500", "#FFFF00", "#008000", "#0000FF"],
 }) => {
   return (
@@ -50,6 +52,7 @@ export const AlertsByPriority: FC<Props> = ({
       ) : (
         <BasePieChart
           data={data}
+          legend={legend}
           centerText={centerText}
           colors={colors}
           dataKey="value"

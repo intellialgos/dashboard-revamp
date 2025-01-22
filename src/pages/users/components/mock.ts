@@ -1,5 +1,3 @@
-import { DeviceEvent } from "../../types/device-event";
-
 export const data: any[] = [
   {
     id: 1,

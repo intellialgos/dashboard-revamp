@@ -1,4 +1,4 @@
-import { RootState } from "../../types/store";
+import { RootState } from "@/types/store";
 
 const getEventsState = (state: RootState) => state.events;
 
@@ -15,6 +15,7 @@ export const getSelectedEvents = (state: RootState) =>
   getEventsState(state).selectedEvents;
 
 export const getEvents = (state: RootState) => getEventsState(state).Events;
+export const getAllEventsRecords = (state: RootState) => getEventsState(state).allEvents;
 
 export const getSelectedRowIds = (state: RootState) =>
   getEventsState(state).selectedEventsId;

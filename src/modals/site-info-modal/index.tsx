@@ -1,21 +1,22 @@
 import { Drawer, Form } from "antd";
 import { useContext, type FC } from "react";
 
-import { useAppDispatch } from "../../hooks/use-app-dispatch";
-import { useAppSelector } from "../../hooks/use-app-selector";
+import { useAppDispatch } from "@/hooks/use-app-dispatch";
+import { useAppSelector } from "@/hooks/use-app-selector";
 import {
   getSelectedEvents,
   getShowSiteInfoModalState
-} from "../../store/selectors/events";
+} from "@/store/selectors/events";
 import {
   setSelectedEvents,
   setShowSiteInfoModal
-} from "../../store/slices/events";
-import { ProcessStatus } from "../../types/device-event";
+} from "@/store/slices/events";
+import { ProcessStatus } from "@/types/device-event";
 
-import { SiteInfoListMap } from "../../components/site-info-map-list";
-import { ThemeContext } from "../../theme";
+import { SiteInfoListMap } from "@/components/site-info-map-list";
+import { ThemeContext } from "@/theme";
 import styles from "./index.module.css";
+import { getSiteObject } from "@/store/selectors/sites";
 
 type Props = {
   dataTestId?: string;
@@ -43,6 +44,8 @@ export const SiteInfoModal: FC<Props> = ({ dataTestId }) => {
   const show = useAppSelector(getShowSiteInfoModalState);
   const [event] = useAppSelector(getSelectedEvents);
 
+  const siteObject = useAppSelector(getSiteObject);
+
 
   const handleClose = () => {
     dispatch(setShowSiteInfoModal(false));
@@ -65,7 +68,7 @@ export const SiteInfoModal: FC<Props> = ({ dataTestId }) => {
       >
         <div className={styles.container}>
           <>
-            <SiteInfoListMap site={event?.site} />
+            <SiteInfoListMap site={siteObject} />
           </>
         </div>
       </Drawer>

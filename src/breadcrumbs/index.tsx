@@ -11,7 +11,7 @@ type Props = {
   className?: string;
 };
 
-const routesWithoutHomeBreadcrumbs = ["/site-configuration"];
+const routesWithoutHomeBreadcrumbs = ["/site-configuration", "/users"];
 
 const itemRender: BreadcrumbProps["itemRender"] = (
   route,
@@ -22,7 +22,7 @@ const itemRender: BreadcrumbProps["itemRender"] = (
   const last = items.indexOf(route) === items.length - 1;
   const first = items.indexOf(route) === 0;
 
-  console.log("route", routesWithoutHomeBreadcrumbs.includes(route.href));
+  // console.log("route", routesWithoutHomeBreadcrumbs.includes(route.href));
 
   return last ? (
     <span>{route.title}</span>

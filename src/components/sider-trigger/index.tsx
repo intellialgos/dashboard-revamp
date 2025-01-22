@@ -4,7 +4,7 @@ import { theme } from "antd";
 import clsx from "clsx";
 
 import styles from "./index.module.css";
-import { ThemeContext } from "../../theme";
+import { ThemeContext } from "@/theme";
 
 type Props = {
   collapsed: boolean;

@@ -1,11 +1,14 @@
 import { type FC, useState } from "react";
-import { List, Popover } from "antd";
+import { List, Popover, Space } from "antd";
 import clsx from "clsx";
 
 import { UserAvatar } from "../user-avatar";
 
 import styles from "./index.module.css";
 import { Link } from "react-router-dom";
+import { useAppDispatch } from "@/hooks/use-app-dispatch";
+import { logout } from "@/store/slices/authSlice";
+import { useAppSelector } from "@/hooks/use-app-selector";
 
 type Props = {
   className?: string;
@@ -17,11 +20,13 @@ export const UserPanel: FC<Props> = ({
   dataTestId = "user-avatar",
 }) => {
   const [open, setOpen] = useState(false);
-  const userName = "userName";
+  const username = useAppSelector((state) => state.authState.user?.userName as string);
 
   const togglePopover = () => {
     setOpen((prevOpen) => !prevOpen);
   };
+
+  const dispatch = useAppDispatch();
 
   return (
     <Popover
@@ -32,18 +37,25 @@ export const UserPanel: FC<Props> = ({
       onOpenChange={togglePopover}
       content={
         <List size="small">
-          <Link to={'/login'}><List.Item>Logout</List.Item></Link>
+          <Link to={''} onClick={() => dispatch(logout({}))}><List.Item>Logout</List.Item></Link>
         </List>
       }
       arrow={false}
     >
-      <UserAvatar
-        size={32}
+      <Space
+        align="center"
+        size={10}
         className={clsx(className, styles.avatar)}
-        userName={userName}
-        aria-label={open ? "Hide user menu" : "Show user menu"}
-        dataTestId={dataTestId}
-      />
+      >
+        <UserAvatar
+          size={32}
+          // style={{margin: 0, padding: 0, lineHeight: 0}}
+          userName={username}
+          // aria-label={open ? "Hide user menu" : "Show user menu"}
+          dataTestId={dataTestId}
+        />
+        {username}
+      </Space>
     </Popover>
   );
 };

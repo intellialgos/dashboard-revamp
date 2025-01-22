@@ -1,8 +1,8 @@
-import { Typography } from "antd";
+import { Tag, Typography } from "antd";
 import type { ColumnType } from "antd/es/table";
 
-import type { AlarmLevel, DeviceEvent } from "../../types/device-event";
-import { getFormattedDateTime } from "../../utils/get-formatted-date-time";
+import type { AlarmLevel, DeviceEvent } from "@/types/device-event";
+import { getFormattedDateTime } from "@/utils/get-formatted-date-time";
 import { AlarmLevelTag } from "../alarm-level-tag";
 
 const { Link } = Typography;
@@ -16,41 +16,45 @@ export const generateColumns = ({
 }: ColumnParams): ColumnType<DeviceEvent>[] => [
   {
     title: "Site",
-    dataIndex: ["site", "name"],
+    dataIndex: "name",
   },
   {
     title: "Box Type",
     dataIndex: "boxType",
+    render: (value) => <Tag color={(value == 1) ? "orange" : "cyan"}> { (value == 1) ? "Lite Version" : "Standard Version" } </Tag>
   },
   {
     title: "Status",
-    dataIndex: "status",
-    render: (text) => <span style={{ color: `rgba(92, 219, 29, 1)` }}>{text}</span>,
+    render: (_, record) => (!record?.latitude && !record?.longitude) && <span style={{ color: `rgb(241, 50, 50)` }}>No GPS Point</span>,
   },
   {
     title: "Address",
-    sorter: true,
+    // sorter: true,
     dataIndex: "address",
     
   },
-
+  {
+    title: "Sim Card Expiration",
+    // sorter: true,
+    dataIndex: "simExpirationTime",
+    render: (value) => <Tag>{value}</Tag>
+  },
   {
     title: "Start Time",
-    sorter: true,
-    dataIndex: "timeEvent",
+    // sorter: true,
+    dataIndex: "activate",
+    render: (value) => <Tag>{value}</Tag>
   },
-
   {
     title: "End Time",
-    sorter: true,
-    dataIndex: "timeEvent",
+    // sorter: true,
+    dataIndex: "deactivate",
+    render: (value) => <Tag>{value}</Tag>
   },
   {
-    title: "Reclear",
-    sorter: true,
-    dataIndex: "reclear",
+    title: "Remark",
+    dataIndex: "remark",
   },
-
   {
     title: "Actions",
     dataIndex: "eventId",

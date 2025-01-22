@@ -3,8 +3,8 @@ import { Outlet } from "react-router-dom";
 import { ConfigProvider, Layout, Space, theme } from "antd";
 import Cookies from "js-cookie";
 
-import { SIDER_MENU_COLLAPSED_STATE_COOKIE } from "../../const/cookies";
-import { ThemeContext } from "../../theme";
+import { SIDER_MENU_COLLAPSED_STATE_COOKIE } from "@/const/cookies";
+import { ThemeContext } from "@/theme";
 import { DashboardNavigation } from "../dashboard-navigation";
 import { FullScreenSwitcher } from "../fullscreen-switcher";
 import { Logo } from "../logo";

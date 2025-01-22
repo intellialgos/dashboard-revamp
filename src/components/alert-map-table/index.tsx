@@ -3,20 +3,20 @@ import { useCallback, useState, type FC } from "react";
 
 import { LoadingOutlined } from "@ant-design/icons";
 import { useDispatch } from "react-redux";
-import { useAppSelector } from "../../hooks/use-app-selector";
-import { ProcessAlarmMapModal } from "../../modals/alert-map-modal";
-import { useProcessEventMutation } from "../../services";
+import { useAppSelector } from "@/hooks/use-app-selector";
+import { ProcessAlarmMapModal } from "@/modals/alert-map-modal";
+import { useProcessEventMutation } from "@/services"
 import {
   getAlertMapEvents,
   getSelectedRowIds,
-} from "../../store/selectors/events";
+} from "@/store/selectors/events";
 import {
   setSelectedEvents,
   setSelectedEventsId,
   setShowProcesslarmModal,
-} from "../../store/slices/events";
-import { DeviceEvent } from "../../types/device-event";
-import { ReqProcessEvent } from "../../types/process-event";
+} from "@/store/slices/events";
+import { DeviceEvent } from "@/types/device-event";
+import { ReqProcessEvent } from "@/types/process-event";
 import { generateColumns } from "./config";
 type Props = {
   className: string;

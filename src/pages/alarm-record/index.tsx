@@ -2,16 +2,18 @@ import { type FC, useState, useContext } from "react";
 import { FilterOutlined } from "@ant-design/icons";
 import { Button, Col, Row, Tabs, type TabsProps } from "antd";
 
-import { Breadcrumbs } from "../../breadcrumbs";
-import { AlarmRecordCharts } from "../../components/alarm-record-charts";
-import { AlarmRecordGrid } from "../../components/alarm-record-grid";
-import { ThemeContext } from "../../theme";
+import { Breadcrumbs } from "@/breadcrumbs";
+import { AlarmRecordCharts } from "@/components/alarm-record-charts";
+import { AlarmRecordGrid } from "@/components/alarm-record-grid";
+import { ThemeContext } from "@/theme";
+import { AllAlerts } from "@/components/all-alerts";
 
 const items: TabsProps["items"] = [
   {
     key: "grid",
     label: "Grid",
-    children: <AlarmRecordGrid />,
+    // children: <AlarmRecordGrid />,
+    children: <AllAlerts />
   },
   {
     key: "chart",
@@ -42,22 +44,22 @@ export const AlarmRecord: FC = () => {
           items={items}
           activeKey={selectedTab}
           onChange={handleTabChange}
-          tabBarExtraContent={
-            selectedTab === "chart"
-              ? {
-                  right: (
-                    <Button
-                      className={`filter_btn ${
-                        darkTheme ? "filter_btn_bg" : ""
-                      }`}
-                      icon={<FilterOutlined />}
-                    >
-                      Filter
-                    </Button>
-                  ),
-                }
-              : null
-          }
+          // tabBarExtraContent={
+          //   selectedTab === "chart"
+          //     ? {
+          //         right: (
+          //           <Button
+          //             className={`filter_btn ${
+          //               darkTheme ? "filter_btn_bg" : ""
+          //             }`}
+          //             icon={<FilterOutlined />}
+          //           >
+          //             Filter
+          //           </Button>
+          //         ),
+          //       }
+          //     : null
+          // }
         />
       </Col>
     </Row>

@@ -1,6 +1,6 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 
-import type { DeviceEvent } from "../../types/device-event";
+import type { DeviceEvent } from "@/types/device-event";
 
 type State = {
   showProcessAlarmModal: boolean;
@@ -8,6 +8,7 @@ type State = {
   showEventsFilterModal: boolean;
   selectedEvents: DeviceEvent[];
   Events: any[];
+  allEvents: DeviceEvent[];
   alertMapEvents: any[];
   alarmRecordEvents: any[];
   selectedEventsId: any[];
@@ -25,6 +26,7 @@ const initialState: State = {
   showSiteInfoModal: false,
   selectedEvents: [],
   Events: [],
+  allEvents: [],
   alertMapEvents: [],
   alarmRecordEvents: [],
   selectedEventsId: [],
@@ -65,6 +67,9 @@ const eventsSlice = createSlice({
       const uniqueArray = Array.from(uniqueSet).map(JSON.parse);
 
       state.Events = uniqueArray;
+    },
+    setAllEvents(state, action: PayloadAction<any>) {
+      state.allEvents = action.payload;
     },
     setSelectedEventsId(state, action: PayloadAction<any>) {
       const { pageIndex, selectedRowKeys } = action.payload;
@@ -147,6 +152,7 @@ export const {
   setShowEventsFilterModal,
   setSelectedEvents,
   setEvents,
+  setAllEvents,
   setSelectedEventsId,
   setGlobalPageSize,
   clearAllEvents,

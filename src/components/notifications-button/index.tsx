@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { NotificationOutlined } from "@ant-design/icons";
 import { Badge } from "antd";
 
-import { AppRoute } from "../../routes/routes";
+import { AppRoute } from "@/routes/routes";
 import { HeaderButton } from "../header-button";
 
 type Props = {
@@ -18,7 +18,7 @@ export const NotificationsButton: FC<Props> = ({
   const navigate = useNavigate();
 
   const handleClick = () => {
-    navigate(AppRoute.Notifications);
+    navigate(AppRoute.DisconnectedSites);
   };
 
   const count = 1;

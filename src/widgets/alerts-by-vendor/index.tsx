@@ -1,7 +1,7 @@
 import type { FC } from "react";
 
-import { ActionList } from "../../components/action-list";
-import { Widget, type WidgetProps } from "../../components/widget";
+import { ActionList } from "@/components/action-list";
+import { Widget, type WidgetProps } from "@/components/widget";
 
 import { alerts } from "./mock";
 

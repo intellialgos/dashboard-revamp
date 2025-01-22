@@ -1,110 +1,148 @@
-import { Button, Drawer, Form, Input, Space } from "antd";
-import { type FC } from "react";
+import { Button, Drawer, Form, Input, message, Space } from "antd";
+import { useEffect, type FC } from "react";
 
-import { BaseSelect } from "../../components/base-select";
+import { BaseSelect } from "@/components/base-select";
 import styles from "./index.module.css";
+import { useGetOrganizationsMutation, usePostGroupMutation } from "@/services";
+import { Organisation } from "@/types/organisation";
+import { MutationTrigger } from "@reduxjs/toolkit/dist/query/react/buildHooks";
 
 type Props = {
   dataTestId?: string;
   alarmRecord?: boolean;
   Show: boolean;
   setAddGroup: React.Dispatch<React.SetStateAction<boolean>>;
-  darkTheme?:boolean
+  darkTheme?:boolean;
+  organizations: any;
+  organizationsLoading: boolean;
+  getOrganizations: MutationTrigger<any>;
 };
 
 type Fields = {
   organization: string[];
-  sitename: string;
-  boxtype: string[];
-  organizationname: string;
+  name: string;
+  orgId: string[];
+  parentGroupId?: string;
 };
 
 const { Item } = Form;
 
-const initialValues: Fields = {
-  organization: [],
-  sitename: "",
-  boxtype: [],
-  organizationname: "",
-};
+// const initialValues: Fields = {
+//   organization: [],
+//   sitename: "",
+//   boxtype: [],
+//   organizationname: "",
+// };
 
-export const AddGroupModal: FC<Props> = ({ dataTestId, Show, setAddGroup,darkTheme }) => {
+export const AddGroupModal: FC<Props> = ({ organizationsLoading, getOrganizations, organizations, dataTestId, Show, setAddGroup,darkTheme }) => {
   const show = Show;
   const [form] = Form.useForm<Fields>();
+  const [messageApi, contextHolder] = message.useMessage();
+
+  const organizationsOptions = organizations?.orgs
+      ? organizations.orgs.map((org: Organisation) => ({
+          label: org.name,
+          value: org.id,
+        }))
+  : [];
+
+  const [createGroup, {isLoading}] = usePostGroupMutation();
 
   const handleClose = () => {
     setAddGroup(false);
   };
 
-  const handleSubmit = () => {
-    setAddGroup(!Show);
+  const handleSubmit = async (data:any) => {
+    try {
+      const result = await createGroup(data);
+        if ( result?.data && !result?.data?.error ) {
+          setAddGroup(!Show);
+          messageApi.success(`Group has been added successfully !`);
+          getOrganizations({});
+          form.resetFields();
+        } else if ( result?.data?.error ) {
+          messageApi.error(result?.data?.desc);
+        }
+      } catch (error) {
+        console.log(error);
+        messageApi.error("There was an error");
+      }
   };
 
   return (
-    <Drawer
+    <>
+      {contextHolder}
+      <Drawer
       open={show}
       width={460}
       title="Add New Group"
       onClose={handleClose}
       data-testid={dataTestId}
-      extra={
-        <Space>
-          <Button
-            type="default"
-            style={{
-              background: "transparent",
-              borderRadius: "1px",
-              borderColor: "#1B3687",
-            }}
-            onClick={handleClose}
-          >
-            Cancel
-          </Button>
-
-          <Button
-            type="primary"
-            style={{
-              borderRadius: "1px",
-            }}
-            onClick={handleSubmit}
-          >
-            Create
-          </Button>
-        </Space>
-      }
       style={{ background: `${darkTheme ? "#0C183B" : "" }` }}
     >
       <Form<Fields>
-        // form={form}
+        form={form}
         layout="vertical"
         name="alerts-search"
-        initialValues={initialValues}
-        // onFinish={handleSubmit}
+        disabled={isLoading}
+        // initialValues={initialValues}
+        onFinish={handleSubmit}
         data-testid="alerts-search-form"
       >
-        <Item<Fields> label="Organization" name="organization">
+        <Item<Fields>
+          label="Organization"
+          name="orgId"
+          rules={[{ required: true, message: "Select organization" }]}
+        >
           <BaseSelect
-            mode="multiple"
             placeholder="Select"
             allowClear={true}
-            // options={siteOptions}
+            loading={organizationsLoading}
+            options={organizationsOptions}
             className="select_input"
           />
         </Item>
-        <Item<Fields> label="Site Name" name="sitename">
+        <Item<Fields>
+          label="Group Name"
+          name="name"
+          rules={[{ required: true, message: "Write group name" }]}
+        >
           <Input placeholder="Type here..." className={darkTheme ? styles.input_bg : ""} />
         </Item>
 
-        <Item<Fields> label="Parent Group" name="organization">
+        <Item<Fields> label="Parent Group" name="parentGroupId">
           <BaseSelect
-            mode="multiple"
             placeholder="Select"
             allowClear={true}
             // options={siteOptions}
             className="select_input"
           />
         </Item>
+        <div className={styles.btn_container}>
+        <Button
+          type="default"
+          style={{
+            flex: 1,
+          }}
+          className={styles.default_btn}
+          onClick={handleClose}
+        >
+          Cancel
+        </Button>
+        <Button
+          type="primary"
+          htmlType="submit"
+          loading={isLoading}
+          style={{
+            borderRadius: "1px",
+            flex: 1,
+          }}
+        >
+          Create
+        </Button>
+      </div>
       </Form>
     </Drawer>
+    </>
   );
 };

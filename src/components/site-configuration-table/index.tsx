@@ -1,63 +1,53 @@
 import { Spin, Table } from "antd";
-import { useCallback, useState, type FC } from "react";
+import { useCallback, type FC } from "react";
 
-import { useAppDispatch } from "../../hooks/use-app-dispatch";
-// import { ProcessAlarmModal } from "../../modals/process-alarm-modal";
+import { useAppDispatch } from "@/hooks/use-app-dispatch";
+// import { ProcessAlarmModal } from "@/modals/process-alarm-modal";
 import {
   setSelectedEvents,
   setSelectedEventsId,
   setShowEventsFilterModal,
   setShowProcesslarmModal,
-} from "../../store/slices/events";
-import type { DeviceEvent } from "../../types/device-event";
+} from "@/store/slices/events";
+import type { DeviceEvent } from "@/types/device-event";
 
 import { LoadingOutlined } from "@ant-design/icons";
-import { useAppSelector } from "../../hooks/use-app-selector";
-import { getEvents, getSelectedRowIds } from "../../store/selectors/events";
+import { useAppSelector } from "@/hooks/use-app-selector";
+import { getEvents, getSelectedRowIds } from "@/store/selectors/events";
 import { generateColumns } from "./config";
-import { data } from './mock'
+import { TransformOrgs } from "@/utils/orgs-transform";
 
 type Props = {
   className: string;
   dataTestId: string;
-  data: DeviceEvent | null;
+  data: any;
   pageIndex: number;
   pageSize: number;
+  isLoading: boolean;
   totalAlerts: number;
   handlePageChange: () => void;
   loading: boolean;
-  setDeleteModal:React.Dispatch<React.SetStateAction<boolean>>;
 };
-const tableData = data;
+
 export const SiteConfigurationTable: FC<Props> = ({
   className,
   dataTestId,
   data,
+  isLoading,
   pageIndex,
   pageSize,
   totalAlerts,
   handlePageChange,
   loading,
-  setDeleteModal
 }) => {
-  const [isLoading, setIsLoading] = useState(false);
 
   const dispatch = useAppDispatch();
   const event = useAppSelector(getEvents);
   const rowKey = useAppSelector(getSelectedRowIds);
 
- 
-  const handleProcessAlarm = useCallback(
-    (selectedEvent: DeviceEvent) => {
-      dispatch(setSelectedEvents([selectedEvent]));
-      dispatch(setShowProcesslarmModal(true));
-    },
-    [dispatch],
-  );
   const handleDelete = useCallback(
     (selectedEvent: DeviceEvent) => {
       dispatch(setSelectedEvents([selectedEvent]));
-      setDeleteModal(true)
     },
     [dispatch],
   );
@@ -70,9 +60,8 @@ export const SiteConfigurationTable: FC<Props> = ({
   );
 
   const columns = generateColumns({
-    onEdit:handleEdit,
-    onProcess: handleProcessAlarm,
-    onDelete:handleDelete,
+    onEdit: handleEdit,
+    onDelete: handleDelete,
   });
 
   const antIcon = <LoadingOutlined style={{ fontSize: 24 }} spin />;
@@ -80,11 +69,12 @@ export const SiteConfigurationTable: FC<Props> = ({
   return (
     <>
       <Table
-        rowKey="eventId"
+        bordered
+        rowKey="key"
         className={className}
         // scroll={{ x: 1200 }}
         // dataSource={event.find((item) => item.pageIndex === pageIndex)?.data}
-        dataSource={tableData}
+        dataSource={(data && data?.error == 0) ? TransformOrgs(data?.orgs) : []}
         sticky={true}
         columns={columns}
         showSorterTooltip={false}

@@ -3,6 +3,7 @@ import dns from "dns";
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import svgr from "vite-plugin-svgr";
+import * as path from "path";
 
 dns.setDefaultResultOrder("verbatim");
 
@@ -30,5 +31,11 @@ export default defineConfig({
   },
   build: {
     outDir: "build",
+  },
+  resolve: {
+    alias: {
+      "@": path.resolve(__dirname, "src"),
+      "@/*": path.resolve(__dirname, "src/*"),
+    },
   },
 });

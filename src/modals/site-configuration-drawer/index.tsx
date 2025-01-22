@@ -1,24 +1,26 @@
 import { Drawer, Form } from "antd";
 import { type FC } from "react";
 
-import { useAppDispatch } from "../../hooks/use-app-dispatch";
-import { useAppSelector } from "../../hooks/use-app-selector";
+import { useAppDispatch } from "@/hooks/use-app-dispatch";
+import { useAppSelector } from "@/hooks/use-app-selector";
 import {
   getSelectedEvents,
   getShowSiteInfoModalState
-} from "../../store/selectors/events";
+} from "@/store/selectors/events";
 import {
   setSelectedEvents,
   setShowSiteInfoModal
-} from "../../store/slices/events";
-import { ProcessStatus } from "../../types/device-event";
+} from "@/store/slices/events";
+import { ProcessStatus } from "@/types/device-event";
 
-import { SiteInfoListMap } from "../../components/site-info-map-list";
+import { SiteInfoListMap } from "@/components/site-info-map-list";
 import styles from "./index.module.css";
+import { OrganisationSite } from "@/types/organisation";
 
 type Props = {
   dataTestId?: string;
-  darkTheme?:boolean
+  darkTheme?:boolean;
+  site: string;
 };
 
 type Fields = {
@@ -34,7 +36,7 @@ const initialValues: Fields = {
 };
 
 
-export const SiteConfigurationDrawer: FC<Props> = ({ dataTestId,darkTheme}) => {
+export const SiteConfigurationDrawer: FC<Props> = ({ dataTestId,darkTheme, site}) => {
 
   const dispatch = useAppDispatch();
   const [form] = Form.useForm<Fields>();
@@ -50,11 +52,10 @@ export const SiteConfigurationDrawer: FC<Props> = ({ dataTestId,darkTheme}) => {
 
   return (
     <>
-
       <Drawer
         open={show}
         width={460}
-        title="Test 1"
+        title={site}
         destroyOnClose={true}
         onClose={handleClose}
         data-testid={dataTestId}
@@ -62,7 +63,7 @@ export const SiteConfigurationDrawer: FC<Props> = ({ dataTestId,darkTheme}) => {
       >
         <div className={styles.container}>
           <>
-            <SiteInfoListMap site={event?.site} darkTheme={darkTheme} />
+            <SiteInfoListMap site={site} darkTheme={darkTheme} />
           </>
         </div>
       </Drawer>

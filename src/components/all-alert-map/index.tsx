@@ -17,7 +17,7 @@ import {
 } from "antd";
 import { useDispatch } from "react-redux";
 
-import { AlertsSearchFilterDrawer } from "../../modals/alerts-search-filter-drawer";
+import { AlertsSearchFilterDrawer } from "@/modals/alerts-search-filter-drawer";
 import {
   clearAllMapAlerts,
   setAlertMapEvents,
@@ -26,35 +26,35 @@ import {
   setShowEventsFilterModal,
   setShowSiteInfoModal,
   setTotalAlertsSiteGlobal,
-} from "../../store/slices/events";
+} from "@/store/slices/events";
 
 import {
   formatDate,
   getLastWeekDate,
   getTodayDate,
-} from "../../utils/general-helpers";
+} from "@/utils/general-helpers";
 
 import styles from "./index.module.css";
 
-import { ReqDeviceEvent } from "../../types/device-event";
+import { ReqDeviceEvent } from "@/types/device-event";
 
 import debouce from "lodash.debounce";
-import { useAppSelector } from "../../hooks/use-app-selector";
-import { SiteInfoModal } from "../../modals/site-info-modal";
+import { useAppSelector } from "@/hooks/use-app-selector";
+import { SiteInfoModal } from "@/modals/site-info-modal";
 import {
-  useGetAllEventsMutation,
+  useQueryEventsMutation,
   useProcessEventMutation,
-} from "../../services";
+} from "@/services";
 import {
   getAlertMapEvents,
   getAlertMapId,
   getGlobalPageSize,
   getSelectedRowIds,
   getTotalAlertsSite,
-} from "../../store/selectors/events";
+} from "@/store/selectors/events";
 import { AllAlertsMapTable } from "../alert-map-table";
 import { useLocation } from "react-router-dom";
-import { ThemeContext } from "../../theme";
+import { ThemeContext } from "@/theme";
 type Fields = {
   search: string;
 };
@@ -70,7 +70,7 @@ const { Search } = Input;
 export const AllAlertsMap: FC = () => {
   const dispatch = useDispatch();
   const [form] = Form.useForm<Fields>();
-  const [getAllEvents, { isLoading }] = useGetAllEventsMutation();
+  const [getAllEvents, { isLoading }] = useQueryEventsMutation();
   const { appTheme } = useContext(ThemeContext);
   const darkTheme = appTheme === "dark";
   const [filter, setFilter] = useState<string | "">("");

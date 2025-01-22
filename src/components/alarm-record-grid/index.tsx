@@ -5,34 +5,36 @@ import { FilterOutlined } from "@ant-design/icons";
 import { Button, Input } from "antd";
 import type { SearchProps } from "antd/es/input";
 
-import { useAppDispatch } from "../../hooks/use-app-dispatch";
-import { useSearch } from "../../hooks/use-search";
-import { AlertsSearchFilterDrawer } from "../../modals/alerts-search-filter-drawer";
+import { useAppDispatch } from "@/hooks/use-app-dispatch";
+import { useSearch } from "@/hooks/use-search";
+import { AlertsSearchFilterDrawer } from "@/modals/alerts-search-filter-drawer";
 import {
   clearAlarmRecordEvents,
   setAlarmRecordEvents,
   setGlobalPageSize,
   setShowEventsFilterModal,
   setTotalAlarmRecord,
-} from "../../store/slices/events";
+} from "@/store/slices/events";
 
 import styles from "./index.module.css";
-import { useGetAllEventsMutation } from "../../services";
-import { ReqDeviceEvent } from "../../types/device-event";
+import { useQueryEventsMutation } from "@/services";
+import { ReqDeviceEvent } from "@/types/device-event";
 import {
   formatDate,
   getLastWeekDate,
   getTodayDate,
-} from "../../utils/general-helpers";
-import { useAppSelector } from "../../hooks/use-app-selector";
+} from "@/utils/general-helpers";
+import { useAppSelector } from "@/hooks/use-app-selector";
 import {
   getAlarmRecordEvents,
   getGlobalPageSize,
   getSelectedRowIds,
   getTotalAlarmRecords,
-} from "../../store/selectors/events";
+} from "@/store/selectors/events";
 import debounce from "lodash.debounce";
-import { ThemeContext } from "../../theme";
+import { ThemeContext } from "@/theme";
+import { getShowEditSiteDrawer } from "@/store/selectors/sites";
+import { setShowEditSiteDrawer } from "@/store/slices/sites";
 
 const { Search } = Input;
 
@@ -43,7 +45,7 @@ export const AlarmRecordGrid: FC = () => {
   const { appTheme } = useContext(ThemeContext);
   const darkTheme = appTheme === "dark";
 
-  const [getAllEvents, { isLoading }] = useGetAllEventsMutation();
+  const [getAllEvents, { isLoading }] = useQueryEventsMutation();
   const [filter, setFilter] = useState<string | "">(""); //search handler state
   const [pageIndex, setPageIndex] = useState(1);
   const [pageSize, setPageSize] = useState(10);
@@ -57,7 +59,7 @@ export const AlarmRecordGrid: FC = () => {
   );
   const [itemLevels, setItemLevels] = useState<any[]>([]);
   const [render, setRender] = useState<boolean>(false);
-  const events = useAppSelector(getAlarmRecordEvents);
+  const events = useAppSelector(getShowEditSiteDrawer);
   const storePageSize = useAppSelector(getGlobalPageSize);
   const selectedIds = useAppSelector(getSelectedRowIds);
   const total = useAppSelector(getTotalAlarmRecords);
@@ -70,7 +72,7 @@ export const AlarmRecordGrid: FC = () => {
   };
 
   const handleFilterClick = () => {
-    dispatch(setShowEventsFilterModal(true));
+    dispatch(setShowEditSiteDrawer(true));
   };
 
   useEffect(() => {

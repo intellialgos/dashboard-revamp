@@ -1,11 +1,11 @@
 import { Button, Col, Row ,DatePicker} from "antd";
 import  {type FC,useContext } from "react";
-import { Breadcrumbs } from "../../breadcrumbs";
-import { AllAlertsMap } from "../../components/all-alert-map";
-import { AlarmSelfRecoverySiteTable } from "../../components/alarm-self-recovery-site-table";
-import { ThemeContext } from "../../theme";
+import { Breadcrumbs } from "@/breadcrumbs";
+import { AllAlertsMap } from "@/components/all-alert-map";
+import { AlarmSelfRecoverySiteTable } from "@/components/alarm-self-recovery-site-table";
+import { ThemeContext } from "@/theme";
 import { SearchOutlined } from "@ant-design/icons";
-import { APP_DATE_TIME_FORMAT } from "../../const/common";
+import { APP_DATE_TIME_FORMAT } from "@/const/common";
 import styles from './index.module.css'
 
 const { RangePicker } = DatePicker;

@@ -1,4 +1,4 @@
-import { type FC } from "react";
+import { useContext, type FC } from "react";
 import { theme } from "antd";
 import {
   Cell,
@@ -12,12 +12,14 @@ import {
 
 import { CustomLegend } from "../custom-legend";
 import { CustomTooltip } from "../custom-tooltip";
+import { ThemeContext } from "@/theme";
 
 export type BasePieChartProps = Pick<PieProps, "data" | "dataKey"> & {
   colors: string[];
   width?: number;
   height?: number;
   centerText?: string;
+  legend?: boolean;
 };
 
 export const BasePieChart: FC<BasePieChartProps> = ({
@@ -27,10 +29,14 @@ export const BasePieChart: FC<BasePieChartProps> = ({
   width,
   height,
   centerText,
+  legend=true
 }) => {
   const {
     token: { colorBgContainer },
   } = theme.useToken();
+
+  const { appTheme } = useContext(ThemeContext);
+  const darkTheme = appTheme === "dark";
 
   return (
     <PieChart width={width} height={height}>
@@ -50,7 +56,7 @@ export const BasePieChart: FC<BasePieChartProps> = ({
             value={centerText}
             position="center"
             fontSize={30}
-            fill="white"
+            fill={darkTheme ? "white" : "black"}
             fontWeight="500"
           />
           {data.map((_entry, index) => {
@@ -61,7 +67,10 @@ export const BasePieChart: FC<BasePieChartProps> = ({
         </>
       </Pie>
       <Tooltip content={<CustomTooltip />} />
-      <Legend align="center" content={<CustomLegend />} />
+      {
+        legend &&
+        <Legend align="center" content={<CustomLegend />} />
+      }
     </PieChart>
   );
 };

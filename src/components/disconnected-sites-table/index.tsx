@@ -1,26 +1,29 @@
 import { type FC, useCallback, useState } from "react";
 import { Spin, Table } from "antd";
 
-import { useAppDispatch } from "../../hooks/use-app-dispatch";
-import { ProcessAlarmModal } from "../../modals/process-alarm-modal";
+import { useAppDispatch } from "@/hooks/use-app-dispatch";
+import { ProcessAlarmModal } from "@/modals/process-alarm-modal";
 import {
   setSelectedEvents,
   setSelectedEventsId,
   setShowProcesslarmModal,
   setShowSiteInfoModal,
-} from "../../store/slices/events";
-import type { DeviceEvent } from "../../types/device-event";
+} from "@/store/slices/events";
+import type { DeviceEvent } from "@/types/device-event";
 
 import { generateColumns } from "./config";
 import { data } from "./mock";
-import { useAppSelector } from "../../hooks/use-app-selector";
+import { useAppSelector } from "@/hooks/use-app-selector";
 import {
   getAlarmRecordEvents,
   getEvents,
   getSelectedRowIds,
-} from "../../store/selectors/events";
+} from "@/store/selectors/events";
 import { LoadingOutlined } from "@ant-design/icons";
-import { SiteInfoModal } from "../../modals/site-info-modal";
+import { SiteInfoModal } from "@/modals/site-info-modal";
+import { useGetSitesQuery } from "@/services";
+import { OrganisationSite } from "@/types/organisation";
+import { setSiteObject } from "@/store/slices/sites";
 
 type Props = {
   className: string;
@@ -43,7 +46,8 @@ export const DisconnectedSitesTable: FC<Props> = ({
   handlePageChange,
   loading,
 }) => {
-  const [isLoading, setIsLoading] = useState(false);
+
+  const { currentData, isLoading } = useGetSitesQuery({connectionState: false});
 
   const dispatch = useAppDispatch();
   const event = useAppSelector(getAlarmRecordEvents);
@@ -60,9 +64,9 @@ export const DisconnectedSitesTable: FC<Props> = ({
   };
 
   const handleProcessAlarm = useCallback(
-    (selectedEvent: DeviceEvent) => {
-      dispatch(setSelectedEvents([selectedEvent]));
-      dispatch(setShowProcesslarmModal(true));
+    (record: OrganisationSite) => {
+      dispatch(setSiteObject(record));
+      // dispatch(setShowProcesslarmModal(true));
       dispatch(setShowSiteInfoModal(true));
     },
     [dispatch],
@@ -85,7 +89,7 @@ export const DisconnectedSitesTable: FC<Props> = ({
         className={className}
         scroll={{ x: 1200 }}
         // dataSource={event.find((item) => item.pageIndex === pageIndex)?.data}
-        dataSource={tableData}
+        dataSource={currentData ? currentData.filter(site => site.connectionState == false) : []}
         // headerBg={"#0000FF"}
         sticky={true}
         columns={columns}

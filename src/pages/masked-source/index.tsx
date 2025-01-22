@@ -1,7 +1,7 @@
 import { Col, Row } from "antd";
 import  { type FC,useContext } from "react";
-import { MaskedSourceTable } from "../../components/masked-source-table";
-import { ThemeContext } from "../../theme";
+import { MaskedSourceTable } from "@/components/masked-source-table";
+import { ThemeContext } from "@/theme";
 
 
 export const MaskedSource: FC = () => {

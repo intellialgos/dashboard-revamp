@@ -1,31 +1,34 @@
-import { useState, type FC, useContext } from "react";
-import { Button, Drawer, Form, Input, Radio, Space, Spin, message } from "antd";
+import { useState, type FC, useContext, useEffect } from "react";
+import { Button, Drawer, Form, Input, Radio, Space, Spin, Typography, message } from "antd";
 import { useDidUpdate } from "rooks";
 
-import { AlarmInfoList } from "../../alarm-info-list";
-import { SiteInfoList } from "../../components/site-info-list";
-import { DescriptionList } from "../../description-list";
-import { useAppDispatch } from "../../hooks/use-app-dispatch";
-import { useAppSelector } from "../../hooks/use-app-selector";
+import { AlarmInfoList } from "@/alarm-info-list";
+import { SiteInfoList } from "@/components/site-info-list";
+import { DescriptionList } from "@/description-list";
+import { useAppDispatch } from "@/hooks/use-app-dispatch";
+import { useAppSelector } from "@/hooks/use-app-selector";
 import {
   getSelectedEvents,
   getShowProcessAlarmModalState,
-} from "../../store/selectors/events";
+} from "@/store/selectors/events";
 import {
   setSelectedEvents,
   setShowProcesslarmModal,
-} from "../../store/slices/events";
-import { DeviceEvent, ProcessStatus } from "../../types/device-event";
-import { getFormattedDateTime } from "../../utils/get-formatted-date-time";
+} from "@/store/slices/events";
+import { ProcessStatus } from "@/types/device-event";
+import { getFormattedDateTime } from "@/utils/get-formatted-date-time";
 
 import styles from "./index.module.css";
-import { useProcessEventMutation } from "../../services";
-import { ReqProcessEvent } from "../../types/process-event";
+import { useProcessEventMutation } from "@/services";
+import { ReqProcessEvent } from "@/types/process-event";
 import { LoadingOutlined } from "@ant-design/icons";
-import { ThemeContext } from "../../theme";
+import { ThemeContext } from "@/theme";
+import { MutationTrigger } from "@reduxjs/toolkit/dist/query/react/buildHooks";
+import { MutationDefinition } from "@reduxjs/toolkit/query";
 
 type Props = {
   dataTestId?: string;
+  refetch: MutationTrigger<MutationDefinition<any, any, any, any, any>>
 };
 
 type Fields = {
@@ -49,13 +52,13 @@ const processStatusOptions = [
   { label: "Accomplished", value: ProcessStatus.Accomplished },
 ];
 
-export const ProcessAlarmModal: FC<Props> = ({ dataTestId }) => {
+export const ProcessAlarmModal: FC<Props> = ({ dataTestId, refetch }) => {
   const [handleProcessEvents, {}] = useProcessEventMutation();
   const dispatch = useAppDispatch();
   const [form] = Form.useForm<Fields>();
   const show = useAppSelector(getShowProcessAlarmModalState);
   const [event] = useAppSelector(getSelectedEvents);
-  const processTime = event ? getFormattedDateTime(event.process.time) : "N/A";
+  const processTime = event?.process?.time ? <Typography.Text type="success">{getFormattedDateTime(event.process.time)}</Typography.Text> : <Typography.Text type="warning">Not Processed Yet</Typography.Text>;
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [messageApi, contextHolder] = message.useMessage();
   const { appTheme } = useContext(ThemeContext);
@@ -93,7 +96,8 @@ export const ProcessAlarmModal: FC<Props> = ({ dataTestId }) => {
     if (res) {
       setIsLoading(false);
       dispatch(setShowProcesslarmModal(false));
-      if (res.data.error === 0) {
+      if (res.data?.error === 0) {
+        refetch({});
         messageApi.open({
           type: "success",
           content: "Process status updated",

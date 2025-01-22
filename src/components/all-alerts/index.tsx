@@ -1,6 +1,6 @@
 import { type FC, useState, useEffect, useMemo, useContext } from "react";
 
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import {
   CheckCircleOutlined,
   FilterOutlined,
@@ -17,7 +17,7 @@ import {
   message,
 } from "antd";
 
-import { AlertsSearchFilterDrawer } from "../../modals/alerts-search-filter-drawer";
+import { AlertsSearchFilterDrawer } from "@/modals/alerts-search-filter-drawer";
 import {
   clearAllEvents,
   setEvents,
@@ -25,32 +25,34 @@ import {
   setSelectedEventsId,
   setShowEventsFilterModal,
   setTotalAlertsGlobal,
-} from "../../store/slices/events";
+} from "@/store/slices/events";
 
 import { AllAlertsTable } from "../all-alerts-table";
 import {
   formatDate,
   getLastWeekDate,
   getTodayDate,
-} from "../../utils/general-helpers";
+} from "@/utils/general-helpers";
 
 import styles from "./index.module.css";
 
-import { DeviceEvent, ReqDeviceEvent } from "../../types/device-event";
+import { DeviceEvent, ReqDeviceEvent } from "@/types/device-event";
 
 import {
-  useGetAllEventsMutation,
+  useQueryEventsMutation,
   useProcessEventMutation,
-} from "../../services";
+  api,
+} from "@/services";
 import debouce from "lodash.debounce";
-import { useAppSelector } from "../../hooks/use-app-selector";
+import { useAppSelector } from "@/hooks/use-app-selector";
 import {
   getEvents,
   getGlobalPageSize,
   getSelectedRowIds,
   getTotalAlerts,
-} from "../../store/selectors/events";
-import { ThemeContext } from "../../theme";
+} from "@/store/selectors/events";
+import { ThemeContext } from "@/theme";
+import { RootState } from "@/types/store";
 
 type Fields = {
   search: string;
@@ -67,7 +69,7 @@ const { Search } = Input;
 export const AllAlerts: FC = () => {
   const dispatch = useDispatch();
   const [form] = Form.useForm<Fields>();
-  const [getAllEvents, { isLoading }] = useGetAllEventsMutation();
+  const [getAllEvents, { isLoading }] = useQueryEventsMutation();
   const [handleProcessEvents, {}] = useProcessEventMutation();
   const [messageApi, contextHolder] = message.useMessage();
   const [filter, setFilter] = useState<string | "">(""); //search handler state
@@ -76,11 +78,10 @@ export const AllAlerts: FC = () => {
   const [totalAlerts, setTotalAlerts] = useState(0);
   const [clearAll, setClearAll] = useState<boolean>(false);
   const date = new Date();
-  const [startDate, setStartDate] = useState<string>(
-    formatDate(getLastWeekDate(date)),
-  );
+  // const [startDate, setStartDate] = useState<string>(formatDate(getLastWeekDate(date)));
+  const [startDate, setStartDate] = useState<string>();
   const [endDate, setEndDate] = useState<string>(
-    formatDate(getTodayDate(date)),
+    formatDate(date),
   );
   const { appTheme } = useContext(ThemeContext);
   const darkTheme = appTheme === "dark";
@@ -92,19 +93,20 @@ export const AllAlerts: FC = () => {
   const total = useAppSelector(getTotalAlerts);
 
   useEffect(() => {
+
     const body: ReqDeviceEvent = {
-      pageSize,
       startTime: startDate,
       endTime: endDate,
       startNum: (pageIndex - 1) * pageSize,
-      processed: -1,
-      sites: [],
-      vendors: [],
-      itemKeys: [],
-      itemLevels: itemLevels,
+      // processed: -1,
+      // sites: [],
+      // vendors: [],
+      // itemKeys: [],
+      // itemLevels: itemLevels,
       keyword: filter,
       orderBy: 1,
       pageIndex: pageIndex,
+      pageSize: pageSize,
     };
     setTotalAlerts(total);
     let pageSizeChange = false;
@@ -122,6 +124,7 @@ export const AllAlerts: FC = () => {
       if (!doExist) {
         const data = await getAllEvents(body);
         if (data?.error) {
+          console.log("DATA ERROR: ", data?.error)
           messageApi.open({
             type: "error",
             content: "Request Timeout",
@@ -146,7 +149,7 @@ export const AllAlerts: FC = () => {
     total,
     itemLevels,
     startDate,
-    endDate,
+    endDate
   ]);
 
   useEffect(() => {
@@ -229,6 +232,9 @@ export const AllAlerts: FC = () => {
       }
     }
   };
+
+  const AllEventsData = useSelector((state: RootState) => state.events);
+
   return (
     <>
       {contextHolder}
@@ -284,16 +290,15 @@ export const AllAlerts: FC = () => {
 
         <Col span={24}>
           <AllAlertsTable
+            refetch={getAllEvents}
             dataTestId="all-alerts-table"
-            // data={queryEventData}
             pageIndex={pageIndex}
             pageSize={pageSize}
             totalAlerts={totalAlerts}
             handlePageChange={handlePageChange}
             loading={isLoading}
             className={`${darkTheme ? "alerts_table" :"" }`}
-
-            // data={AllEventsData}
+            data={AllEventsData}
           />
         </Col>
       </Row>

@@ -1,45 +1,51 @@
-import { Button, Drawer, Form, Input, Space, Typography } from "antd";
-import { type FC, useState } from "react";
+import { Button, Divider, Drawer, Form, Input, message, Space, Typography } from "antd";
+import { type FC, useEffect, useState } from "react";
 
 import { ArrowLeftOutlined, PlusOutlined } from "@ant-design/icons";
-import { BaseSelect } from "../../components/base-select";
+import { BaseSelect } from "@/components/base-select";
 import styles from "./index.module.css";
+import { useCreateSiteMutation, useGetOrganizationsMutation, usePostOrganizationMutation } from "@/services";
+import { Organisation } from "@/types/organisation";
+import { MessageInstance } from "antd/es/message/interface";
+import { MutationTrigger } from "@reduxjs/toolkit/dist/query/react/buildHooks";
 
 type Props = {
   dataTestId?: string;
   alarmRecord?: boolean;
   Show: boolean;
   setAddSite: React.Dispatch<React.SetStateAction<boolean>>;
-  darkTheme?:boolean
+  darkTheme?:boolean;
+  organizations: any;
+  organizationsLoading: boolean;
+  getOrganizations: MutationTrigger<any>;
 };
 
-type Fields = {
-  organization: string[];
-  sitename: string;
-  boxtype: string[];
-  organizationname: string;
+type SiteFields = {
+  orgId: string;
+  name: string;
+  boxType: "sbox-win"|"sbox-linux";
+};
+
+type OrgFields = {
+  name: string;
+  remark: string;
 };
 
 const { Item } = Form;
 const { TextArea } = Input;
-const initialValues: Fields = {
-  organization: [],
-  sitename: "",
-  boxtype: [],
-  organizationname: "",
-};
 
-export const AddSiteModal: FC<Props> = ({ dataTestId, Show, setAddSite,darkTheme}) => {
+export const AddSiteModal: FC<Props> = ({ getOrganizations, dataTestId, Show, setAddSite, darkTheme, organizations, organizationsLoading}) => {
   const show = Show;
-  const [form] = Form.useForm<Fields>();
+  const [messageApi, contextHolder] = message.useMessage();
   const [index, setIndex] = useState<number>(0);
 
   const handleClose = () => {
     setAddSite(false);
   };
 
-
   return (
+    <>
+    {contextHolder}
     <Drawer
       open={show}
       width={460}
@@ -48,36 +54,78 @@ export const AddSiteModal: FC<Props> = ({ dataTestId, Show, setAddSite,darkTheme
       data-testid={dataTestId}
       style={{ background:`${ darkTheme ? "#0C183B": "" }`  }}
     >
-      {index === 0 && <Step1 setStep={setIndex} setAddSite={setAddSite} darkTheme={darkTheme} />}
-      {index === 1 && <Step2 setStep={setIndex} setAddSite={setAddSite} darkTheme={darkTheme} />}
+      {index === 0 && <Step1 getOrganizations={getOrganizations} organizationsLoading={organizationsLoading} organizations={organizations} setStep={setIndex} messageApi={messageApi} setAddSite={setAddSite} darkTheme={darkTheme} />}
+      {index === 1 && <Step2 getOrganizations={getOrganizations} setStep={setIndex} messageApi={messageApi} setAddSite={setAddSite} darkTheme={darkTheme} />}
     </Drawer>
+    </>
   );
 };
 const Step1 = ({
   setStep,
   setAddSite,
-  darkTheme
+  darkTheme,
+  messageApi,
+  organizations,
+  getOrganizations,
+  organizationsLoading
 }: {
-  setStep: React.Dispatch<React.SetStateAction<number>>;
-  setAddSite: React.Dispatch<React.SetStateAction<boolean>>;
-  darkTheme:boolean
+  setStep: React.Dispatch<React.SetStateAction<number>>,
+  setAddSite: React.Dispatch<React.SetStateAction<boolean>>,
+  darkTheme:boolean,
+  messageApi: MessageInstance,
+  organizations: any,
+  getOrganizations: MutationTrigger<any>;
+  organizationsLoading: boolean
 }) => {
+  const [createSite, {isLoading: siteCreationLoading}] = useCreateSiteMutation();
+  const [form] = Form.useForm();
+
+  const organizationsOptions = organizations?.orgs
+      ? organizations.orgs.map((org: Organisation) => ({
+          label: org.name,
+          value: org.id,
+        }))
+  : [];
+
+  const handleSubmitSite = async (data: any) => {
+    try {
+    const result = await createSite(data);
+      if ( result?.data && !result?.data?.error ) {
+        messageApi.success(`Site has been added successfully !`);
+        form.resetFields();
+        getOrganizations({});
+        // handleCancel();
+        setAddSite(false);
+      } else if ( result?.data?.error ) {
+        messageApi.error(result?.data?.desc);
+      }
+    } catch (error) {
+      console.log(error);
+      messageApi.error("There was an error");
+    }
+  }
+  
   return (
-    <Form<Fields>
+    <>
+    <Form<SiteFields>
       // form={form}
       layout="vertical"
-      name="alerts-search"
-      initialValues={initialValues}
-      // onFinish={handleSubmit}
-      data-testid="alerts-search-form"
+      name="add-site-form"
+      onFinish={handleSubmitSite}
+      data-testid="add-site-form"
+      disabled={siteCreationLoading}
     >
       {" "}
-      <Item<Fields> label="Organization" name="organization">
+      <Item<SiteFields>
+        label="Organization"
+        name="orgId"
+        rules={[{ required: true, message: 'Select Organization' }]}
+      >
         <BaseSelect
-          mode="multiple"
           placeholder="Select"
           allowClear={true}
-          // options={siteOptions}
+          loading={organizationsLoading}
+          options={organizationsOptions}
           className="select_input"
         />
       </Item>
@@ -92,15 +140,32 @@ const Step1 = ({
       >
         Add New Organization
       </Button>
-      <Item<Fields> label="Site Name" name="sitename">
+      <Divider />
+      <Item<SiteFields>
+        label="Site Name"
+        name="name"
+        rules={[{ required: true, message: 'Write site name' }]}
+      >
         <Input placeholder="Type here..." className={darkTheme  ? styles.input_bg : ""} />
       </Item>
-      <Item<Fields> label="Box Type" name="boxtype">
+      <Item<SiteFields>
+        label="Box Type"
+        name="boxType"
+        rules={[{ required: true, message: 'Select box type' }]}
+      >
         <BaseSelect
-          mode="multiple"
           placeholder="Select"
-          allowClear={true}
           className="select_input"
+          options={[
+            {
+              value: "sbox-win",
+              label: "Windows"
+            },
+            {
+              value: "sbox-linux",
+              label: "Linux"
+            }
+          ]}
         />
       </Item>
       <div className={styles.btn_container}>
@@ -116,7 +181,8 @@ const Step1 = ({
         </Button>
         <Button
           type="primary"
-          // onClick={handleReset}
+          htmlType="submit"
+          loading={siteCreationLoading}
           style={{
             borderRadius: "1px",
             flex: 1,
@@ -126,54 +192,77 @@ const Step1 = ({
         </Button>
       </div>
     </Form>
+    </>
   );
 };
+
 const Step2 = ({
   setStep,
   setAddSite,
-  darkTheme
+  darkTheme,
+  messageApi,
+  getOrganizations,
 }: {
-  setStep: React.Dispatch<React.SetStateAction<number>>;
-  setAddSite: React.Dispatch<React.SetStateAction<boolean>>;
-  darkTheme:boolean
+  setStep: React.Dispatch<React.SetStateAction<number>>,
+  setAddSite: React.Dispatch<React.SetStateAction<boolean>>,
+  darkTheme:boolean,
+  messageApi: MessageInstance,
+  getOrganizations: MutationTrigger<any>
 }) => {
+  const [createOrganization, {isLoading: orgCreationLoading}] = usePostOrganizationMutation();
+  const handleSubmitOrganization = async (data: any) => {
+    try {
+      const result = await createOrganization(data);
+        if ( result?.data && !result?.data?.error ) {
+          messageApi.success(`Organization has been added successfully !`);
+          getOrganizations({});
+          // handleCancel();
+        } else if ( result?.data?.error ) {
+          messageApi.error(result?.data?.desc);
+        }
+      } catch (error) {
+        console.log(error);
+        messageApi.error("There was an error");
+      }
+  }
+
   return (
     <>
       <Space size={5} align="center" style={{ marginBottom: "1rem" }}>
         <ArrowLeftOutlined
-          // style={{ fontSize: "20px" }}
           className={styles.title}
           onClick={() => setStep(0)}
         />
         <Typography.Title
           className={styles.title}
-
-          // style={{ fontSize: "20px" }}
         >
           Add New Organization
         </Typography.Title>
       </Space>
 
-      <Form<Fields>
+      <Form<OrgFields>
         // form={form}
         layout="vertical"
         name="alerts-search"
-        initialValues={initialValues}
-        // onFinish={handleSubmit}
+        onFinish={handleSubmitOrganization}
+        disabled={orgCreationLoading}
         data-testid="alerts-search-form"
       >
         {" "}
-        <Item<Fields> label="Organization name" name="sitename">
+        <Item<OrgFields>
+          label="Organization name"
+          name="name"
+          rules={[{ required: true, message: 'Write organization name' }]}
+        >
           <Input placeholder="Type here..." className={darkTheme ? styles.input_bg : ""} />
         </Item>
-        <Item<Fields> label="Organization name" name="">
+        <Item<OrgFields> label="Remark" name="remark">
           <TextArea
             autoSize={{ minRows: 2, maxRows: 6 }}
             maxLength={256}
             showCount={true}
             placeholder="Process notes"
             className={darkTheme ? styles.testingTextarea : ""}
-            // style={{backgroundColor: "yellow"}}
           />
         </Item>
         <div className={styles.btn_container}>
@@ -189,12 +278,14 @@ const Step2 = ({
           </Button>
           <Button
             type="primary"
+            htmlType="submit"
             style={{
               borderRadius: "1px",
               flex: 1,
             }}
+            loading={orgCreationLoading}
           >
-            Save
+            Create Organization
           </Button>
         </div>
       </Form>

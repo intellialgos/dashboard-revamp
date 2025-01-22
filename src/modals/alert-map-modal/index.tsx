@@ -2,25 +2,25 @@ import { useState, type FC } from "react";
 import { Button, Drawer, Form, Input, Radio, Space, Spin, message } from "antd";
 import { useDidUpdate } from "rooks";
 
-import { AlarmInfoList } from "../../alarm-info-list";
-import { SiteInfoList } from "../../components/site-info-list";
-import { DescriptionList } from "../../description-list";
-import { useAppDispatch } from "../../hooks/use-app-dispatch";
-import { useAppSelector } from "../../hooks/use-app-selector";
+import { AlarmInfoList } from "@/alarm-info-list";
+import { SiteInfoList } from "@/components/site-info-list";
+import { DescriptionList } from "@/description-list";
+import { useAppDispatch } from "@/hooks/use-app-dispatch";
+import { useAppSelector } from "@/hooks/use-app-selector";
 import {
   getSelectedEvents,
   getShowProcessAlarmModalState,
-} from "../../store/selectors/events";
+} from "@/store/selectors/events";
 import {
   setSelectedEvents,
   setShowProcesslarmModal,
-} from "../../store/slices/events";
-import { DeviceEvent, ProcessStatus } from "../../types/device-event";
-import { getFormattedDateTime } from "../../utils/get-formatted-date-time";
+} from "@/store/slices/events";
+import { DeviceEvent, ProcessStatus } from "@/types/device-event";
+import { getFormattedDateTime } from "@/utils/get-formatted-date-time";
 
 import styles from "./index.module.css";
-import { useProcessEventMutation } from "../../services";
-import { ReqProcessEvent } from "../../types/process-event";
+import { useProcessEventMutation } from "@/services";
+import { ReqProcessEvent } from "@/types/process-event";
 import { LoadingOutlined } from "@ant-design/icons";
 
 type Props = {

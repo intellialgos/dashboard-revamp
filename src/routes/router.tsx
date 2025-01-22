@@ -1,36 +1,39 @@
 import { createBrowserRouter, Navigate, Outlet } from "react-router-dom";
 
-import { DashboardLayout } from "../components/dashboard-layout";
-import { AlarmRecord } from "../pages/alarm-record";
-import { Dashboard } from "../pages/dashboard";
+import { DashboardLayout } from "@/components/dashboard-layout";
+import { AlarmRecord } from "@/pages/alarm-record";
+import { Dashboard } from "@/pages/dashboard";
 
 import { AlarmRoute, AlertRoute, AppRoute } from "./routes";
-import { AlertMap } from "../pages/alert-map";
-import { AlarmSelfRecovery } from "../pages/alarm-self-recovery";
-import { AlarmSelfRecoverySite } from "../pages/alarm-self-recovery-site";
-import { SiteConfiguration } from "../pages/site-configuration";
-import { MaskedSource } from "../pages/masked-source";
-import { DisconnectedSites } from "../pages/disconnected-sites";
-import { SiteMap } from "../pages/site-map";
-import SignIn from "../pages/auth/signin";
-import { Users } from "../pages/users";
+import { AlertMap } from "@/pages/alert-map";
+import { AlarmSelfRecovery } from "@/pages/alarm-self-recovery";
+import { AlarmSelfRecoverySite } from "@/pages/alarm-self-recovery-site";
+import { SiteConfiguration } from "@/pages/site-configuration";
+import { MaskedSource } from "@/pages/masked-source";
+import { DisconnectedSites } from "@/pages/disconnected-sites";
+import { SiteMap } from "@/pages/site-map";
+import SignIn from "@/pages/auth/signin";
+import { Users } from "@/pages/users";
+import AuthProvider from "@/providers/AuthProvider";
+import { useAppSelector } from "@/hooks/use-app-selector";
+import { SiteUpgrade } from "@/pages/site-upgrade";
 // import { useAppSelector } from "../hooks/use-app-selector";
 // import { getAlertMapId } from "../store/selectors/events";
 
 // const siteId = useAppSelector(getAlertMapId);
+const AuthGuard = ({ children }: { children: React.ReactNode }) => {
+  const token = useAppSelector((state) => state.authState.token);
+  return token ? <Navigate to={AppRoute.Dashboard} replace /> : <>{children}</>;
+};
 
 export const router = createBrowserRouter([
   {
     path: "/login",
-    element: <SignIn/>,
+    element: <AuthGuard><SignIn/></AuthGuard>,
   },
-  // {
-  //   path: "/sign-up",
-  //   element: "Sign up",
-  // },
   {
     path: AppRoute.Home,
-    element: <DashboardLayout />,
+    element: <AuthProvider><DashboardLayout /></AuthProvider>,
     errorElement: <>TODO: Add 404 page</>,
     handle: {
       crumb: () => ({
@@ -40,7 +43,7 @@ export const router = createBrowserRouter([
     children: [
       {
         path: "",
-        element: <Navigate to={AppRoute.Dashboard} replace={true} />,
+        element: <Navigate to={AppRoute.Dashboard} replace={true} />
       },
       {
         path: AppRoute.Dashboard,
@@ -49,6 +52,11 @@ export const router = createBrowserRouter([
       {
         path: AppRoute.Users,
         element: <Users />,
+        handle: {
+          crumb: () => ({
+            title: "Users",
+          }),
+        },
       },
       {
         path: AlertRoute.alertMap,
@@ -93,7 +101,7 @@ export const router = createBrowserRouter([
             element: <AlarmSelfRecovery />,
             handle: {
               crumb: () => ({
-                title: "Self Recovery",
+                title: "Quick Recovery",
               }),
             },
           },
@@ -119,6 +127,20 @@ export const router = createBrowserRouter([
       {
         path: AppRoute.SiteMap,
         element: <SiteMap/>,
+        handle: {
+          crumb: () => ({
+            title: "Site Map",
+          }),
+        },
+      },
+      {
+        path: AppRoute.SiteUpgrade,
+        element: <SiteUpgrade />,
+        handle: {
+          crumb: () => ({
+            title: "Site Upgrade",
+          }),
+        },
       },
       {
         path: AppRoute.SiteConfiguration,

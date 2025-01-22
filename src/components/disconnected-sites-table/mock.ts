@@ -1,4 +1,4 @@
-import { DeviceEvent } from "../../types/device-event";
+import { DeviceEvent } from "@/types/device-event";
 
 export const data: any[] = [
   {

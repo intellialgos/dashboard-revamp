@@ -1,164 +1,250 @@
-import { type FC, useMemo,useContext } from "react";
+import { type FC, useMemo,useContext, useEffect, useState } from "react";
 
-import { DescriptionList, DescriptionListItem } from "../../description-list";
-import { DeviceEvent } from "../../types/device-event";
+import { DescriptionList, DescriptionListItem } from "@/description-list";
 import { StatusLevelTag } from "../status-level-tag";
-import { Button, Card, Form, Input, Space, Tag } from "antd";
+import { Button, Card, Form, FormListFieldData, Input, InputNumber, Skeleton, Space, Tag } from "antd";
 import styles from "./index.module.css";
-import { DeleteOutlined, PlusOutlined, RedoOutlined } from "@ant-design/icons";
+import { DeleteOutlined, PlusOutlined, PoweroffOutlined, RedoOutlined } from "@ant-design/icons";
 import { BaseSelect } from "../base-select";
-import { ThemeContext } from "../../theme";
+import { ThemeContext } from "@/theme";
+import { useGetBoxStatusMutation, useGetIoEventsMutation, useGetMaskedItemMutation, useRestartBoxMutation, useUpdateIoEventsMutation } from "@/services";
+import useMessage from "antd/es/message/useMessage";
+import { useAppSelector } from "@/hooks/use-app-selector";
+import { getSelectedSite } from "@/store/selectors/sites";
 
 type Props = {
-  site?: DeviceEvent["site"];
   className?: string;
   dataTestId?: string;
   title?:string;
+  data?: any,
+  boxStatus: any,
+  ioEvents: any,
+  maskedItem: any,
+  site: string,
 };
 const { Item } = Form;
 export const EditSiteInfo: FC<Props> = ({
-  site,
   className,
   dataTestId,
   data,
+  boxStatus,
+  ioEvents,
+  maskedItem,
+  site,
   title
 }) => {
+  const [ restartBox, { isLoading } ] = useRestartBoxMutation();
+  const [ messageApi, messageContext ] = useMessage();
+  const [ updateIoEvents, { isLoading: ioEventsLoading } ] = useUpdateIoEventsMutation();
+  const [filteredMaskedItems, setMaskedItems] = useState([]);
+
+  const [form] = Form.useForm();
+  const handleRestart = async () => {
+    try {
+      const response = await restartBox({siteId: site});
+      if ( response && !response?.error ) {
+        messageApi.success('App has been rebooted !');
+        // refetch();
+      } else if (response?.error) {
+        messageApi.error(response?.desc);
+      }
+    } catch (error) {
+      console.log("ERROR: ", error);
+    }
+  }
+
+  const handleUpdateIoEvents = async (data: any) => {
+    try {
+      const response = await updateIoEvents({
+        siteId: "",
+        ...data
+      });
+      if ( response && !response?.error ) {
+        messageApi.success('IO Events Text has been updated !');
+      } else if ( response?.error ) {
+        messageApi.error(response?.desc);
+      }
+    } catch (error) {
+      messageApi.error("There was an error");
+    }
+  }
+
+  useEffect(() => {
+    if (maskedItem?.list) {
+      setMaskedItems(maskedItem.list.filter((i:any) => i.siteId == site));
+    }
+  }, [maskedItem])
+
   // TODO: Get rest info from BE
   const items = useMemo<DescriptionListItem[]>(
     () => [
-      { label: "Box Type", value: "sbox-linux" },
+      { label: "Box Type", value: <Tag color={(boxStatus?.boxType == 'sbox-linux') ? "orange" : "cyan"}> { (boxStatus?.boxType == 'sbox-linux') ? "Linux" : "Windows" } </Tag> },
       {
         label: "Status",
         value: (
           <>
-            {" "}
-            <StatusLevelTag level={5} />{" "}
             <Space size="small">
-              <Tag style={{ background: "transparent" }}>Reboot App</Tag>
+            <Tag color={boxStatus?.connectionState ? "green" : "red"}> <PoweroffOutlined /> { boxStatus?.connectionState ? "Online" : "Offline" } </Tag>
+              {
+                boxStatus?.connectionState &&
+                <Button size="small" loading={isLoading} type="primary" onClick={handleRestart}>Reboot App</Button>
+              }
             </Space>
           </>
         ),
       },
-      { label: "Last Firmware Version", value: "N/A" },
-      { label: "Current Firmware Version", value: "1.1.11" },
-      { label: "Os Version", value: "N/A" },
-      {
-        label: "Custom I/O Alarm Text",
-        value: (
-          <Button
-            type="default"
-            style={{
-              background: "transparent",
-              borderRadius: "1px",
-              borderColor: "#1B3687",
-            }}
-          >
-            Apply IO Alarm Text
-          </Button>
-        ),
-      },
+      { label: "Current Firmware Version", value: boxStatus?.firmwareVersion?.currentFwVersion || "N/A" },
+      { label: "Pending Firmware Version", value: boxStatus?.firmwareVersion?.pendingFwVersion || "N/A" },
+      { label: "Firmware Update Status", value: <Tag color={boxStatus?.firmwareVersion?.fwUpdateStatus == "error" ? "error" : "blue"}>{boxStatus?.firmwareVersion?.fwUpdateStatus}</Tag> },
+      { label: "Os Version", value: boxStatus?.osVersion || "N/A" }
     ],
     [site],
   );
+
   const maskeditems = useMemo<DescriptionListItem[]>(
-    () => [
-      { label: "Site ID", value: "0100098" },
-      { label: "Source ID", value: "N/A" },
-      { label: "Ignore ID", value: "N/A" },
-      { label: "Item Key", value: "N/A" },
-    ],
-    [site],
+    () =>
+      filteredMaskedItems
+        ? filteredMaskedItems.flatMap((item: any) => [
+            { label: "Site ID", value: site },
+            { label: "Source ID", value: item?.objId || "N/A" },
+            { label: "Ignore ID", value: item?.keyId || "N/A" },
+            { label: "Item Key", value: item?.key || "N/A" },
+            { label: "Action", value: <Button type="primary" size="small" icon={<RedoOutlined />}>Recovery</Button> }
+          ])
+        : [],
+    [site, maskedItem, filteredMaskedItems],
   );
+
   return (
     <>
+      {messageContext}
+
+    {
+
+    }
       <DescriptionList
         className={className}
         // title="Site Info"
         items={data ? data : items}
         dataTestId={dataTestId}
       />
-      <ContactCard title={title} />
-        {title && (<Button
-          type="default"
-          // onClick={handleReset}
-          style={{
-            background: "transparent",
-            borderRadius: "1px",
-            borderColor: "#1B3687",
-            width: "100%",
-            marginBottom:"1rem"
-          }}
-          icon={<PlusOutlined />}
-         
+      <Form
+        layout="vertical"
+        form={form}
+        style={{ textAlign: 'center' }}
+        onFinish={handleUpdateIoEvents}
+        disabled={ioEventsLoading}
+      >
+        <Form.List
+          name={'ioCustomText'}
+          initialValue={ioEvents ?? [{}]}
         >
-         Add Another
-        </Button>)}
+          {(fields, { add, remove }) => (
+            <>
+              {fields.map((field) => (
+                <ContactCard
+                  key={field.key}
+                  field={field}
+                  remove={remove}
+                  length={fields.length}
+                />
+              ))}
+              <Button
+                type="dashed"
+                onClick={() => add()}
+                style={{ marginBottom: 20, background: 'transparent' }}
+                block
+              >
+                <PlusOutlined />
+                Add Another
+              </Button>
+            </>
+          )}
+        </Form.List>
+
+        <Button
+          type="primary"
+          htmlType="submit"
+          block
+          size="large"
+          loading={ioEventsLoading}
+          style={{ marginBottom: 30 }}
+        >
+          Apply IO Alarm Text
+        </Button>
+      </Form>
+
         
       <DescriptionList
         className={className}
-        title="Masked Source"
-        items={data ? data : maskeditems}
+        title={`Masked Source (${filteredMaskedItems.length})`}
+        items={maskeditems}
         dataTestId={dataTestId}
       />
-      <Button
-          type="default"
-          // onClick={handleReset}
-          style={{
-            background: "transparent",
-            borderRadius: "1px",
-            borderColor: "#1B3687",
-            width: "100%",
-          }}
-          icon={<RedoOutlined />}
-         
-        >
-          Recovery
-        </Button>
     </>
   );
 };
 
-const ContactCard = ({title}:{title?:string}) => {
+const ContactCard = ({field, remove, length}: {length: number,field: FormListFieldData, remove: (index: number|number[]) => void}) => {
   const { appTheme } = useContext(ThemeContext);
   const darkTheme = appTheme === "dark";
   return (
-    <>
-      <Card className="contact_card" style={{marginBottom:"1rem"}}>
-        <Item label="IO" name="remarks">
-          <Input placeholder="0" className={`${darkTheme ? styles.input_bg : ""}`} type="number" />
+      <Card className="contact_card" style={{marginBottom:"1rem"}} key={field.key}>
+        <Item
+          label="IO"
+          name={[field.name, "io"]}
+          rules={[ {required: true}, { type: "number", min: 0, max: 1000, message: "IO between 0-1000" } ]}
+        >
+          <InputNumber
+            style={{width: '100%'}}
+            placeholder="0"
+            className={`${darkTheme ? styles.input_bg : ""}`}
+            type="number"
+            min={0}
+            max={1000}
+          />
         </Item>
-        <Item label="Alarm Text" name="remarks">
+        <Item label="Alarm Text" name={[field.name, "text"]} rules={[{ required: true }]}>
           <Input
             placeholder="Type here..."
             className={`${darkTheme ? styles.input_bg : ""}`}
             />
         </Item>
         {/* When Clicked on Edit */}
-        {title && ( <Item label="Alarm Level" name="remarks">
+        <Item
+          label="Alarm Level"
+          name={[field.name, "level"]}
+        >
         <BaseSelect
-            mode="multiple"
             placeholder="Select"
-            allowClear={true}
-            // options={siteOptions}
+            options={[
+              { label: "1", value: 1 },
+              { label: "2", value: 2 },
+              { label: "3", value: 3 },
+              { label: "4", value: 4 },
+              { label: "5", value: 5 },
+            ]}
             className={`${darkTheme ? styles.input_bg : ""} select_input`}
           />
-        </Item>) }
+        </Item>
        
          {/* When Clicked on Edit */}
-        {title && (<Button
+        <Button
           type="default"
-          // onClick={handleReset}
+          onClick={() => {
+            remove(field.name);
+          }}
           style={{
            background:`rgba(255, 77, 79, 1)`,
             borderRadius: "1px",
             width: "100%",
+            marginBottom: 10
           }}
           icon={<DeleteOutlined />}
          
         >
          Delete
-        </Button>)}
+        </Button>
       </Card>
-    </>
   );
 };

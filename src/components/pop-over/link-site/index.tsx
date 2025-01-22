@@ -2,9 +2,9 @@ import React, { useState,useContext } from "react";
 import { Button, Form, Popover, Space, Typography } from "antd";
 import styles from './index.module.css'
 import { InfoCircleOutlined, InfoOutlined, LinkOutlined } from "@ant-design/icons";
-import { ThemeContext } from "../../../theme";
-import { getMultipleSelectProps } from "../../../utils/form-helpers/get-multiple-select-props";
-import { BaseSelect } from "../../base-select";
+import { ThemeContext } from "@/theme";
+import { getMultipleSelectProps } from "@/utils/form-helpers/get-multiple-select-props";
+import { BaseSelect } from "@/components/base-select";
 
 const { Link } = Typography;
 const LinkSitePopOver: React.FC = () => {

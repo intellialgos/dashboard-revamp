@@ -21,3 +21,7 @@
 .value {
   flex-shrink: 0;
 }
+
+.smaller .title {
+  font-size: 15px !important;
+}

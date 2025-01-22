@@ -1,16 +1,18 @@
 import { type FC, useMemo } from "react";
 
-import { DescriptionList, DescriptionListItem } from "../../description-list";
-import { DeviceEvent } from "../../types/device-event";
-import { Card, Space, Tag } from "antd";
+import { DescriptionList, DescriptionListItem } from "@/description-list";
+import { DeviceEvent } from "@/types/device-event";
+import { Card, Space, Tag, Typography } from "antd";
 import {
   CheckCircleOutlined,
   ContactsOutlined,
   MailOutlined,
+  PoweroffOutlined,
 } from "@ant-design/icons";
+import { OrganisationSite } from "@/types/organisation";
 
 type Props = {
-  site: DeviceEvent["site"];
+  site: OrganisationSite;
   className?: string;
   dataTestId?: string;
 };
@@ -19,7 +21,6 @@ export const SiteInfoListMap: FC<Props> = ({
   site,
   className,
   dataTestId,
-  data,
 }) => {
   // TODO: Get rest info from BE
   const items = useMemo<DescriptionListItem[]>(
@@ -29,30 +30,36 @@ export const SiteInfoListMap: FC<Props> = ({
         value: (
           <Space size="small">
             {/* {event.obj.key} */}
-            <Tag className="site-info-tag" icon={<CheckCircleOutlined />}>
-              Connected
-            </Tag>
+            <Tag color={site.connectionState ? "green-inverse" : "red-inverse"}> <PoweroffOutlined /> { site.connectionState ? "Online" : "Offline" } </Tag>
           </Space>
         ),
       },
-      {
-        label: "Subscription Status",
-        value: (
-          <Space size="small">
-            {/* {event.obj.key} */}
-            <Tag>Active</Tag>
-          </Space>
-        ),
-      },
-      { label: "Site ID", value: "01900040" },
-      { label: "Site Name", value: "Dubai Mall" },
-      { label: "Site Address", value: "Downtown Dubai - Dubai" },
-      { label: "Reclear", value: "N/A" },
-      { label: "Start Date and Time", value: "23 Aug 2023 12:00 PM" },
-      { label: "End Date and Time", value: "06 Sep 2023 12:00 AM" },
+      { label: "Box type", value:  <Tag color={(site.boxType == 1) ? "orange" : "cyan"}> { (site.boxType == 1) ? "Lite Version" : "Standard Version" } </Tag> },
+      { label: "Site ID", value: site.id },
+      { label: "Site Name", value: site.name },
+      { label: "Site Address", value: site.address },
+      { label: "Start Date and Time", value: site.activate || "N/A" },
+      { label: "End Date and Time", value: site.deactivate || "N/A" },
+      { label: "Sim Card Expiration", value: site.simExpirationTime || "N/A" },
+      { label: "Remark", value: site.remark || "N/A" },
     ],
     [],
   );
+
+  const contactDetails = [
+    {
+      index: 1,
+      contactEmail: site.contactEmail || "N/A",
+      contactPerson: site.contactPerson || "N/A",
+      contactPhoneNum: site.contactPhoneNum || "N/A",
+    },
+    {
+      index: 2,
+      contactEmail: site.contactEmail2 || "N/A",
+      contactPerson: site.contactPerson2 || "N/A",
+      contactPhoneNum: site.contactPhoneNum2 || "N/A",
+    },
+  ]
   return (
     <>
       <DescriptionList
@@ -62,28 +69,28 @@ export const SiteInfoListMap: FC<Props> = ({
         dataTestId={dataTestId}
       />
 
-      <ContactCard index={1} />
-
-      <ContactCard index={2} />
+      {
+        contactDetails.map(contact => <ContactCard contact={contact} />)
+      }
     </>
   );
 };
 
-const ContactCard = ({ index }: { index: number }) => {
+const ContactCard = ({ contact }: { contact: any }) => {
   return (
     <>
-      <p style={{ color: `rgba(255, 255, 255, 0.45)`, margin: 0 }}>
-        Contact {index}
-      </p>
+      <Typography.Text>
+        Contact {contact.index}
+      </Typography.Text>
       <Card className="contact_card">
-        <p>Samvel Nazaryan</p>
+        <p>{contact.contactPerson}</p>
         <div style={{ display: "flex", gap: "5px", alignItems: "center" }}>
           <ContactsOutlined />
-          +971 58 1000 000
+          {contact.contactPhoneNum}
         </div>
         <div style={{ display: "flex", gap: "5px", alignItems: "center" }}>
           <MailOutlined />
-          s.nazaryan@convergint.com
+          {contact.contactEmail}
         </div>
       </Card>
     </>

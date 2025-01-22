@@ -2,7 +2,7 @@ import type { FC, ReactElement } from "react";
 import clsx from "clsx";
 import { ResponsiveContainer } from "recharts";
 
-import { Widget, type WidgetProps } from "../../components/widget";
+import { Widget, type WidgetProps } from "@/components/widget";
 
 import styles from "./index.module.css";
 

@@ -6,6 +6,7 @@ export enum AppRoute {
   MaskedSource = "/masked-source",
   Notifications = "/notifications",
   SiteConfiguration = "/site-configuration",
+  SiteUpgrade = "/site-upgrade",
   SiteMap = "/site-map",
   Users = '/users'
 }

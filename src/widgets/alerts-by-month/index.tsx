@@ -1,11 +1,11 @@
 import type { FC } from "react";
 import { Bar, Legend, XAxis, YAxis } from "recharts";
 
-import { BaseBarChart } from "../../charts/base-bar-chart";
+import { BaseBarChart } from "@/charts/base-bar-chart";
 import {
   ChartContainer,
   ChartContainerProps,
-} from "../../charts/chart-container";
+} from "@/charts/chart-container";
 import { Empty, Spin } from "antd";
 import { LoadingOutlined } from "@ant-design/icons";
 

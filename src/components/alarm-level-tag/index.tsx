@@ -1,9 +1,9 @@
 import type { FC } from "react";
 import { Tag } from "antd";
 
-import { ALARM_LEVEL_NAME_MAP } from "../../const/alarm";
-import { AlarmLevel } from "../../types/device-event";
-import { getAlarmLevelName } from "../../utils/get-alarm-level-name";
+import { ALARM_LEVEL_NAME_MAP } from "@/const/alarm";
+import { AlarmLevel } from "@/types/device-event";
+import { getAlarmLevelName } from "@/utils/get-alarm-level-name";
 
 type Props = {
   className?: string;

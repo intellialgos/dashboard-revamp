@@ -1,17 +1,20 @@
-import { GroupOutlined, LinkOutlined, PlusOutlined } from "@ant-design/icons";
+import { GroupOutlined, PlusOutlined } from "@ant-design/icons";
 import { Button, Col, Row, Space } from "antd";
-import { FC, useContext, useState } from "react";
-import { Breadcrumbs } from "../../breadcrumbs";
-import { SiteConfigurationTable } from "../../components/site-configuration-table";
-import { useAppDispatch } from "../../hooks/use-app-dispatch";
-import { SiteConfigurationDrawer } from "../../modals/site-configuration-drawer";
-import { setShowSiteInfoModal } from "../../store/slices/events";
-import { ThemeContext } from "../../theme";
-import { AddSiteModal } from "../../modals/add-site-modal";
-import { AddGroupModal } from "../../modals/add-group-modal";
-import DeleteModal from "../../modals/delete-modal";
-import { EditSiteMapModal } from "../../modals/edit-site-map-modal";
-import LinkSitePopOver from "../../components/pop-over/link-site";
+import { FC, useContext, useEffect, useState } from "react";
+import { Breadcrumbs } from "@/breadcrumbs";
+import { SiteConfigurationTable } from "@/components/site-configuration-table";
+import { useAppDispatch } from "@/hooks/use-app-dispatch";
+import { SiteConfigurationDrawer } from "@/modals/site-configuration-drawer";
+import { setShowSiteInfoModal } from "@/store/slices/events";
+import { ThemeContext } from "@/theme";
+import { AddSiteModal } from "@/modals/add-site-modal";
+import { AddGroupModal } from "@/modals/add-group-modal";
+import DeleteModal from "@/modals/delete-modal";
+import { EditSiteMapModal } from "@/modals/edit-site-map-modal";
+import LinkSitePopOver from "@/components/pop-over/link-site";
+import { useGetOrganizationsMutation } from "@/services";
+import { useAppSelector } from "@/hooks/use-app-selector";
+import { getSelectedSite } from "@/store/selectors/sites";
 
 export const SiteConfiguration: FC = () => {
   const dispatch = useAppDispatch();
@@ -20,8 +23,14 @@ export const SiteConfiguration: FC = () => {
   const [addSite,setAddSite] = useState<boolean>(false)
   const [addGroup,setAddGroup] = useState<boolean>(false)
   const [deleteModal,setDeleteModal]=useState<boolean>(false)
+  const site = useAppSelector(getSelectedSite);
 
- 
+
+  const [getOrganizations, { isLoading, data: organizations }] = useGetOrganizationsMutation();
+  useEffect(() => {
+      getOrganizations({});
+  }, [getOrganizations]);
+
   const handleSiteInfo = () => {
     dispatch(setShowSiteInfoModal(true));
   };
@@ -42,7 +51,7 @@ export const SiteConfiguration: FC = () => {
               icon={<PlusOutlined color="white" />}
               onClick={()=>setAddSite(!addSite)}
             >
-              Add Site
+              Add Site/Organization
             </Button>
             <Button
               size="large"
@@ -54,18 +63,18 @@ export const SiteConfiguration: FC = () => {
             >
               Add Group
             </Button>
-            <LinkSitePopOver/>
+            {/* <LinkSitePopOver/> */}
           </Space>
         </Col>
         <Col span={24}>
-          <SiteConfigurationTable className={darkTheme ? "alerts_table" : "alerts_table_light"} setDeleteModal={setDeleteModal} />
+          <SiteConfigurationTable data={organizations} isLoading={isLoading} className={darkTheme ? "alerts_table" : "alerts_table_light"} />
         </Col>
       </Row>
       <SiteConfigurationDrawer handlePageFilter={handleSiteInfo} darkTheme={darkTheme}/>
-      <AddSiteModal Show={addSite} setAddSite={setAddSite} darkTheme={darkTheme}/>
-      <AddGroupModal Show={addGroup} setAddGroup={setAddGroup} darkTheme={darkTheme}/>
+      <AddSiteModal getOrganizations={getOrganizations} organizationsLoading={isLoading} organizations={organizations} Show={addSite} setAddSite={setAddSite} darkTheme={darkTheme}/>
+      <AddGroupModal organizationsLoading={isLoading} organizations={organizations} getOrganizations={getOrganizations} Show={addGroup} setAddGroup={setAddGroup} darkTheme={darkTheme}/>
       <DeleteModal Show={deleteModal} setDeleteModal={setDeleteModal} darkTheme={darkTheme}/>
-      <EditSiteMapModal title="Test 1" darkTheme={darkTheme}/>
+      <EditSiteMapModal title={site} darkTheme={darkTheme}/>
     </>
   );
 };

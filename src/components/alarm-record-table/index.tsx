@@ -1,23 +1,23 @@
 import { type FC, useCallback, useState } from "react";
 import { Spin, Table } from "antd";
 
-import { useAppDispatch } from "../../hooks/use-app-dispatch";
-import { ProcessAlarmModal } from "../../modals/process-alarm-modal";
+import { useAppDispatch } from "@/hooks/use-app-dispatch";
+import { ProcessAlarmModal } from "@/modals/process-alarm-modal";
 import {
   setSelectedEvents,
   setSelectedEventsId,
   setShowProcesslarmModal,
-} from "../../store/slices/events";
-import type { DeviceEvent } from "../../types/device-event";
+} from "@/store/slices/events";
+import type { DeviceEvent } from "@/types/device-event";
 
 import { generateColumns } from "./config";
-import { data } from "./mock";
-import { useAppSelector } from "../../hooks/use-app-selector";
+import { data as mockData } from "./mock";
+import { useAppSelector } from "@/hooks/use-app-selector";
 import {
   getAlarmRecordEvents,
   getEvents,
   getSelectedRowIds,
-} from "../../store/selectors/events";
+} from "@/store/selectors/events";
 import { LoadingOutlined } from "@ant-design/icons";
 
 type Props = {
@@ -78,7 +78,8 @@ export const AlarmRecordTable: FC<Props> = ({
         // headerBg="#fff"
         className={className}
         scroll={{ x: 1200 }}
-        dataSource={event.find((item) => item.pageIndex === pageIndex)?.data}
+        // dataSource={event.find((item) => item.pageIndex === pageIndex)?.data}
+        dataSource={mockData}
         // headerBg={"#0000FF"}
         sticky={true}
         columns={columns}

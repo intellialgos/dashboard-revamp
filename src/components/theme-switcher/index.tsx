@@ -1,9 +1,9 @@
 import { type FC, useContext } from "react";
 import Icon from "@ant-design/icons";
 
-import MoonIcon from "../../assets/moon.svg?react";
-import SunIcon from "../../assets/sun.svg?react";
-import { ThemeContext } from "../../theme";
+import MoonIcon from "@/assets/moon.svg?react";
+import SunIcon from "@/assets/sun.svg?react";
+import { ThemeContext } from "@/theme";
 import { HeaderButton } from "../header-button";
 
 type Props = {

@@ -1,10 +1,11 @@
-import { Typography } from "antd";
+import { Tag, Typography } from "antd";
 import type { ColumnType } from "antd/es/table";
 
-import type { AlarmLevel, DeviceEvent } from "../../types/device-event";
-import { getFormattedDateTime } from "../../utils/get-formatted-date-time";
+import type { AlarmLevel, DeviceEvent } from "@/types/device-event";
+import { getFormattedDateTime } from "@/utils/get-formatted-date-time";
 import { AlarmLevelTag } from "../alarm-level-tag";
 import { StatusLevelTag } from "../status-level-tag";
+import { PoweroffOutlined } from "@ant-design/icons";
 
 const { Link } = Typography;
 
@@ -15,13 +16,13 @@ type ColumnParams = {
 export const generateColumns = (): ColumnType<DeviceEvent>[] => [
   {
     title: "ID",
-    dataIndex: ["site", "id"],
+    dataIndex: "id",
     width:88,
     sorter:true
   },
   {
     title: "Name",
-    dataIndex: ["site", "name"],
+    dataIndex: "name",
     sorter:true,
     width:100
   },
@@ -34,9 +35,11 @@ export const generateColumns = (): ColumnType<DeviceEvent>[] => [
   {
     title: "Status",
     sorter: true,
-    dataIndex: "statusLevel",
+    dataIndex: "connectionState",
     width:100,
-    render: (statusLevel: AlarmLevel) =><div style={{display:"flex",justifyContent:"center"}}> <StatusLevelTag level={statusLevel} /></div>,
+    render: (state: boolean) =><div style={{display:"flex",justifyContent:"center"}}>
+      <Tag color={state ? "green" : "red"}> <PoweroffOutlined /> { state ? "Online" : "Offline" } </Tag>
+    </div>,
 
     
   },

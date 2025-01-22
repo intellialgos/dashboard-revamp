@@ -1,35 +1,49 @@
 import { Typography } from "antd";
 import type { ColumnType } from "antd/es/table";
 
-import type { AlarmLevel, DeviceEvent } from "../../types/device-event";
-import { getFormattedDateTime } from "../../utils/get-formatted-date-time";
+import type { AlarmLevel, DeviceEvent } from "@/types/device-event";
+import { getFormattedDateTime } from "@/utils/get-formatted-date-time";
 import { AlarmLevelTag } from "../alarm-level-tag";
+import { OrganisationSite } from "@/types/organisation";
 
 const { Link } = Typography;
 
 type ColumnParams = {
-  onProcess: (event: DeviceEvent) => void;
+  onProcess: (keyId: number) => void;
+  sites: OrganisationSite[]
 };
 
 export const generateColumns = ({
   onProcess,
-}: ColumnParams): ColumnType<DeviceEvent>[] => [
+  sites
+}: ColumnParams): ColumnType<DeviceEvent>[] => {
+
+
+  return [
   {
     title: "Site",
-    dataIndex: ["site", "name"],
+    dataIndex: "siteName",
   },
   {
     title: "Contact 1",
     dataIndex: "contact1",
+    // render: (_, record) => {
+    //   const site = sites ? sites.filter(s => s.id == record?.siteId) : {};
+    //   return  <>{site?.contactPerson}</>
+    // }
   },
   {
     title: "Contact 2",
     dataIndex: "contact1",
+    // render: (_, record) => {
+    //   const site = sites ? sites.filter(s => s.id == record?.siteId) : {};
+    //   return  <>{site?.contactPerson2}</>
+    // }
   },
   {
     title: "Key",
     sorter: true,
-    dataIndex: ["obj", "key"],
+    dataIndex: "key",
     render: (text) => (
       <span style={{ color: `rgba(92, 219, 29, 1)` }}>{text}</span>
     ),
@@ -38,7 +52,7 @@ export const generateColumns = ({
   {
     title: "Device",
     sorter: true,
-    dataIndex: ["obj", "name"],
+    dataIndex: "objName",
   },
 
   {
@@ -47,8 +61,8 @@ export const generateColumns = ({
     sorter: false,
     width: 130,
     fixed: "right",
-    render(_, event) {
-      return <Link onClick={() => onProcess(event)}>Recovery</Link>;
+    render(_, record) {
+      return <Link onClick={() => onProcess(record?.keyId)}>Recovery</Link>;
     },
   },
-];
+]};

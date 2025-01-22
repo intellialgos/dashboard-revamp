@@ -1,7 +1,7 @@
 export const mockAreaChartData = [
     {
       name: 'Camera 1',
-      uv: 100,
+      // uv: 100,
       pv: 2400,
       amt: 200,
     },

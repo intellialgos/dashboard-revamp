@@ -1,4 +1,4 @@
-import { formatDateHeader } from "../../utils/general-helpers";
+import { formatDateHeader } from "@/utils/general-helpers";
 
 const DateTime = () => {
   const inputDate = new Date();

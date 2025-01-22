@@ -3,13 +3,15 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { Menu, type MenuProps } from "antd";
 
 import { getItem } from "./utils";
-import { ThemeContext } from "../../theme";
+import { ThemeContext } from "@/theme";
 
 type NavItem = {
   label: string;
   href: string;
   icon?: ReactNode;
   disabled?: boolean;
+  permissionKey?: string;
+  action?: string;
   subNav?: NavItem[];
 };
 
@@ -38,7 +40,7 @@ export const Navigation: FC<NavigationProps> = ({
   };
 
   const onClick: MenuProps["onClick"] = (e) => {
-    console.log("click ", e);
+    // console.log("click ", e);
   };
 
   return (

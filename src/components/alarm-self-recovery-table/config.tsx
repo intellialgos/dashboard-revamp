@@ -1,7 +1,7 @@
 import { Divider, Space, Typography } from "antd";
 import type { ColumnType } from "antd/es/table";
 
-import type { DeviceEvent } from "../../types/device-event";
+import type { DeviceEvent } from "@/types/device-event";
 
 const { Link } = Typography;
 

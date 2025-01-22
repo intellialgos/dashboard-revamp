@@ -1,6 +1,9 @@
 export const getLastWeekDate = (date: Date) => {
   return new Date(date.getFullYear(), date.getMonth(), date.getDate() - 7);
 };
+export const getLastMonthDate = (date: Date) => {
+  return new Date(date.getFullYear(), date.getMonth() - 1, date.getDate());
+};
 export const getTodayDate = (date: Date) => {
   return new Date(date.getFullYear(), date.getMonth(), date.getDate());
 };
