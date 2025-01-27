@@ -41,7 +41,7 @@ export const AllAlertsTable: FC<Props> = ({
   refetch
 }: Props) => {
   const dispatch = useDispatch();
-  const event = useAppSelector(getEvents); //needs to be passed from parents
+  // const event = useAppSelector(getEvents); //needs to be passed from parents
   const rowKey = useAppSelector(getSelectedRowIds);
   const [handleProcessEvents, {}] = useProcessEventMutation();
   const [isLoading, setIsLoading] = useState(false);
@@ -117,7 +117,7 @@ export const AllAlertsTable: FC<Props> = ({
         // headerBg="#fff"
         className={className}
         scroll={{ x: 1200 }}
-        dataSource={event.find((item) => item.pageIndex === pageIndex)?.data}
+        dataSource={data}
         // headerBg={"#0000FF"}
         sticky={true}
         columns={columns}

@@ -20,6 +20,7 @@ import {
 import { AlertsSearchFilterDrawer } from "@/modals/alerts-search-filter-drawer";
 import {
   clearAllEvents,
+  setAllEvents,
   setEvents,
   setGlobalPageSize,
   setSelectedEventsId,
@@ -42,6 +43,7 @@ import {
   useQueryEventsMutation,
   useProcessEventMutation,
   api,
+  useGetAssetsStatisticsMutation,
 } from "@/services";
 import debouce from "lodash.debounce";
 import { useAppSelector } from "@/hooks/use-app-selector";
@@ -53,6 +55,7 @@ import {
 } from "@/store/selectors/events";
 import { ThemeContext } from "@/theme";
 import { RootState } from "@/types/store";
+import { getFiltersState } from "@/store/selectors/filters";
 
 type Fields = {
   search: string;
@@ -75,82 +78,13 @@ export const AllAlerts: FC = () => {
   const [filter, setFilter] = useState<string | "">(""); //search handler state
   const [pageIndex, setPageIndex] = useState(1);
   const [pageSize, setPageSize] = useState(10);
-  const [totalAlerts, setTotalAlerts] = useState(0);
   const [clearAll, setClearAll] = useState<boolean>(false);
-  const date = new Date();
-  // const [startDate, setStartDate] = useState<string>(formatDate(getLastWeekDate(date)));
-  const [startDate, setStartDate] = useState<string>();
-  const [endDate, setEndDate] = useState<string>(
-    formatDate(date),
-  );
+
   const { appTheme } = useContext(ThemeContext);
   const darkTheme = appTheme === "dark";
   const [itemLevels, setItemLevels] = useState<any[]>([]);
   const [render, setRender] = useState<boolean>(false);
-  const events = useAppSelector(getEvents);
-  const storePageSize = useAppSelector(getGlobalPageSize);
   const selectedIds = useAppSelector(getSelectedRowIds);
-  const total = useAppSelector(getTotalAlerts);
-
-  useEffect(() => {
-
-    const body: ReqDeviceEvent = {
-      startTime: startDate,
-      endTime: endDate,
-      startNum: (pageIndex - 1) * pageSize,
-      // processed: -1,
-      // sites: [],
-      // vendors: [],
-      // itemKeys: [],
-      // itemLevels: itemLevels,
-      keyword: filter,
-      orderBy: 1,
-      pageIndex: pageIndex,
-      pageSize: pageSize,
-    };
-    setTotalAlerts(total);
-    let pageSizeChange = false;
-
-    if (storePageSize !== pageSize || render) {
-      setPageIndex(1);
-      dispatch(clearAllEvents());
-      pageSizeChange = true;
-    }
-    const doExist = !pageSizeChange
-      ? events.find((item) => item.pageIndex === pageIndex)
-      : undefined;
-
-    (async () => {
-      if (!doExist) {
-        const data = await getAllEvents(body);
-        if (data?.error) {
-          console.log("DATA ERROR: ", data?.error)
-          messageApi.open({
-            type: "error",
-            content: "Request Timeout",
-          });
-        }
-        dispatch(
-          setEvents({
-            pageIndex: pageIndex,
-            data: data.data.data.event,
-          }),
-        );
-        dispatch(setGlobalPageSize(pageSize));
-        dispatch(setTotalAlertsGlobal(data.data.data.totalCount));
-        setRender(false);
-      }
-    })();
-  }, [
-    pageIndex,
-    pageSize,
-    filter,
-    render,
-    total,
-    itemLevels,
-    startDate,
-    endDate
-  ]);
 
   useEffect(() => {
     if (selectedIds.length !== 0) {
@@ -168,9 +102,9 @@ export const AllAlerts: FC = () => {
     startD: string,
     endD: string,
     data: number[],
+    // sites?: string[]
   ) => {
     setRender(true);
-    console.log("data in filter", data);
     if (startD !== undefined) {
       setStartDate(startD);
     }
@@ -232,8 +166,27 @@ export const AllAlerts: FC = () => {
       }
     }
   };
+  
+  const filters = useSelector((state: RootState) => state.filters);
+  const [getAssetsStatistics, { data: dashboardStatistics, isLoading: dashboardLoading }] = useGetAssetsStatisticsMutation();
+  
+    useEffect(() => {
+      (async () => {
+        await getAssetsStatistics({
+          ...filters,
+        });
+      })()
+  }, [filters]);
 
-  const AllEventsData = useSelector((state: RootState) => state.events);
+  const setDataIntoStates = (data: DeviceEvent[]) => {
+      dispatch(setAllEvents(data));
+    };
+
+  useEffect(() => {
+    if ( dashboardStatistics ) {
+      setDataIntoStates(dashboardStatistics?.allAlerts);
+    }
+  }, [dashboardStatistics]);
 
   return (
     <>
@@ -241,7 +194,7 @@ export const AllAlerts: FC = () => {
       <Row gutter={[24, 24]}>
         <Col span={24}>
           <header className={styles.header}>
-            <Title level={4}>All Alerts — {totalAlerts}</Title>
+            <Title level={4}>All Alerts — {dashboardStatistics?.allAlerts.length}</Title>
 
             <Space size="middle" align="center">
               <Form
@@ -290,20 +243,20 @@ export const AllAlerts: FC = () => {
 
         <Col span={24}>
           <AllAlertsTable
-            refetch={getAllEvents}
+            refetch={getAssetsStatistics}
             dataTestId="all-alerts-table"
-            pageIndex={pageIndex}
-            pageSize={pageSize}
-            totalAlerts={totalAlerts}
+            // pageIndex={pageIndex}
+            // pageSize={pageSize}
             handlePageChange={handlePageChange}
-            loading={isLoading}
+            loading={dashboardLoading}
             className={`${darkTheme ? "alerts_table" :"" }`}
-            data={AllEventsData}
+            data={dashboardStatistics?.allAlerts}
           />
         </Col>
       </Row>
 
       <AlertsSearchFilterDrawer
+        darkTheme={darkTheme}
         dataTestId="all-alerts-search-filter"
         handlePageFilterDate={handlePageFilterDate}
       />

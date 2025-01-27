@@ -37,6 +37,8 @@ import { setAllEvents, setShowEventsFilterModal } from "@/store/slices/events";
 import { useAppDispatch } from "@/hooks/use-app-dispatch";
 import { CheckCircleOutlined, FilterOutlined } from "@ant-design/icons";
 import { formatDate } from "@/utils/general-helpers";
+import { useSelector } from "react-redux";
+import { RootState } from "@/types/store";
 
 export const Dashboard: FC = () => {
   const dispatch = useAppDispatch();
@@ -56,14 +58,10 @@ export const Dashboard: FC = () => {
   const [totalWeeklyAlerts, setTotalWeeklyAlerts] = useState<Number>(0);
 
   const [ selectedSite, setSelectedSite ] = useState<string|null>(null);
-  const [ startDate, setStartDate ] = useState<string|null>();
-  const [ endDate, setEndDate ] = useState<string|null>();
-
   const { appTheme } = useContext(ThemeContext);
   const darkTheme = appTheme === "dark";
-  const [form] = Form.useForm();
 
-  // const date = new Date();
+  const filters = useSelector((state: RootState) => state.filters);
 
   const setDataIntoStates = (data: DeviceEvent[]) => {
     setTotalWeeklyAlerts(data.length);
@@ -139,25 +137,19 @@ export const Dashboard: FC = () => {
     );
     dispatch(setAllEvents(data));
   };
-  // const events = useAppSelector(getEvents);
+
   const [getAssetsStatistics, { data: dashboardStatistics, isLoading: dashboardLoading }] = useGetAssetsStatisticsMutation();
 
   useEffect(() => {
     (async () => {
       await getAssetsStatistics({
+        ...filters,
         ...( selectedSite ? {sites: [selectedSite]} : {} ),
-        ...( (startDate && endDate) ? { startTime: startDate, endTime: endDate } : {} )
       });
     })()
-  }, [selectedSite, endDate, startDate]
+  }, [selectedSite, filters]
   )
   useEffect(() => {
-    // const body = {
-    //   startTime: formatDate(getLastWeekDate(date)),
-    //   endTime: formatDate(date),
-    //   pageIndex:1,
-    //   pageSize:50
-    // };
     if ( dashboardStatistics ) {
       setDataIntoStates(dashboardStatistics?.allAlerts);
     }

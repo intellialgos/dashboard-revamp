@@ -1,9 +1,10 @@
-import React, { FC, useEffect, useState } from "react";
+import React, { FC, useContext, useEffect, useState } from "react";
 import { Button, Drawer, Form, Input, Select, Checkbox, Card, Row, Col, Switch, message, FormInstance } from "antd";
 import { useGetOrganizationsMutation, usePostUserMutation } from "@/services";
 import { Organisation, OrganisationSite } from "@/types/organisation";
 import { useAppSelector } from "@/hooks/use-app-selector";
 import { QueryActionCreatorResult, QueryDefinition } from "@reduxjs/toolkit/query";
+import { ThemeContext } from "@/theme";
 
 type Props = {
   Show: boolean;
@@ -172,6 +173,9 @@ export const AddUserModal: FC<Props> = ({ Show, setAddUser, refetch }) => {
     }
   }
 
+  const { appTheme } = useContext(ThemeContext);
+  const darkTheme = appTheme === "dark";
+
   return (
     <>
     {contextHolder}
@@ -179,6 +183,7 @@ export const AddUserModal: FC<Props> = ({ Show, setAddUser, refetch }) => {
       open={Show}
       width={800}
       title="Add New User"
+      style={{ background:`${darkTheme ? " #0C183B" :"" }`  }}
       onClose={() => setAddUser(false)}
     >
       <Form
@@ -192,6 +197,7 @@ export const AddUserModal: FC<Props> = ({ Show, setAddUser, refetch }) => {
         <Card
           title="User Information"
           bordered={false}
+          style={{ background:`${darkTheme ? "rgb(5, 15, 49)" :"" }`  }}
           extra={
             <Form.Item
               name={'status'}
@@ -267,7 +273,11 @@ export const AddUserModal: FC<Props> = ({ Show, setAddUser, refetch }) => {
         {/* Customer Organization & Sites */}
         {
           (selectedRole == "customer") &&
-          <Card title="Organization & Sites" bordered={false} style={{ marginTop: 24 }}>
+          <Card
+            title="Organization & Sites"
+            bordered={false}
+            style={{ marginTop: 24, background:`${darkTheme ? "rgb(5, 15, 49)" :"" }`  }}
+          >
             <OrganizationsSelect form={form} />
           </Card>
         }
@@ -275,7 +285,11 @@ export const AddUserModal: FC<Props> = ({ Show, setAddUser, refetch }) => {
         {/* Permissions Section */}
         {
           (selectedRole == "user" || selectedRole == "customer") &&
-          <Card title="Permissions" bordered={false} style={{ marginTop: 24 }}>
+          <Card
+            title="Permissions"
+            bordered={false}
+            style={{ marginTop: 24, background:`${darkTheme ? "rgb(5, 15, 49)" :"" }`  }}
+          >
           <Row gutter={[16, 16]}>
             {Object.entries(selectedPermissions).map(([key, perms]) => {
               // Determine the available permissions based on the keys in the object
@@ -286,8 +300,14 @@ export const AddUserModal: FC<Props> = ({ Show, setAddUser, refetch }) => {
 
               return (
                 <Col span={12} key={key}>
-                  <Card size="small" title={key} bordered>
+                  <Card
+                    size="small"
+                    title={key}
+                    bordered
+                    style={{ background:`${darkTheme ? "rgb(5, 15, 49)" :"" }`  }}
+                  >
                     <Checkbox.Group
+                      className={"filter_checkbox"}
                       options={availablePermissions}
                       onChange={(selectedPermission) => {
                         handlePermissionChange(key, selectedPermission as string[])

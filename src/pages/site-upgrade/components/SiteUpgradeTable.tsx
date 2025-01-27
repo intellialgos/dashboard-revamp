@@ -1,9 +1,10 @@
 import { useGetSitesQuery, useUpgradeBoxMutation } from "@/services"
+import { ThemeContext } from "@/theme";
 import { Button, Card, Col, Form, Input, message, Row, Select, Skeleton, Switch, Table, TableColumnsType, Tag, TimePicker, TimePickerProps, Transfer, TransferProps, Typography } from "antd";
 import { TableRowSelection } from "antd/es/table/interface";
 import { TransferItem } from "antd/es/transfer";
 import dayjs from "dayjs";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 
 interface DataType {
     id: string;
@@ -22,6 +23,9 @@ export const SiteUpgradeTable = ({packages}: Props) => {
     const [time, setTime] = useState<string>("");
     const [messageApi, contextHolder] = message.useMessage();
     const [form] = Form.useForm();
+
+    const { appTheme } = useContext(ThemeContext);
+    const darkTheme = appTheme === "dark";
 
     const onChange: TableTransferProps['onChange'] = (nextTargetKeys) => {
         setTargetKeys(nextTargetKeys);
@@ -96,8 +100,8 @@ export const SiteUpgradeTable = ({packages}: Props) => {
         <Row>
             <Col span={24}>
                 <Card
-                    style={{marginBottom: 20}}
                     title="Choose a package"
+                    style={{ marginBottom: 20, background:`${darkTheme ? " #0C183B" :"" }`  }}
                 >
                     <Form
                         layout="inline"
@@ -111,8 +115,8 @@ export const SiteUpgradeTable = ({packages}: Props) => {
                             rules={[ { required: true, message: "Please choose a package" } ]}
                         >
                             <Select
+                                style={{ width: 300, background:`${darkTheme ? " #0C183B" :"" }`  }}
                                 onChange={onChoosePackage}
-                                style={{ width: 300 }}
                                 options={packages ? packages.map((item) => ({
                                     label: `${item.fileName} (${ (item.boxType == 1) ? "Lite Version" : "Standard Version" })`,
                                     value: item.fileName
@@ -143,6 +147,7 @@ export const SiteUpgradeTable = ({packages}: Props) => {
             </Col>
             <Col span={24}>
                 <TableTransfer
+                    className={darkTheme ? "alerts_table" : "alerts_table_light"}
                     rowKey={(record) => record.id}
                     dataSource={(boxType>-1) ? currentData.filter(item => item.boxType == boxType) : []}
                     titles={[boxType==-1 && <Tag color="warning">Choose Package To See Sites</Tag>]}

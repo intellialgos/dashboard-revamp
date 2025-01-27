@@ -4,8 +4,9 @@ import { getFormattedDateTime } from "@/utils/get-formatted-date-time";
 import { PlusOutlined } from "@ant-design/icons";
 import { QueryActionCreatorResult, QueryDefinition } from "@reduxjs/toolkit/query";
 import { Button, Col, Row, Space, Table, Tag } from "antd"
-import { useState } from "react";
+import { useContext, useState } from "react";
 import DeletePackgeButton from "./DeletePackageButton";
+import { ThemeContext } from "@/theme";
 
 interface Props {
     loading: boolean;
@@ -15,6 +16,8 @@ interface Props {
 
 export const PackagesTable = ({data, loading, refetch}: Props) => {
     const [ openUpload, setOpenUpload ] = useState(false);
+    const { appTheme } = useContext(ThemeContext);
+    const darkTheme = appTheme === "dark";
 
     return (
         <>
@@ -36,6 +39,7 @@ export const PackagesTable = ({data, loading, refetch}: Props) => {
                 <Table
                     dataSource={data}
                     loading={loading}
+                    className={darkTheme ? "alerts_table" : "alerts_table_light"}
                 >
                     <Table.Column
                         title="Package Name"

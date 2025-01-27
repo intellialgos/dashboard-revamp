@@ -113,8 +113,6 @@ export const DashboardNavigation: FC<Props> = ({
   dataTestId = "dashboard-navigation",
 }) => {
   const user = useAppSelector((state) => state.authState.user as User);
-  console.log("USER PERMISSIONS: ", userPermissions(user));
-
   return (
   <ConfigProvider theme={themeConfig}>
     <Navigation

@@ -15,8 +15,11 @@ import { getCheckboxGroupProps } from "@/utils/form-helpers/get-checkbox-group-p
 import { getDateFromEvent } from "@/utils/form-helpers/get-date-from-event";
 import { getDateProps } from "@/utils/form-helpers/get-date-props";
 import { getMultipleSelectProps } from "@/utils/form-helpers/get-multiple-select-props";
-import { ProcessStatus } from "@/types/device-event";
+import { DeviceEvent, ProcessStatus } from "@/types/device-event";
 import { useGetSitesQuery } from "@/services";
+import { useSelector } from "react-redux";
+import { RootState } from "@/types/store";
+import { setFilters } from "@/store/slices/filters";
 
 type Props = {
   dataTestId?: string;
@@ -31,33 +34,20 @@ type Props = {
 
 type Fields = {
   datetime: string[];
-  object: unknown[];
+  devices: string[];
   priority: number[];
-  site: unknown[];
+  sites: string[];
   type: unknown[];
   value: unknown[];
-  vendor: unknown[];
-  system: unknown[];
-  device: unknown[];
-  eventDetails: unknown[];
-  status: unknown[];
+  vendors: string[];
+  systems: string[];
+  status: string[];
+  eventType: string;
 };
 
 const { Item } = Form;
 const { RangePicker } = DatePicker;
-const initialValues: Fields = {
-  datetime: [],
-  status: [],
-  object: [],
-  priority: [],
-  site: [],
-  type: [],
-  value: [],
-  vendor: [],
-  system: [],
-  device: [],
-  eventDetails: [],
-};
+
 const processStatusOptions = [
   { label: "Pending", value: ProcessStatus.Pending },
   { label: "Completed", value: ProcessStatus.Accomplished },
@@ -74,9 +64,19 @@ export const AlertsSearchFilterDrawer: FC<Props> = ({
   const show = useAppSelector(getShowEventsFilterModalState);
   const [form] = Form.useForm<Fields>();
 
+  const filters = useSelector((state: RootState) => state.filters);
+
   const handleReset = () => {
     form.resetFields();
-    handleSubmit(initialValues);
+    dispatch(setFilters({
+      startTime: "",
+      endTime: "",
+      priority: [],
+      devices: [],
+      sites: [],
+      eventType: null,
+      vendors: []
+    }));
     dispatch(setShowEventsFilterModal(false));
   };
 
@@ -85,17 +85,47 @@ export const AlertsSearchFilterDrawer: FC<Props> = ({
   };
 
   const handleSubmit = (values: Fields) => {
-    handlePageFilterDate(
-      values.datetime[0],
-      values.datetime[1],
-      values.priority,
-    );
+    dispatch(setFilters({
+      startTime: values.datetime ? values.datetime[0] : "",
+      endTime: values.datetime ? values.datetime[1] : "",
+      priority: values.priority ? values.priority.flat() : [],
+      devices: values.devices || [],
+      sites: values.sites || [],
+      eventType: values.eventType || null,
+      vendors: values.vendors || []
+    }));
     dispatch(setShowEventsFilterModal(false));
   };
   const siteOptions = sites ? sites.map( site => ({
     label: site.name,
     value: site.id
   }) ) : [];
+
+
+  const AllEventsData = useSelector((state: RootState) => state.events);
+
+  var vendors: any = [];
+  var devices: any = [];
+  var eventTypes: any = [];
+
+  AllEventsData.allEvents.forEach((ev: DeviceEvent) => {  
+        // Vendors
+        const findVendor = vendors.find((item) => item.value == ev.vendor);
+        if (!findVendor) {
+          vendors.push({ label: ev.vendor, value: ev.vendor });
+        }
+        // devices
+        const device = devices.find((item) => item.value == ev.obj.name);
+        if (!device) {
+          devices.push({ label: ev.obj.name, value: ev.obj.name });
+        }
+        // Event Types
+        const type = eventTypes.find((item) => item.value == ev.obj.key);
+        if (!type) {
+          eventTypes.push({ label: ev.obj.key, value: ev.obj.key });
+        }
+  });
+  
   return (
     <Drawer
       open={show}
@@ -126,13 +156,13 @@ export const AlertsSearchFilterDrawer: FC<Props> = ({
       // destroyOnClose={true}
       onClose={handleClose}
       data-testid={dataTestId}
-      style={{ background: `${darkTheme ? " #0C183B" : "" }` }}
+      style={{ background:`${darkTheme ? " #0C183B" :"" }`  }}
     >
       <Form<Fields>
         form={form}
         layout="vertical"
         name="alerts-search"
-        initialValues={initialValues}
+        initialValues={filters}
         onFinish={handleSubmit}
         data-testid="alerts-search-form"
       >
@@ -146,21 +176,9 @@ export const AlertsSearchFilterDrawer: FC<Props> = ({
             className={"filter_checkbox"}
           />
         </Item>
-        {alarmRecord && (
-          <Item<Fields>
-            label="Status"
-            name="status"
-            getValueProps={getCheckboxGroupProps}
-          >
-            <Checkbox.Group
-              options={processStatusOptions}
-              className={"filter_checkbox"}
-            />
-          </Item>
-        )}
         <Item<Fields>
           label="Site"
-          name="site"
+          name="sites"
           getValueProps={getMultipleSelectProps}
         >
           <BaseSelect
@@ -185,50 +203,40 @@ export const AlertsSearchFilterDrawer: FC<Props> = ({
           />
         </Item>
         <Item<Fields>
-          label="System"
-          name="system"
+          label="Vendors"
+          name="vendors"
           getValueProps={getMultipleSelectProps}
         >
           <BaseSelect
             mode="multiple"
-            placeholder="Select System"
+            placeholder="Select Vendors"
             allowClear={true}
+            options={vendors}
             className="select_input"
           />
         </Item>
         <Item<Fields>
           label="Device"
-          name="device"
+          name="devices"
           getValueProps={getMultipleSelectProps}
         >
           <BaseSelect
             mode="multiple"
             placeholder="Select device"
             allowClear={true}
+            options={devices}
             className="select_input"
           />
         </Item>
         <Item<Fields>
           label="Event Type"
-          name="type"
+          name="eventType"
           getValueProps={getMultipleSelectProps}
         >
           <BaseSelect
-            mode="multiple"
             placeholder="Select Event Type"
             allowClear={true}
-            className="select_input"
-          />
-        </Item>
-        <Item<Fields>
-          label="Event Details"
-          name="eventDetails"
-          getValueProps={getMultipleSelectProps}
-        >
-          <BaseSelect
-            mode="multiple"
-            placeholder="Select Event Details"
-            allowClear={true}
+            options={eventTypes}
             className="select_input"
           />
         </Item>

@@ -63,6 +63,10 @@ export const AlertsMap: FC<Props> = ({ className, dataTestId, data, isLoading, s
     }
   }, [filteredAlertData]);
 
+  useEffect(() => {
+    console.log("FILTERED DATAAA: ", filteredAlertData);
+  }, [filteredAlertData]);
+
   const handleMapUnmount = useCallback(() => {
     setMap(null);
   }, []);

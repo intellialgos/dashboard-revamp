@@ -81,7 +81,7 @@ export const DashboardLayout: FC = () => {
             <Space align="center" className={styles.controls}>
               <DateTime />
               <ThemeSwitcher />
-              <SoundNotificationsSwitcher />
+              {/* <SoundNotificationsSwitcher /> */}
               <FullScreenSwitcher />
               <NotificationsButton />
               <UserPanel className={styles.userPanel} />

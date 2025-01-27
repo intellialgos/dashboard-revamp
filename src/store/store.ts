@@ -6,12 +6,14 @@ import { api } from "../services";
 import { events } from "./slices/events";
 import { authState } from "./slices/authSlice";
 import { sites } from "./slices/sites";
+import { filters } from "./slices/filters";
 
 export const store = configureStore({
   reducer: {
     events,
     authState,
     sites,
+    filters,
     [api.reducerPath]: api.reducer,
   },
   middleware: (getDefaultMiddleware) =>
