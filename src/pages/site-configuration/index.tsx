@@ -1,5 +1,5 @@
 import { GroupOutlined, PlusOutlined } from "@ant-design/icons";
-import { Button, Col, Row, Space } from "antd";
+import { Button, Col, message, Row, Space } from "antd";
 import { FC, useContext, useEffect, useState } from "react";
 import { Breadcrumbs } from "@/breadcrumbs";
 import { SiteConfigurationTable } from "@/components/site-configuration-table";
@@ -15,6 +15,8 @@ import LinkSitePopOver from "@/components/pop-over/link-site";
 import { useGetOrganizationsMutation } from "@/services";
 import { useAppSelector } from "@/hooks/use-app-selector";
 import { getSelectedSite } from "@/store/selectors/sites";
+import EditOrganizationModal from "@/modals/edit-organization-modal";
+import EditGroupModal from "@/modals/edit-group-modal";
 
 export const SiteConfiguration: FC = () => {
   const dispatch = useAppDispatch();
@@ -24,6 +26,7 @@ export const SiteConfiguration: FC = () => {
   const [addGroup,setAddGroup] = useState<boolean>(false)
   const [deleteModal,setDeleteModal]=useState<boolean>(false)
   const site = useAppSelector(getSelectedSite);
+  const [messageApi, contextHolder] = message.useMessage();
 
 
   const [getOrganizations, { isLoading, data: organizations }] = useGetOrganizationsMutation();
@@ -37,6 +40,7 @@ export const SiteConfiguration: FC = () => {
 
   return (
     <>
+      {contextHolder}
       <Row gutter={[24, 24]}>
         {" "}
         <Col span={24}>
@@ -75,6 +79,9 @@ export const SiteConfiguration: FC = () => {
       <AddGroupModal organizationsLoading={isLoading} organizations={organizations} getOrganizations={getOrganizations} Show={addGroup} setAddGroup={setAddGroup} darkTheme={darkTheme}/>
       <DeleteModal Show={deleteModal} setDeleteModal={setDeleteModal} darkTheme={darkTheme}/>
       <EditSiteMapModal title={site} darkTheme={darkTheme}/>
+
+      <EditOrganizationModal refetch={getOrganizations} messageApi={messageApi} />
+      <EditGroupModal refetch={getOrganizations} messageApi={messageApi} />
     </>
   );
 };

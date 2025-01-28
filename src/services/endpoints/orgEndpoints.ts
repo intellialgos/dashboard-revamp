@@ -90,6 +90,15 @@ export const orgEndpoints = (builder: EndpointBuilder<any, any, any>) => ({
     transformResponse: (response: { data: any }, meta, arg) =>
       response.data,
   }),
+  maskItem: builder.mutation({
+    query: (body: any) => ({
+      url: ENDPOINTS.MASK_ITEM,
+      method: "POST",
+      body
+    }),
+    transformResponse: (response: { data: any }, meta, arg) =>
+      response.data,
+  }),
   upgradeBox: builder.mutation({
     query: (body: any) => ({
       url: ENDPOINTS.UPGRADE_BOX,

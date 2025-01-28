@@ -36,7 +36,7 @@ const initialValues: Fields = {
 
 
 
-export const SiteInfoModal: FC<Props> = ({ dataTestId }) => {
+export const SiteInfo: FC<Props> = ({ dataTestId }) => {
   const dispatch = useAppDispatch();
   const { appTheme } = useContext(ThemeContext);
   const darkTheme = appTheme === "dark";

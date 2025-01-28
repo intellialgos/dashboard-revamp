@@ -40,7 +40,7 @@ import { ReqDeviceEvent } from "@/types/device-event";
 
 import debouce from "lodash.debounce";
 import { useAppSelector } from "@/hooks/use-app-selector";
-import { SiteInfoModal } from "@/modals/site-info-modal";
+import { SiteInfo } from "@/modals/site-info-modal";
 import {
   useQueryEventsMutation,
   useProcessEventMutation,
@@ -311,7 +311,7 @@ setClearAll(true)
         dataTestId="all-alerts-search-filter"
         handlePageFilterDate={handlePageFilterDate}
       />
-      <SiteInfoModal handlePageFilter={handleSiteInfo} />
+      <SiteInfo />
     </>
   );
 };

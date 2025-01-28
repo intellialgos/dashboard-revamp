@@ -9,7 +9,7 @@ import { useNavigate } from "react-router-dom";
 import { GoogleMapControl } from "@/components/google-map-control";
 import { GOOGLE_MAP_API_KEY } from "@/const/google-maps";
 import { useGetSitesQuery, useQueryeventsiteMutation } from "@/services";
-import { clearAllSelectEvents, setShowEventsFilterModal } from "@/store/slices/events";
+import { clearAllSelectEvents, setShowEventsFilterModal, setShowSiteInfoModal } from "@/store/slices/events";
 import { ThemeContext } from "@/theme";
 import { formatDate, getLastWeekDate } from "@/utils/general-helpers";
 import { ALERTS_MAP_CONFIG } from "./config";
@@ -17,6 +17,7 @@ import brownMarker from '@/assets/brownmarker.svg'
 import orangeMarker from '@/assets/orangemarker.svg'
 import styles from "./index.module.css";
 import { OrganisationSite } from "@/types/organisation";
+import { setSelectedSite, setSiteObject } from "@/store/slices/sites";
 
 type Props = {
   className?: string;
@@ -61,8 +62,10 @@ export const SiteMapComp: FC<Props> = ({ className, dataTestId, sites }) => {
     dispatch(clearAllSelectEvents());
     navigate(`/alert-map?siteId=${id}&&title=${name}`);
   };
-  const onMarkerClick=()=>{
-    dispatch(setShowEventsFilterModal(true))
+  const onMarkerClick=(data: OrganisationSite)=>{
+    dispatch(setShowSiteInfoModal(true));
+    dispatch(setSelectedSite(data.id));
+    dispatch(setSiteObject(data));
   }
   const [hoveredMarker, setHoveredMarker] = useState<string | null>(null);
   const handleMarkerMouseOver = (siteId: string) => {
@@ -85,7 +88,7 @@ export const SiteMapComp: FC<Props> = ({ className, dataTestId, sites }) => {
             {sites && sites.map((site: OrganisationSite) => (
               <Marker
                 position={{ lat: site.latitude, lng: site.longitude }}
-                onClick={()=>onMarkerClick()}
+                onClick={()=>onMarkerClick(site)}
                 icon={site.connectionState ? orangeMarker : brownMarker}
                 onMouseOver={() => handleMarkerMouseOver(site.id)}
                 onMouseOut={handleMarkerMouseOut}

@@ -12,7 +12,7 @@ import { ALERTS_MAP_CONFIG } from "./config";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 // import { useQueryEventsMutation } from "@/services";
-import { clearAllSelectEvents } from "@/store/slices/events";
+import { clearAllSelectEvents, setShowSiteInfoModal } from "@/store/slices/events";
 import { ThemeContext } from "@/theme";
 // import { formatDate, getLastWeekDate } from "@/utils/general-helpers";
 import styles from "./index.module.css";
@@ -21,6 +21,8 @@ import styles from "./index.module.css";
 // import { useAppSelector } from "@/hooks/use-app-selector";
 // import { getEvents } from "@/store/selectors/events";
 import circleMarker from '@/assets/orangemarker.svg'
+import { OrganisationSite } from "@/types/organisation";
+import { setSiteObject } from "@/store/slices/sites";
 
 type Props = {
   className?: string;
@@ -63,10 +65,6 @@ export const AlertsMap: FC<Props> = ({ className, dataTestId, data, isLoading, s
     }
   }, [filteredAlertData]);
 
-  useEffect(() => {
-    console.log("FILTERED DATAAA: ", filteredAlertData);
-  }, [filteredAlertData]);
-
   const handleMapUnmount = useCallback(() => {
     setMap(null);
   }, []);
@@ -91,10 +89,15 @@ export const AlertsMap: FC<Props> = ({ className, dataTestId, data, isLoading, s
     }
   };
 
+  const onMarkerClick=(data: OrganisationSite)=>{
+      dispatch(setShowSiteInfoModal(true));
+      dispatch(setSiteObject(data));
+  }
+
   return (
     <div className={clsx(className, styles.container)} data-testid={dataTestId}>
       <Widget
-        title="Alerts By Site"
+        title="Weekly Alerts By Site"
         className={ `${styles.alerts} ${darkTheme ? styles.alerts_bg : styles.alert_light}`}
         contentClassName={styles.content}
         round={false}
@@ -157,6 +160,7 @@ export const AlertsMap: FC<Props> = ({ className, dataTestId, data, isLoading, s
               <Marker
                 key={site_id}
                 position={{ lat: lat, lng: lng }}
+                // onClick={() => onMarkerClick()}
                 options={{
                   icon: window.google.maps.Icon
                 }}

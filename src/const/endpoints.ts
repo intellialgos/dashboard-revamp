@@ -16,9 +16,13 @@ export enum ENDPOINTS {
     UPDATE_IO_EVENTS = 'updateioevents',
     GET_BOX_STATUS = 'getBoxStatus',
     GET_IO_EVENTS = 'getIoEvents',
-    GET_MASKED_ITEM = 'getMaskedItemKey',
     UPGRADE_BOX = 'upgradeBoxFirmware',
+    
+    // MASKED
     DELETE_MASKED_ITEM = 'deleteMaskedItem',
+    GET_MASKED_ITEM = 'getMaskedItemKey',
+    MASK_ITEM = 'maskItem',
+
     // EVENTS
     EVENTS = 'events',
     PROCESS_EVENT = 'processEvent',

@@ -38,6 +38,8 @@ import { getAlarmLevelName } from "@/utils/get-alarm-level-name";
 import { setAllEvents } from "@/store/slices/events";
 import { useAppDispatch } from "@/hooks/use-app-dispatch";
 import { Form } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { RootState } from "@/types/store";
 
 export const AlarmRecordCharts: FC = () => {
   const dispatch = useAppDispatch();
@@ -139,23 +141,22 @@ export const AlarmRecordCharts: FC = () => {
     );
     dispatch(setAllEvents(data));
   };
+  
+  const filters = useSelector((state: RootState) => state.filters);
 
   useEffect(() => {
     (async () => {
       await getAssetsStatistics({
+        ...filters,
+        ...{startTime: formatDate(getLastWeekDate(new Date()))},
+        ...{endTime: formatDate(new Date())},
         ...( selectedSite ? {sites: [selectedSite]} : {} ),
-        ...( (startDate && endDate) ? { startTime: startDate, endTime: endDate } : {} )
       });
     })()
-  }, [selectedSite, endDate, startDate]
+  }, [selectedSite, filters]
   )
+  
   useEffect(() => {
-    // const body = {
-    //   startTime: formatDate(getLastWeekDate(date)),
-    //   endTime: formatDate(date),
-    //   pageIndex:1,
-    //   pageSize:50
-    // };
     if ( dashboardStatistics ) {
       setDataIntoStates(dashboardStatistics?.allAlerts);
     }
@@ -339,7 +340,7 @@ export const AlarmRecordCharts: FC = () => {
       </Col>
       
       <Col span={8}>
-        <AlertsByMonth
+        {/* <AlertsByMonth
           title="Alerts by Month"
           // tooltipText="TODO: Add tooltip text"
           className={`${styles.widget} ${
@@ -348,9 +349,7 @@ export const AlarmRecordCharts: FC = () => {
           dataTestId="weekly-alerts-by-month"
           data={dashboardStatistics?.allAlertsByMonths}
           isLoading={dashboardLoading}
-        />
-      </Col>
-      <Col span={12}>
+        /> */}
         <AlertsByPriority
           title="Alerts by System"
           // tooltipText="TODO: Add tooltip text"
@@ -368,7 +367,7 @@ export const AlarmRecordCharts: FC = () => {
           }
         />
       </Col>
-      <Col span={12}>
+      <Col span={24}>
         <TopAlertsBySite
           title="Top 10 Weekly Alerts by Site"
           // tooltipText="TODO: Add tooltip text"

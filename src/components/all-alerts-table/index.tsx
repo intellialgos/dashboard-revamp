@@ -7,16 +7,17 @@ import {
   setSelectedEventsId,
   setShowProcesslarmModal,
 } from "@/store/slices/events";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { generateColumns } from "./config";
 import { DeviceEvent } from "@/types/device-event";
 import { LoadingOutlined } from "@ant-design/icons";
-import { useProcessEventMutation } from "@/services";
+import { useProcessEventMutation, useQueryEventsMutation } from "@/services";
 import { ReqProcessEvent } from "@/types/process-event";
 import { useAppSelector } from "@/hooks/use-app-selector";
 import { getEvents, getSelectedRowIds } from "@/store/selectors/events";
 import { MutationTrigger } from "@reduxjs/toolkit/dist/query/react/buildHooks";
 import { MutationDefinition } from "@reduxjs/toolkit/query";
+import { RootState } from "@/types/store";
 type Props = {
   className: string;
   dataTestId: string;
@@ -46,6 +47,7 @@ export const AllAlertsTable: FC<Props> = ({
   const [handleProcessEvents, {}] = useProcessEventMutation();
   const [isLoading, setIsLoading] = useState(false);
   const [messageApi, contextHolder] = message.useMessage();
+  const filters = useSelector((state: RootState) => state.filters);
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   // const rowSelection: TableProps<any>["rowSelection"] = {
@@ -90,6 +92,7 @@ export const AllAlertsTable: FC<Props> = ({
     if (res) {
       setIsLoading(false);
       if (res.data) {
+        refetch({...filters});
         messageApi.open({
           type: "success",
           content: "Process status updated",
@@ -109,6 +112,18 @@ export const AllAlertsTable: FC<Props> = ({
   });
   const antIcon = <LoadingOutlined style={{ fontSize: 24 }} spin />;
 
+  const [getEvents, {data: events , isLoading: tableLoading}] = useQueryEventsMutation();
+
+  useEffect(() => {
+    (async () => {
+      await getEvents({
+        ...filters,
+        pageSize,
+        pageIndex
+      });
+    })()
+}, [filters, pageSize, pageIndex]);
+
   return (
     <>
       {contextHolder}
@@ -117,23 +132,21 @@ export const AllAlertsTable: FC<Props> = ({
         // headerBg="#fff"
         className={className}
         scroll={{ x: 1200 }}
-        dataSource={data}
-        // headerBg={"#0000FF"}
+        dataSource={events?.data?.event}
         sticky={true}
         columns={columns}
         rowSelection={rowSelection}
         showSorterTooltip={false}
         loading={{
           indicator: <Spin indicator={antIcon} />,
-          spinning: loading || isLoading,
+          spinning: loading || tableLoading,
         }}
         pagination={{
           pageSize,
+          current: pageIndex,
+          total: events?.data?.totalCount,
           showQuickJumper: true,
           showSizeChanger: true,
-          // total: Math.ceil(totalAlerts / pageSize),
-          total: totalAlerts,
-          current: pageIndex,
           onChange: handlePageChange,
         }}
         data-testid={dataTestId}

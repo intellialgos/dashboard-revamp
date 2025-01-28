@@ -1,16 +1,26 @@
-import { OrganisationSite } from "@/types/organisation";
+import { Organisation, OrganisationGroup, OrganisationSite } from "@/types/organisation";
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 
 type State = {
   showEditSiteDrawer: boolean;
+  showEditOrgDrawer: boolean;
+  showEditGroupDrawer: boolean;
   selectedSite: string;
-  siteObject: OrganisationSite
+  selectedGroup: string;
+  selectedOrg: string;
+  siteObject: OrganisationSite;
+  orgObject: Organisation;
+  groupObject: OrganisationGroup;
 };
 
 const initialState: State = {
     selectedSite: "",
     siteObject: {},
-    showEditSiteDrawer: false
+    orgObject: {},
+    groupObject: {},
+    showEditSiteDrawer: false,
+    showEditOrgDrawer: false,
+    showEditGroupDrawer: false
 };
 
 const sitesSlice = createSlice({
@@ -20,11 +30,29 @@ const sitesSlice = createSlice({
     setSelectedSite(state, action: PayloadAction<string>) {
       state.selectedSite = action.payload;
     },
+    setSelectedGroup(state, action: PayloadAction<string>) {
+      state.selectedGroup = action.payload;
+    },
+    setSelectedOrg(state, action: PayloadAction<string>) {
+      state.selectedOrg = action.payload;
+    },
     setShowEditSiteDrawer(state, action: PayloadAction<boolean>) {
       state.showEditSiteDrawer = action.payload;
     },
+    setShowEditOrgDrawer(state, action: PayloadAction<boolean>) {
+      state.showEditOrgDrawer = action.payload;
+    },
+    setShowEditGroupDrawer(state, action: PayloadAction<boolean>) {
+      state.showEditGroupDrawer = action.payload;
+    },
     setSiteObject(state, action: PayloadAction<OrganisationSite>) {
       state.siteObject = action.payload;
+    },
+    setGroupObject(state, action: PayloadAction<OrganisationGroup>) {
+      state.groupObject = action.payload;
+    },
+    setOrgObject(state, action: PayloadAction<Organisation>) {
+      state.orgObject = action.payload;
     },
   },
 });
@@ -34,5 +62,11 @@ export const sites = sitesSlice.reducer;
 export const {
     setSelectedSite,
     setShowEditSiteDrawer,
-    setSiteObject
+    setShowEditGroupDrawer,
+    setShowEditOrgDrawer,
+    setSiteObject,
+    setGroupObject,
+    setOrgObject,
+    setSelectedGroup,
+    setSelectedOrg
 } = sitesSlice.actions;

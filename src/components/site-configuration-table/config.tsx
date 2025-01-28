@@ -5,7 +5,7 @@ import type { OrganisationSite } from "@/types/organisation";
 import { DeleteOutlined, FolderFilled, HomeFilled, PoweroffOutlined, VideoCameraFilled } from "@ant-design/icons";
 import DeleteSiteButton from "./components/DeleteSiteButton";
 import { useAppDispatch } from "@/hooks/use-app-dispatch";
-import { setSelectedSite, setShowEditSiteDrawer } from "@/store/slices/sites";
+import { setGroupObject, setOrgObject, setSelectedSite, setShowEditGroupDrawer, setShowEditOrgDrawer, setShowEditSiteDrawer } from "@/store/slices/sites";
 
 type ColumnParams = {
   onDelete: ({id, name, type}: {id: string, name: string, type: "organization"|"site"}) => void;
@@ -28,6 +28,15 @@ const SitesActions: React.FC<any> = ({
     dispatch(setSelectedSite(record.id));
   }
 
+  const editOrg = (record: any) => {
+    dispatch(setShowEditOrgDrawer(true));
+    dispatch(setOrgObject(record));
+  }
+  const editGroup = (record: any) => {
+    dispatch(setShowEditGroupDrawer(true));
+    dispatch(setGroupObject(record));
+  }
+
   if ( record?.isSite ) {
     return <Space>
     <Button
@@ -40,7 +49,7 @@ const SitesActions: React.FC<any> = ({
     return <Space>
     <Button
       size="small"
-      onClick={() => onEdit}
+      onClick={() => editGroup(record)}
     >Edit Group</Button>
     {
       !record?.children &&
@@ -56,7 +65,7 @@ const SitesActions: React.FC<any> = ({
     return <Space>
     <Button
       size="small"
-      onClick={() => onEdit}
+      onClick={() => editOrg(record)}
     >Edit Organizatiom</Button>
     {
       !record?.children &&

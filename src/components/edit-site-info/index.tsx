@@ -56,7 +56,7 @@ export const EditSiteInfo: FC<Props> = ({
   const handleUpdateIoEvents = async (data: any) => {
     try {
       const response = await updateIoEvents({
-        siteId: "",
+        siteId: site,
         ...data
       });
       if ( response && !response?.error ) {

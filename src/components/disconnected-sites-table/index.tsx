@@ -20,7 +20,7 @@ import {
   getSelectedRowIds,
 } from "@/store/selectors/events";
 import { LoadingOutlined } from "@ant-design/icons";
-import { SiteInfoModal } from "@/modals/site-info-modal";
+import { SiteInfo } from "@/modals/site-info-modal";
 import { useGetSitesQuery } from "@/services";
 import { OrganisationSite } from "@/types/organisation";
 import { setSiteObject } from "@/store/slices/sites";
@@ -112,7 +112,7 @@ export const DisconnectedSitesTable: FC<Props> = ({
       />
 
      
-      <SiteInfoModal handlePageFilter={handleSiteInfo} />
+      <SiteInfo />
 
     </>
   );

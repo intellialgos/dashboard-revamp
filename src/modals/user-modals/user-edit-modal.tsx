@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useState } from "react";
+import React, { FC, useContext, useEffect, useState } from "react";
 import { Button, Drawer, Form, Input, Select, Checkbox, Card, Row, Col, Switch, message, FormInstance } from "antd";
 import { useGetOrganizationsMutation, usePostUserMutation } from "@/services";
 import { Organisation, OrganisationSite } from "@/types/organisation";
@@ -7,6 +7,7 @@ import { QueryActionCreatorResult, QueryDefinition } from "@reduxjs/toolkit/quer
 import { User } from "@/types/user";
 import { decodeBase64 } from "@/utils/decodeBase64";
 import { CheckboxGroupProps } from "antd/es/checkbox";
+import { ThemeContext } from "@/theme";
 
 type Props = {
   Show: boolean;
@@ -204,6 +205,9 @@ export const EditUserModal: FC<Props> = ({ Show, setEditUser, refetch, user }) =
     }
   }, [user]);
 
+  const { appTheme } = useContext(ThemeContext);
+  const darkTheme = appTheme === "dark";
+
   return (
     <>
     {contextHolder}
@@ -212,6 +216,7 @@ export const EditUserModal: FC<Props> = ({ Show, setEditUser, refetch, user }) =
       width={800}
       title="Edit User"
       onClose={() => setEditUser(false)}
+      style={{ background:`${darkTheme ? " #0C183B" :"" }`  }}
     >
       <Form
         form={form}
@@ -225,6 +230,7 @@ export const EditUserModal: FC<Props> = ({ Show, setEditUser, refetch, user }) =
         <Card
           title="User Information"
           bordered={false}
+          style={{ marginTop: 24, background:`${darkTheme ? "rgb(5, 15, 49)" :"" }`  }}
           extra={
             <Form.Item
               name={'status'}
@@ -298,7 +304,11 @@ export const EditUserModal: FC<Props> = ({ Show, setEditUser, refetch, user }) =
         {/* Customer Organization & Sites */}
         {
           (selectedRole == "customer") &&
-          <Card title="Organization & Sites" bordered={false} style={{ marginTop: 24 }}>
+          <Card
+            title="Organization & Sites"
+            bordered={false}
+            style={{ marginTop: 24, background:`${darkTheme ? "rgb(5, 15, 49)" :"" }`  }}
+          >
             <OrganizationsSelect user={user} form={form} />
           </Card>
         }
@@ -306,7 +316,11 @@ export const EditUserModal: FC<Props> = ({ Show, setEditUser, refetch, user }) =
         {/* Permissions Section */}
         {
           (selectedRole == "user" || selectedRole == "customer") &&
-          <Card title="Permissions" bordered={false} style={{ marginTop: 24 }}>
+          <Card
+            title="Permissions"
+            bordered={false}
+            style={{ marginTop: 24, background:`${darkTheme ? "rgb(5, 15, 49)" :"" }`  }}
+          >
           <Row gutter={[16, 16]}>
             {Object.entries(selectedPermissions).map(([key, perms]) => {
               const availablePermissions: CheckboxGroupProps["options"] = Object.keys(perms).map((permKey) => ({

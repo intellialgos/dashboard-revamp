@@ -15,16 +15,18 @@ import {
   setSelectedEvents,
   setShowProcesslarmModal,
 } from "@/store/slices/events";
-import { ProcessStatus } from "@/types/device-event";
+import { DeviceEvent, ProcessStatus } from "@/types/device-event";
 import { getFormattedDateTime } from "@/utils/get-formatted-date-time";
 
 import styles from "./index.module.css";
-import { useProcessEventMutation } from "@/services";
+import { useDeleteMaskedItemMutation, useMaskItemMutation, useProcessEventMutation } from "@/services";
 import { ReqProcessEvent } from "@/types/process-event";
 import { LoadingOutlined } from "@ant-design/icons";
 import { ThemeContext } from "@/theme";
 import { MutationTrigger } from "@reduxjs/toolkit/dist/query/react/buildHooks";
 import { MutationDefinition } from "@reduxjs/toolkit/query";
+import { useSelector } from "react-redux";
+import { RootState } from "@/types/store";
 
 type Props = {
   dataTestId?: string;
@@ -69,6 +71,48 @@ export const ProcessAlarmModal: FC<Props> = ({ dataTestId, refetch }) => {
     dispatch(setSelectedEvents([]));
   };
 
+  const [ maskItem, { isLoading: isMasking } ] = useMaskItemMutation();
+  const filters = useSelector((state: RootState) => state.filters);
+
+  const handleMaskItem = async ( record: DeviceEvent ) => {
+    const res = await maskItem({keyId: record.obj.keyId});
+    if (res.data?.error === 0) {
+      refetch({
+        ...filters
+      });
+      messageApi.open({
+        type: "success",
+        content: "Masked Successfully !",
+      });
+      
+    } else {
+      messageApi.open({
+        type: "error",
+        content: "There was an error",
+      });
+    }
+  }
+
+  const [ deleteMasked, {isLoading: isRecovering} ] = useDeleteMaskedItemMutation();
+  
+  const handleRecovery = async (record: DeviceEvent) => {
+    const res = await deleteMasked({keyId: record.obj.keyId});
+    if (res.data?.error === 0) {
+      refetch({
+        ...filters
+      });
+      messageApi.open({
+        type: "success",
+        content: "Recovered Successfully !",
+      });
+    } else {
+      messageApi.open({
+        type: "error",
+        content: "There was an error",
+      });
+    }
+  }
+
   useDidUpdate(() => {
     if (typeof event === "undefined") {
       return;
@@ -81,6 +125,7 @@ export const ProcessAlarmModal: FC<Props> = ({ dataTestId, refetch }) => {
       caseNumber: caseNum,
     });
   }, [event]);
+
   const onSubmit = async () => {
     setIsLoading(true);
     const { caseNumber, processStatus, remarks } = form.getFieldsValue();
@@ -97,7 +142,9 @@ export const ProcessAlarmModal: FC<Props> = ({ dataTestId, refetch }) => {
       setIsLoading(false);
       dispatch(setShowProcesslarmModal(false));
       if (res.data?.error === 0) {
-        refetch({});
+        refetch({
+          ...filters
+        });
         messageApi.open({
           type: "success",
           content: "Process status updated",
@@ -194,7 +241,7 @@ export const ProcessAlarmModal: FC<Props> = ({ dataTestId, refetch }) => {
 
           {event && (
             <>
-              <AlarmInfoList event={event} dataTestId="alarm-info-list" />
+              <AlarmInfoList onRecovery={handleRecovery} onMask={handleMaskItem} event={event} dataTestId="alarm-info-list" />
               <SiteInfoList site={event.site} dataTestId="site-info-list" />
             </>
           )}

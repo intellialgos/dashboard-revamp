@@ -1,5 +1,5 @@
 import { Button, Divider, Drawer, Form, Input, message, Space, Typography } from "antd";
-import { type FC, useEffect, useState } from "react";
+import { type FC, useContext, useEffect, useState } from "react";
 
 import { ArrowLeftOutlined, PlusOutlined } from "@ant-design/icons";
 import { BaseSelect } from "@/components/base-select";
@@ -8,13 +8,13 @@ import { useCreateSiteMutation, useGetOrganizationsMutation, usePostOrganization
 import { Organisation } from "@/types/organisation";
 import { MessageInstance } from "antd/es/message/interface";
 import { MutationTrigger } from "@reduxjs/toolkit/dist/query/react/buildHooks";
+import { ThemeContext } from "@/theme";
 
 type Props = {
   dataTestId?: string;
   alarmRecord?: boolean;
   Show: boolean;
   setAddSite: React.Dispatch<React.SetStateAction<boolean>>;
-  darkTheme?:boolean;
   organizations: any;
   organizationsLoading: boolean;
   getOrganizations: MutationTrigger<any>;
@@ -34,7 +34,7 @@ type OrgFields = {
 const { Item } = Form;
 const { TextArea } = Input;
 
-export const EditSiteModal: FC<Props> = ({ getOrganizations, dataTestId, Show, setAddSite, darkTheme, organizations, organizationsLoading}) => {
+export const EditSiteModal: FC<Props> = ({ getOrganizations, dataTestId, Show, setAddSite, organizations, organizationsLoading}) => {
   const show = Show;
   const [messageApi, contextHolder] = message.useMessage();
   const [index, setIndex] = useState<number>(0);
@@ -42,6 +42,9 @@ export const EditSiteModal: FC<Props> = ({ getOrganizations, dataTestId, Show, s
   const handleClose = () => {
     setAddSite(false);
   };
+
+  const { appTheme } = useContext(ThemeContext);
+  const darkTheme = appTheme === "dark";
 
   return (
     <>
@@ -52,7 +55,7 @@ export const EditSiteModal: FC<Props> = ({ getOrganizations, dataTestId, Show, s
       title="Edit Site (S+ box)"
       onClose={handleClose}
       data-testid={dataTestId}
-      style={{ background:`${ darkTheme ? "#0C183B": "" }`  }}
+      style={{ background:`${darkTheme ? " #0C183B" :"" }`  }}
     >
       <EditSiteForm
         getOrganizations={getOrganizations}

@@ -17,8 +17,9 @@ import {
   getSelectedRowIds,
 } from "@/store/selectors/events";
 import { LoadingOutlined } from "@ant-design/icons";
-import { SiteInfoModal } from "@/modals/site-info-modal";
+import { SiteInfo } from "@/modals/site-info-modal";
 import { OrganisationSite } from "@/types/organisation";
+import { setSelectedSite, setSiteObject } from "@/store/slices/sites";
 
 type Props = {
   className: string;
@@ -57,23 +58,17 @@ export const SiteMapTable: FC<Props> = ({
     onChange: onSelectChange,
   };
 
-  const handleProcessAlarm = useCallback(
-    (selectedEvent: DeviceEvent) => {
-      dispatch(setSelectedEvents([selectedEvent]));
-      dispatch(setShowProcesslarmModal(true));
-      dispatch(setShowSiteInfoModal(true));
-    },
-    [dispatch],
-  );
+  const handleSiteInfo = (data: OrganisationSite) => {
+    dispatch(setShowSiteInfoModal(true));
+    dispatch(setSelectedSite(data.id));
+    dispatch(setSiteObject(data));
+  };
 
   const columns = generateColumns({
-    onProcess: handleProcessAlarm,
+    onClick: handleSiteInfo
   });
 
   const antIcon = <LoadingOutlined style={{ fontSize: 24 }} spin />;
-  const handleSiteInfo = () => {
-  
-  };
 
   return (
     <>
@@ -100,10 +95,6 @@ export const SiteMapTable: FC<Props> = ({
         // }}
         data-testid={dataTestId}
       />
-
-     
-      <SiteInfoModal handlePageFilter={handleSiteInfo} />
-
     </>
   );
 };

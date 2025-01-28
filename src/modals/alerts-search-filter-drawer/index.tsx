@@ -1,4 +1,4 @@
-import type { FC } from "react";
+import { useState, type FC } from "react";
 import { Button, Checkbox, DatePicker, Drawer, Form, Space } from "antd";
 
 import { BaseSelect } from "@/components/base-select";
@@ -20,6 +20,7 @@ import { useGetSitesQuery } from "@/services";
 import { useSelector } from "react-redux";
 import { RootState } from "@/types/store";
 import { setFilters } from "@/store/slices/filters";
+import { formatDate, getLastWeekDate } from "@/utils/general-helpers";
 
 type Props = {
   dataTestId?: string;
@@ -65,20 +66,32 @@ export const AlertsSearchFilterDrawer: FC<Props> = ({
   const [form] = Form.useForm<Fields>();
 
   const filters = useSelector((state: RootState) => state.filters);
+  const date = new Date();
 
   const handleReset = () => {
-    form.resetFields();
-    dispatch(setFilters({
-      startTime: "",
-      endTime: "",
-      priority: [],
-      devices: [],
-      sites: [],
-      eventType: null,
-      vendors: []
-    }));
-    dispatch(setShowEventsFilterModal(false));
+  const initialFilters = {
+    startTime: formatDate(getLastWeekDate(date)),
+    endTime: formatDate(new Date()),
+    priority: [],
+    devices: [],
+    sites: [],
+    eventType: null,
+    vendors: [],
   };
+
+  // Reset form fields and update values explicitly
+  form.resetFields();
+  form.setFieldsValue({
+    ...initialFilters,
+    datetime: [initialFilters.startTime, initialFilters.endTime],
+  });
+
+  // Update Redux state with initial filters
+  dispatch(setFilters(initialFilters));
+
+  // Close the filter modal
+  dispatch(setShowEventsFilterModal(false));
+};
 
   const handleClose = () => {
     dispatch(setShowEventsFilterModal(false));
@@ -162,7 +175,10 @@ export const AlertsSearchFilterDrawer: FC<Props> = ({
         form={form}
         layout="vertical"
         name="alerts-search"
-        initialValues={filters}
+        initialValues={{
+          ...filters,
+          datetime: [filters.startTime, filters.endTime],
+        }}
         onFinish={handleSubmit}
         data-testid="alerts-search-form"
       >

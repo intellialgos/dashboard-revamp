@@ -36,9 +36,10 @@ import { getAlarmLevelName } from "@/utils/get-alarm-level-name";
 import { setAllEvents, setShowEventsFilterModal } from "@/store/slices/events";
 import { useAppDispatch } from "@/hooks/use-app-dispatch";
 import { CheckCircleOutlined, FilterOutlined } from "@ant-design/icons";
-import { formatDate } from "@/utils/general-helpers";
+import { formatDate, getLastWeekDate } from "@/utils/general-helpers";
 import { useSelector } from "react-redux";
 import { RootState } from "@/types/store";
+import { SiteInfo } from "@/modals/site-info-modal";
 
 export const Dashboard: FC = () => {
   const dispatch = useAppDispatch();
@@ -144,6 +145,8 @@ export const Dashboard: FC = () => {
     (async () => {
       await getAssetsStatistics({
         ...filters,
+        ...{startTime: formatDate(getLastWeekDate(new Date()))},
+        ...{endTime: formatDate(new Date())},
         ...( selectedSite ? {sites: [selectedSite]} : {} ),
       });
     })()
@@ -202,7 +205,7 @@ export const Dashboard: FC = () => {
               title="Open Tickets"
               loading={dashboardLoading}
               icon={<OpenTickets />}
-              value={dashboardStatistics?.openAlarmsCount}
+              value={dashboardStatistics?.openAlarmsCount ? dashboardStatistics?.openAlarmsCount : 0}
             />
           </Col>
           <Col span={8}>
@@ -210,7 +213,7 @@ export const Dashboard: FC = () => {
               title="Closed Tickets"
               loading={dashboardLoading}
               icon={<ClosedTickets />}
-              value={dashboardStatistics?.closedAlarmsCount}
+              value={dashboardStatistics?.closedAlarmsCount ? dashboardStatistics?.closedAlarmsCount : 0}
             />
           </Col>
           <Col span={8}>
@@ -218,7 +221,7 @@ export const Dashboard: FC = () => {
               title="Success Rate"
               loading={dashboardLoading}
               icon={<SuccessRate />}
-              value={`${dashboardStatistics?.successRate.toFixed(2)}%`}
+              value={`${(dashboardStatistics?.successRate) ? dashboardStatistics?.successRate.toFixed(2)+"%" : 0}`}
               color={successRateColor(dashboardStatistics?.successRate)}
             />
           </Col>
@@ -325,8 +328,7 @@ export const Dashboard: FC = () => {
 
       <Col span={6}>
         <TopAlertsBySite
-          // title="All Weekly Alerts"
-          title="Alerts By Event Type"
+          title="Weekly Alerts By Event Type"
           className={`${styles.widget} ${
             darkTheme ? styles.widget_bg : styles.widget_bg_light
           }`}
@@ -338,8 +340,7 @@ export const Dashboard: FC = () => {
       </Col>
       <Col span={6}>
         <AlertsByPriority
-          // title="Weekly Alerts by Priority"
-          title="Alerts by Priority"
+          title="Weekly Alerts by Priority"
           // tooltipText="TODO: Add tooltip text"
           className={`${styles.widget} ${
             darkTheme ? styles.widget_bg : styles.widget_bg_light
@@ -353,8 +354,7 @@ export const Dashboard: FC = () => {
       </Col>
       <Col span={6}>
         <AlertsByPriority
-          // title="Weekly Alerts by System"
-          title="Alerts by System"
+          title="Weekly Alerts by System"
           // tooltipText="TODO: Add tooltip text"
           className={`${styles.widget} ${
             darkTheme ? styles.widget_bg : styles.widget_bg_light
@@ -372,9 +372,7 @@ export const Dashboard: FC = () => {
       </Col>
       <Col span={6}>
         <TopAlertsBySite
-          // title="Top 10 Weekly Alerts by Site"
-          title="Top 10 Alerts by Site"
-          // tooltipText="TODO: Add tooltip text"
+          title="Top 10 Weekly Alerts by Site"
           className={`${styles.widget} ${
             darkTheme ? styles.widget_bg : styles.widget_bg_light
           }`}
@@ -388,6 +386,8 @@ export const Dashboard: FC = () => {
       <Col span={24}>
         <AllAlerts />
       </Col>
+
+      <SiteInfo />
     </Row>
   );
 };

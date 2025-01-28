@@ -77,7 +77,7 @@ export const AllAlerts: FC = () => {
   const [messageApi, contextHolder] = message.useMessage();
   const [filter, setFilter] = useState<string | "">(""); //search handler state
   const [pageIndex, setPageIndex] = useState(1);
-  const [pageSize, setPageSize] = useState(10);
+  const [pageSize, setPageSize] = useState(20);
   const [clearAll, setClearAll] = useState<boolean>(false);
 
   const { appTheme } = useContext(ThemeContext);
@@ -144,28 +144,6 @@ export const AllAlerts: FC = () => {
   const debouncedResults = useMemo(() => {
     return debouce(handleChange, 300);
   }, []);
-
-  const ClearAllEvents = async () => {
-    const event: Array<number> = selectedRow;
-    const body: any = {
-      event,
-      processStatus: 2,
-    };
-    const res = await handleProcessEvents(body);
-    if (res) {
-      if (res.data) {
-        messageApi.open({
-          type: "success",
-          content: "Process status updated",
-        });
-      } else {
-        messageApi.open({
-          type: "error",
-          content: "Process status update failed",
-        });
-      }
-    }
-  };
   
   const filters = useSelector((state: RootState) => state.filters);
   const [getAssetsStatistics, { data: dashboardStatistics, isLoading: dashboardLoading }] = useGetAssetsStatisticsMutation();
@@ -178,6 +156,38 @@ export const AllAlerts: FC = () => {
       })()
   }, [filters]);
 
+  const ClearAllEvents = async () => {
+      const event: Array<number> = selectedIds;
+      const body: any = {
+        event,
+        processStatus: 2,
+      };
+      if ( selectedIds.length > 0 ) {
+        const res = await handleProcessEvents(body);
+        if (res) {
+          if (res.data) {
+            getAssetsStatistics({
+              ...filters,
+            });
+            messageApi.open({
+              type: "success",
+              content: "Process status updated",
+            });
+          } else {
+            messageApi.open({
+              type: "error",
+              content: "Process status update failed",
+            });
+          }
+        }
+      } else {
+        messageApi.open({
+          type: "error",
+          content: "Check the alarms you want to clear first",
+        });
+      }
+    };
+    
   const setDataIntoStates = (data: DeviceEvent[]) => {
       dispatch(setAllEvents(data));
     };
@@ -194,10 +204,10 @@ export const AllAlerts: FC = () => {
       <Row gutter={[24, 24]}>
         <Col span={24}>
           <header className={styles.header}>
-            <Title level={4}>All Alerts — {dashboardStatistics?.allAlerts.length}</Title>
+            <Title level={4}>All Alerts — {dashboardStatistics?.totalCount}</Title>
 
             <Space size="middle" align="center">
-              <Form
+              {/* <Form
                 form={form}
                 layout="vertical"
                 initialValues={initialValues}
@@ -218,7 +228,7 @@ export const AllAlerts: FC = () => {
                     }`}
                   />
                 </Item>
-              </Form>
+              </Form> */}
 
               <Button
                 className={`filter_btn ${darkTheme ? "filter_btn_bg":""}`}
@@ -245,12 +255,11 @@ export const AllAlerts: FC = () => {
           <AllAlertsTable
             refetch={getAssetsStatistics}
             dataTestId="all-alerts-table"
-            // pageIndex={pageIndex}
-            // pageSize={pageSize}
+            pageIndex={pageIndex}
+            pageSize={pageSize}
             handlePageChange={handlePageChange}
             loading={dashboardLoading}
             className={`${darkTheme ? "alerts_table" :"" }`}
-            data={dashboardStatistics?.allAlerts}
           />
         </Col>
       </Row>

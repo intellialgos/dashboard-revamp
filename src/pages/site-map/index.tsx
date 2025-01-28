@@ -6,6 +6,8 @@ import { SiteInfoModal } from "@/modals/site-map-modal";
 import { SiteMapComp } from "@/widgets/site-map";
 import styles from './index.module.css';
 import { useGetSitesQuery } from "@/services";
+import { EditSiteModal } from "@/modals/edit-site-modal";
+import { SiteInfo } from "@/modals/site-info-modal";
 
 export const SiteMap: FC = () => {
   const [collapsed, setCollapsed] = useState<boolean>(false);
@@ -36,7 +38,9 @@ export const SiteMap: FC = () => {
           className={`${styles.trigger} ${collapsed ? styles.trigger_expand : styles.trigger_collapse}`}
         />
       <SiteInfoModal sites={sites} collapse={collapsed} onClick={handleCollapseMenu} />
+      <SiteInfo />
       <EditSiteMapModal />
+      <EditSiteModal />
     </Row>
   );
 };
