@@ -1,4 +1,4 @@
-import { Drawer, Form } from "antd";
+import { Button, Drawer, Form } from "antd";
 import { useContext, type FC } from "react";
 
 import { useAppDispatch } from "@/hooks/use-app-dispatch";
@@ -17,6 +17,8 @@ import { SiteInfoListMap } from "@/components/site-info-map-list";
 import { ThemeContext } from "@/theme";
 import styles from "./index.module.css";
 import { getSiteObject } from "@/store/selectors/sites";
+import { EditSiteModal } from "../edit-site-modal";
+import { setShowConfigureSiteDrawer } from "@/store/slices/sites";
 
 type Props = {
   dataTestId?: string;
@@ -52,7 +54,9 @@ export const SiteInfo: FC<Props> = ({ dataTestId }) => {
     dispatch(setSelectedEvents([]));
   };
 
- 
+  const configureSite = () => {
+    dispatch(setShowConfigureSiteDrawer(true));
+  }
 
   return (
     <>
@@ -64,13 +68,14 @@ export const SiteInfo: FC<Props> = ({ dataTestId }) => {
         onClose={()=>handleClose()}
         data-testid={dataTestId}
         style={{ background: `${darkTheme ? "#0C183B" :  ""}` }}
-
+        extra={<Button onClick={configureSite} className={`filter_btn ${darkTheme ? "filter_btn_bg":""}`} type="primary">Edit Site</Button>}
       >
         <div className={styles.container}>
           <>
             <SiteInfoListMap site={siteObject} />
           </>
         </div>
+        <EditSiteModal />
       </Drawer>
     </>
   );

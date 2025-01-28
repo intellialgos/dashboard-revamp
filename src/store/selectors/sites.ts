@@ -2,6 +2,8 @@ import { RootState } from "@/types/store";
 
 const getState = (state: RootState) => state.sites;
 
+export const getShowConfigureSiteDrawer = (state: RootState) => getState(state).showConfigureSiteDrawer;
+
 export const getShowEditSiteDrawer = (state: RootState) => getState(state).showEditSiteDrawer;
 export const getShowEditOrgDrawer = (state: RootState) => getState(state).showEditOrgDrawer;
 export const getShowEditGroupDrawer = (state: RootState) => getState(state).showEditGroupDrawer;

@@ -40,7 +40,6 @@ export const SiteMap: FC = () => {
       <SiteInfoModal sites={sites} collapse={collapsed} onClick={handleCollapseMenu} />
       <SiteInfo />
       <EditSiteMapModal />
-      <EditSiteModal />
     </Row>
   );
 };

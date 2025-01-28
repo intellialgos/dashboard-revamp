@@ -3,6 +3,7 @@ import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 
 type State = {
   showEditSiteDrawer: boolean;
+  showConfigureSiteDrawer: boolean;
   showEditOrgDrawer: boolean;
   showEditGroupDrawer: boolean;
   selectedSite: string;
@@ -20,7 +21,8 @@ const initialState: State = {
     groupObject: {},
     showEditSiteDrawer: false,
     showEditOrgDrawer: false,
-    showEditGroupDrawer: false
+    showEditGroupDrawer: false,
+    showConfigureSiteDrawer: false
 };
 
 const sitesSlice = createSlice({
@@ -41,6 +43,9 @@ const sitesSlice = createSlice({
     },
     setShowEditOrgDrawer(state, action: PayloadAction<boolean>) {
       state.showEditOrgDrawer = action.payload;
+    },
+    setShowConfigureSiteDrawer(state, action: PayloadAction<boolean>) {
+      state.showConfigureSiteDrawer = action.payload;
     },
     setShowEditGroupDrawer(state, action: PayloadAction<boolean>) {
       state.showEditGroupDrawer = action.payload;
@@ -67,6 +72,7 @@ export const {
     setSiteObject,
     setGroupObject,
     setOrgObject,
+    setShowConfigureSiteDrawer,
     setSelectedGroup,
     setSelectedOrg
 } = sitesSlice.actions;
