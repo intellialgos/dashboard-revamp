@@ -1,6 +1,38 @@
 import { Organisation, OrganisationGroup } from "@/types/organisation";
 import { organizeOrgs } from "./organizeOrgs";
 
+const buildGroupHierarchy = (groups: OrganisationGroup[]): any[] => {
+    const groupMap = new Map<number, any>(); // Store all groups by ID
+    const rootGroups: any[] = []; // Store root-level groups
+
+    // Initialize the map with group data
+    groups.forEach((group) => {
+        groupMap.set(group.id, {
+            key: `group-${group.id}`,
+            id: group.id,
+            checkId: `${group.id}-${group.id}`,
+            name: group.name,
+            isGroup: true,
+            isOrganisation: false,
+            isSite: false,
+            children: [], // This will hold nested children
+        });
+    });
+
+    // Assign groups to their parent or root if no parentId
+    groups.forEach((group: OrganisationGroup) => {
+        const groupNode = groupMap.get(group.id);
+
+        if (group.parentId && groupMap.has(group.parentId)) {
+            groupMap.get(group.parentId).children.push(groupNode); // Assign to parent
+        } else {
+            rootGroups.push(groupNode); // No parent, so it's a root group
+        }
+    });
+
+    return rootGroups;
+};
+
 const getGroupsAndSite = (groups: OrganisationGroup[]): any[] => {
     return groups.map((group: OrganisationGroup) => {
         // Initialize children array
@@ -49,7 +81,7 @@ export const TransformOrgs = (data: Organisation[]): any[] => {
 
         // Add groups and their nested children
         if (org.groups) {
-            children.push(...getGroupsAndSite(org.groups));
+            children.push(...buildGroupHierarchy(org.groups));
         }
 
         // Add standalone sites

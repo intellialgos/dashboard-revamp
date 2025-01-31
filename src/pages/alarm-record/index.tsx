@@ -9,6 +9,7 @@ import { ThemeContext } from "@/theme";
 import { AllAlerts } from "@/components/all-alerts";
 import { useAppDispatch } from "@/hooks/use-app-dispatch";
 import { setShowEventsFilterModal } from "@/store/slices/events";
+import { setShowDateFilter } from "@/store/slices/sites";
 
 const items: TabsProps["items"] = [
   {
@@ -36,6 +37,7 @@ export const AlarmRecord: FC = () => {
 
   const handleFilterClick = () => {
       dispatch(setShowEventsFilterModal(true));
+      dispatch(setShowDateFilter(false));
   };
 
   return (

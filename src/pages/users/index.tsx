@@ -51,10 +51,7 @@ export const Users: FC = () => {
         sticky={true}
         columns={columns}
         showSorterTooltip={false}
-        loading={{
-          indicator: <Spin indicator={antIcon} />,
-          spinning: isLoading,
-        }}
+        loading={isLoading}
       />
       </Col>
     </Row>

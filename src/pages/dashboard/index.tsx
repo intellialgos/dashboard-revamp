@@ -40,6 +40,7 @@ import { formatDate, getLastWeekDate } from "@/utils/general-helpers";
 import { useSelector } from "react-redux";
 import { RootState } from "@/types/store";
 import { SiteInfo } from "@/modals/site-info-modal";
+import { setShowDateFilter } from "@/store/slices/sites";
 
 export const Dashboard: FC = () => {
   const dispatch = useAppDispatch();
@@ -170,6 +171,7 @@ export const Dashboard: FC = () => {
 
   const handleFilterClick = () => {
       dispatch(setShowEventsFilterModal(true));
+      dispatch(setShowDateFilter(false));
   };
 
   return (

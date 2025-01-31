@@ -43,8 +43,8 @@ const permissions: Permissions = {
   maskSource: { v: 0, m: 0 },
   disconnectParent: { v: 0 },
   disconnect: { v: 0 },
-  userParent: { v: 0 },
-  user: { v: 0, c: 0, m: 0, d: 0 },
+  // userParent: { v: 0 },
+  // user: { v: 0, c: 0, m: 0, d: 0 },
 };
 
 const keyToLabelMap = {

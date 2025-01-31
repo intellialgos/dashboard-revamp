@@ -46,8 +46,8 @@ const permissions: Permissions = {
   maskSource: { v: 0, m: 0 },
   disconnectParent: { v: 0 },
   disconnect: { v: 0 },
-  userParent: { v: 0 },
-  user: { v: 0, c: 0, m: 0, d: 0 },
+  // userParent: { v: 0 },
+  // user: { v: 0, c: 0, m: 0, d: 0 },
 };
 
 const keyToLabelMap = {
@@ -196,8 +196,11 @@ export const EditUserModal: FC<Props> = ({ Show, setEditUser, refetch, user }) =
     if ( user ) {
         setSelectedRole(user.filter ? "customer" : "user"); 
         const userPermissions = user.permission ? decodeBase64(user.permission) : "";
+        const filteredPermissions = { ...userPermissions };
+        delete filteredPermissions["user"];
+        delete filteredPermissions["userParent"];
 
-        setSelectedPermissions(userPermissions ? userPermissions : permissions);
+        setSelectedPermissions(userPermissions ? filteredPermissions : permissions);
         setStatus(user.status ? true : false)
         form.setFieldsValue({
             ...user,
@@ -254,9 +257,9 @@ export const EditUserModal: FC<Props> = ({ Show, setEditUser, refetch, user }) =
               <Form.Item
                 label="Username"
                 name="userName"
-                rules={[{ required: true, message: "Please enter the name" }]}
+                // rules={[{ required: true, message: "Please enter the name" }]}
               >
-                <Input className={styles.input_bg} placeholder="Enter name" />
+                <Input disabled className={styles.input_bg} placeholder="Enter name" />
               </Form.Item>
             </Col>
             <Col span={12}>
@@ -373,7 +376,7 @@ export const EditUserModal: FC<Props> = ({ Show, setEditUser, refetch, user }) =
             Cancel
           </Button>
           <Button
-            htmlType="submit"s
+            htmlType="submit"
             type="primary"
             loading={isLoading}
           >

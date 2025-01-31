@@ -18,7 +18,6 @@ import {
 import { DeviceEvent } from "@/types/device-event";
 import { ReqProcessEvent } from "@/types/process-event";
 import { generateColumns } from "./config";
-import { data } from './mock.ts'
 import { useLocation } from "react-router-dom";
 type Props = {
   className: string;
@@ -30,7 +29,6 @@ type Props = {
   handlePageChange: () => void;
   loading: boolean;
 };
-const tableData=data
 export const AlarmSelfRecoverySiteTable: FC<Props> = ({
   className,
   dataTestId,
@@ -71,6 +69,18 @@ export const AlarmSelfRecoverySiteTable: FC<Props> = ({
     dispatch(setSelectedEventsId({ selectedRowKeys, pageIndex }));
   };
 
+  const refetch = async () => {
+    await getEvents({
+      // ...filters,
+      sites: [siteId],
+      pageSize,
+      pageIndex,
+      ...{
+        processed: 99
+      }
+    })
+  }
+
   const rowSelection = {
     selectedRowKeys: rowKey,
     onChange: onSelectChange,
@@ -95,6 +105,7 @@ export const AlarmSelfRecoverySiteTable: FC<Props> = ({
     if (res) {
       setIsLoading(false);
       if (res.data) {
+        refetch();
         messageApi.open({
           type: "success",
           content: "Process status updated",
@@ -142,7 +153,7 @@ export const AlarmSelfRecoverySiteTable: FC<Props> = ({
         // preserveSelectedRowKeys={true}
       />
 
-      <ProcessAlarmMapModal dataTestId="process-alarm" />
+      <ProcessAlarmMapModal refetch={refetch} dataTestId="process-alarm" />
     </>
   );
 };

@@ -12,6 +12,7 @@ type State = {
   siteObject: OrganisationSite;
   orgObject: Organisation;
   groupObject: OrganisationGroup;
+  showDateFilter: boolean;
 };
 
 const initialState: State = {
@@ -22,7 +23,8 @@ const initialState: State = {
     showEditSiteDrawer: false,
     showEditOrgDrawer: false,
     showEditGroupDrawer: false,
-    showConfigureSiteDrawer: false
+    showConfigureSiteDrawer: false,
+    showDateFilter: true
 };
 
 const sitesSlice = createSlice({
@@ -31,6 +33,9 @@ const sitesSlice = createSlice({
   reducers: {
     setSelectedSite(state, action: PayloadAction<string>) {
       state.selectedSite = action.payload;
+    },
+    setShowDateFilter(state, action: PayloadAction<boolean>) {
+      state.showDateFilter = action.payload;
     },
     setSelectedGroup(state, action: PayloadAction<string>) {
       state.selectedGroup = action.payload;
@@ -74,5 +79,6 @@ export const {
     setOrgObject,
     setShowConfigureSiteDrawer,
     setSelectedGroup,
-    setSelectedOrg
+    setSelectedOrg,
+    setShowDateFilter
 } = sitesSlice.actions;

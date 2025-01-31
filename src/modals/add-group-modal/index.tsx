@@ -1,10 +1,10 @@
 import { Button, Drawer, Form, Input, message, Space } from "antd";
-import { useEffect, type FC } from "react";
+import { useEffect, useState, type FC } from "react";
 
 import { BaseSelect } from "@/components/base-select";
 import styles from "./index.module.css";
 import { useGetOrganizationsMutation, usePostGroupMutation } from "@/services";
-import { Organisation } from "@/types/organisation";
+import { Organisation, OrganisationGroup } from "@/types/organisation";
 import { MutationTrigger } from "@reduxjs/toolkit/dist/query/react/buildHooks";
 
 type Props = {
@@ -38,6 +38,9 @@ export const AddGroupModal: FC<Props> = ({ organizationsLoading, getOrganization
   const show = Show;
   const [form] = Form.useForm<Fields>();
   const [messageApi, contextHolder] = message.useMessage();
+  const [groups, setGroups] = useState<any[]>([]);
+  const [selectedOrg, setSelectedOrg] = useState<string>();
+
 
   const organizationsOptions = organizations?.orgs
       ? organizations.orgs.map((org: Organisation) => ({
@@ -45,6 +48,22 @@ export const AddGroupModal: FC<Props> = ({ organizationsLoading, getOrganization
           value: org.id,
         }))
   : [];
+
+  useEffect(() => {
+    if ( organizations?.error == 0 ) {
+      if ( organizations.orgs.length > 0 ) {
+        const org = organizations.orgs.filter(org => org.id == selectedOrg)
+        const groupsArray = [];
+        if ( org && org[0].groups ) {
+          const groups = org[0].groups.map((group:OrganisationGroup) => ({label: group.name, value: group.id}))
+          groupsArray.push(...groups);
+          setGroups(groupsArray);
+        } else {
+          setGroups([]);
+        }
+      }
+    }
+  }, [selectedOrg])
 
   const [createGroup, {isLoading}] = usePostGroupMutation();
 
@@ -99,6 +118,7 @@ export const AddGroupModal: FC<Props> = ({ organizationsLoading, getOrganization
             allowClear={true}
             loading={organizationsLoading}
             options={organizationsOptions}
+            onChange={(value) => setSelectedOrg(value)}
             className="select_input"
           />
         </Item>
@@ -114,7 +134,7 @@ export const AddGroupModal: FC<Props> = ({ organizationsLoading, getOrganization
           <BaseSelect
             placeholder="Select"
             allowClear={true}
-            // options={siteOptions}
+            options={groups}
             className="select_input"
           />
         </Item>

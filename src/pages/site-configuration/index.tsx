@@ -71,13 +71,13 @@ export const SiteConfiguration: FC = () => {
           </Space>
         </Col>
         <Col span={24}>
-          <SiteConfigurationTable data={organizations} isLoading={isLoading} className={darkTheme ? "alerts_table" : "alerts_table_light"} />
+          <SiteConfigurationTable refetch={getOrganizations} data={organizations} isLoading={isLoading} className={darkTheme ? "alerts_table" : "alerts_table_light"} />
         </Col>
       </Row>
       <SiteConfigurationDrawer handlePageFilter={handleSiteInfo} darkTheme={darkTheme}/>
       <AddSiteModal getOrganizations={getOrganizations} organizationsLoading={isLoading} organizations={organizations} Show={addSite} setAddSite={setAddSite} darkTheme={darkTheme}/>
       <AddGroupModal organizationsLoading={isLoading} organizations={organizations} getOrganizations={getOrganizations} Show={addGroup} setAddGroup={setAddGroup} darkTheme={darkTheme}/>
-      <DeleteModal Show={deleteModal} setDeleteModal={setDeleteModal} darkTheme={darkTheme}/>
+      {/* <DeleteModal Show={deleteModal} setDeleteModal={setDeleteModal} darkTheme={darkTheme}/> */}
       <EditSiteMapModal title={site} darkTheme={darkTheme}/>
 
       <EditOrganizationModal refetch={getOrganizations} messageApi={messageApi} />

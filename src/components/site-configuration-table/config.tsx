@@ -6,12 +6,14 @@ import { DeleteOutlined, FolderFilled, HomeFilled, PoweroffOutlined, VideoCamera
 import DeleteSiteButton from "./components/DeleteSiteButton";
 import { useAppDispatch } from "@/hooks/use-app-dispatch";
 import { setGroupObject, setOrgObject, setSelectedSite, setShowEditGroupDrawer, setShowEditOrgDrawer, setShowEditSiteDrawer } from "@/store/slices/sites";
+import { MutationTrigger } from "@reduxjs/toolkit/dist/query/react/buildHooks";
+import { MutationDefinition } from "@reduxjs/toolkit/query";
 
 type ColumnParams = {
   onDelete: ({id, name, type}: {id: string, name: string, type: "organization"|"site"}) => void;
   onEdit: (event: any) => void;
   record: any;
-  refetch: () => any
+  refetch: MutationTrigger<MutationDefinition<any, any, any, any, any>>
 };
 
 const SitesActions: React.FC<any> = ({
@@ -93,10 +95,12 @@ const Icon: React.FC<any> = ({record}: {record: any}) => {
 export const generateColumns = ({
   onDelete,
   onEdit,
+  refetch
 }: ColumnParams): ColumnType<OrganisationSite>[] => [
   {
     title: "Name",
     dataIndex: "name",
+    width: 300,
     render: (value, record) => <Space><Icon record={record} /> {value}</Space>
   },
   {
@@ -117,6 +121,6 @@ export const generateColumns = ({
     title: "Actions",
     dataIndex: "",
     fixed: "right",
-    render: (_, record) => <SitesActions record={record} />
+    render: (_, record) => <SitesActions refetch={refetch} record={record} />
   },
 ];

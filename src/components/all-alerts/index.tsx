@@ -4,7 +4,6 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   CheckCircleOutlined,
   FilterOutlined,
-  LoadingOutlined,
 } from "@ant-design/icons";
 import {
   Button,
@@ -19,55 +18,35 @@ import {
 
 import { AlertsSearchFilterDrawer } from "@/modals/alerts-search-filter-drawer";
 import {
-  clearAllEvents,
   setAllEvents,
-  setEvents,
-  setGlobalPageSize,
-  setSelectedEventsId,
   setShowEventsFilterModal,
-  setTotalAlertsGlobal,
 } from "@/store/slices/events";
 
 import { AllAlertsTable } from "../all-alerts-table";
-import {
-  formatDate,
-  getLastWeekDate,
-  getTodayDate,
-} from "@/utils/general-helpers";
 
 import styles from "./index.module.css";
 
-import { DeviceEvent, ReqDeviceEvent } from "@/types/device-event";
+import { DeviceEvent } from "@/types/device-event";
 
 import {
   useQueryEventsMutation,
   useProcessEventMutation,
-  api,
   useGetAssetsStatisticsMutation,
 } from "@/services";
 import debouce from "lodash.debounce";
 import { useAppSelector } from "@/hooks/use-app-selector";
 import {
-  getEvents,
-  getGlobalPageSize,
   getSelectedRowIds,
-  getTotalAlerts,
 } from "@/store/selectors/events";
 import { ThemeContext } from "@/theme";
 import { RootState } from "@/types/store";
-import { getFiltersState } from "@/store/selectors/filters";
+import { setShowDateFilter } from "@/store/slices/sites";
 
 type Fields = {
   search: string;
 };
 
-const initialValues: Fields = {
-  search: "",
-};
-
 const { Title } = Typography;
-const { Item } = Form;
-const { Search } = Input;
 
 export const AllAlerts: FC = () => {
   const dispatch = useDispatch();
@@ -96,6 +75,7 @@ export const AllAlerts: FC = () => {
 
   const handleFilterClick = () => {
     dispatch(setShowEventsFilterModal(true));
+    dispatch(setShowDateFilter(true));
   };
 
   const handlePageFilterDate = (

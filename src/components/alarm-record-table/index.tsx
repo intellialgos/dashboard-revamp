@@ -19,6 +19,8 @@ import {
   getSelectedRowIds,
 } from "@/store/selectors/events";
 import { LoadingOutlined } from "@ant-design/icons";
+import { MutationTrigger } from "@reduxjs/toolkit/dist/query/react/buildHooks";
+import { MutationDefinition } from "@reduxjs/toolkit/query";
 
 type Props = {
   className: string;
@@ -29,6 +31,7 @@ type Props = {
   totalAlerts: number;
   handlePageChange: () => void;
   loading: boolean;
+  refetch: MutationTrigger<MutationDefinition<any, any, any, any, any>>
 };
 
 export const AlarmRecordTable: FC<Props> = ({
@@ -40,6 +43,7 @@ export const AlarmRecordTable: FC<Props> = ({
   totalAlerts,
   handlePageChange,
   loading,
+  refetch
 }) => {
   const [isLoading, setIsLoading] = useState(false);
 
@@ -101,7 +105,7 @@ export const AlarmRecordTable: FC<Props> = ({
         data-testid={dataTestId}
       />
 
-      <ProcessAlarmModal dataTestId="process-alarm" />
+      <ProcessAlarmModal refetch={refetch} dataTestId="process-alarm" />
     </>
   );
 };

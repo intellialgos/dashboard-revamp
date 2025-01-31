@@ -19,9 +19,11 @@ import { DeviceEvent, ProcessStatus } from "@/types/device-event";
 import { getFormattedDateTime } from "@/utils/get-formatted-date-time";
 
 import styles from "./index.module.css";
-import { useProcessEventMutation } from "@/services";
+import { useDeleteMaskedItemMutation, useMaskItemMutation, useProcessEventMutation } from "@/services";
 import { ReqProcessEvent } from "@/types/process-event";
 import { LoadingOutlined } from "@ant-design/icons";
+import { useSelector } from "react-redux";
+import { RootState } from "@/types/store";
 
 type Props = {
   dataTestId?: string;
@@ -48,7 +50,7 @@ const processStatusOptions = [
   { label: "Accomplished", value: ProcessStatus.Accomplished },
 ];
 
-export const ProcessAlarmMapModal: FC<Props> = ({ dataTestId }) => {
+export const ProcessAlarmMapModal: FC<Props> = ({ dataTestId, refetch }) => {
   const [handleProcessEvents, {}] = useProcessEventMutation();
   const dispatch = useAppDispatch();
   const [form] = Form.useForm<Fields>();
@@ -57,6 +59,41 @@ export const ProcessAlarmMapModal: FC<Props> = ({ dataTestId }) => {
   const processTime = event ? getFormattedDateTime(event.process.time) : "N/A";
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [messageApi, contextHolder] = message.useMessage();
+
+  const [ maskItem ] = useMaskItemMutation();
+  const handleMaskItem = async ( record: DeviceEvent ) => {
+    const res = await maskItem({keyId: record.obj.keyId});
+    if (res.data?.error === 0) {
+      refetch();
+      messageApi.open({
+        type: "success",
+        content: "Masked Successfully !",
+      });
+      
+    } else {
+      messageApi.open({
+        type: "error",
+        content: "There was an error",
+      });
+    }
+  }
+  
+  const [ deleteMasked ] = useDeleteMaskedItemMutation();
+  const handleRecovery = async (record: DeviceEvent) => {
+    const res = await deleteMasked({keyId: record.obj.keyId});
+    if (res.data?.error === 0) {
+      refetch();
+      messageApi.open({
+        type: "success",
+        content: "Recovered Successfully !",
+      });
+    } else {
+      messageApi.open({
+        type: "error",
+        content: "There was an error",
+      });
+    }
+  }
 
   const handleClose = () => {
     dispatch(setShowProcesslarmModal(false));
@@ -91,6 +128,7 @@ export const ProcessAlarmMapModal: FC<Props> = ({ dataTestId }) => {
       setIsLoading(false);
       dispatch(setShowProcesslarmModal(false));
       if (res.data.error === 0) {
+        refetch();
         messageApi.open({
           type: "success",
           content: "Process status updated",
@@ -187,7 +225,12 @@ export const ProcessAlarmMapModal: FC<Props> = ({ dataTestId }) => {
 
           {event && (
             <>
-              <AlarmInfoList event={event} dataTestId="alarm-info-list" />
+              <AlarmInfoList
+                onRecovery={handleRecovery}
+                onMask={handleMaskItem}
+                event={event}
+                dataTestId="alarm-info-list"
+              />
               <SiteInfoList site={event.site} dataTestId="site-info-list" />
             </>
           )}

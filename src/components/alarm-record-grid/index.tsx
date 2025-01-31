@@ -222,6 +222,7 @@ export const AlarmRecordGrid: FC = () => {
             pageSize={pageSize}
             totalAlerts={totalAlerts}
             handlePageChange={handlePageChange}
+            refetch={getAllEvents}
             loading={isLoading}
             className={`${darkTheme ? "alerts_table" :"" }`}
           />

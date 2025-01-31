@@ -1,11 +1,12 @@
 import { useDeleteSiteMutation, useDeleteUserMutation } from "@/services";
 import { User } from "@/types/user";
 import { DeleteOutlined } from "@ant-design/icons";
-import { QueryActionCreatorResult, QueryDefinition } from "@reduxjs/toolkit/query";
+import { MutationTrigger } from "@reduxjs/toolkit/dist/query/react/buildHooks";
+import { MutationDefinition } from "@reduxjs/toolkit/query";
 import { Button, Popconfirm, PopconfirmProps } from "antd";
 import useMessage from "antd/es/message/useMessage";
 
-const DeleteSiteButton = ({id, refetch}: {id: string, refetch: () => QueryActionCreatorResult<QueryDefinition<any, any, any, any, any>>}) => {
+const DeleteSiteButton = ({id, refetch}: {id: string, refetch: MutationTrigger<MutationDefinition<any, any, any, any, any>>}) => {
     
     const [ messageApi, messageContext ] = useMessage();
     const [ deleteSite, { isLoading } ] = useDeleteSiteMutation();
@@ -13,7 +14,7 @@ const DeleteSiteButton = ({id, refetch}: {id: string, refetch: () => QueryAction
       const response = await deleteSite({siteId: id});
       if ( response && !response?.error ) {
         messageApi.success('Site has been deleted !');
-        refetch();
+        refetch({});
       }
     };
 

@@ -16,6 +16,8 @@ import { useAppSelector } from "@/hooks/use-app-selector";
 import { getEvents, getSelectedRowIds } from "@/store/selectors/events";
 import { generateColumns } from "./config";
 import { TransformOrgs } from "@/utils/orgs-transform";
+import { MutationTrigger } from "@reduxjs/toolkit/dist/query/react/buildHooks";
+import { MutationDefinition } from "@reduxjs/toolkit/query";
 
 type Props = {
   className: string;
@@ -27,6 +29,7 @@ type Props = {
   totalAlerts: number;
   handlePageChange: () => void;
   loading: boolean;
+  refetch: MutationTrigger<MutationDefinition<any, any, any, any, any>>;
 };
 
 export const SiteConfigurationTable: FC<Props> = ({
@@ -39,6 +42,7 @@ export const SiteConfigurationTable: FC<Props> = ({
   totalAlerts,
   handlePageChange,
   loading,
+  refetch
 }) => {
 
   const dispatch = useAppDispatch();
@@ -62,6 +66,7 @@ export const SiteConfigurationTable: FC<Props> = ({
   const columns = generateColumns({
     onEdit: handleEdit,
     onDelete: handleDelete,
+    refetch: refetch
   });
 
   const antIcon = <LoadingOutlined style={{ fontSize: 24 }} spin />;

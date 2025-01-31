@@ -66,7 +66,7 @@ const navItems: NavigationProps["items"] = [
       {
         label: "Quick Recovery",
         href: `${AppRoute.Alarm}/${AlarmRoute.SelfRecovery}`,
-        permissionKey: "selfrecovery",
+        permissionKey: "quickly",
         action: "v",
       },
     ],

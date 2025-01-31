@@ -21,6 +21,8 @@ import { useSelector } from "react-redux";
 import { RootState } from "@/types/store";
 import { setFilters } from "@/store/slices/filters";
 import { formatDate, getLastWeekDate } from "@/utils/general-helpers";
+import { getShowDateFilter } from "@/store/selectors/sites";
+import { selectOptions } from "@/utils/selectOptions";
 
 type Props = {
   dataTestId?: string;
@@ -54,6 +56,32 @@ const processStatusOptions = [
   { label: "Completed", value: ProcessStatus.Accomplished },
 ];
 
+const CustomSelect = ({ options, setState }: { options: any[], setState: React.Dispatch<React.SetStateAction<any[]|undefined>> }) => {
+  const [value, setValue] = useState<string | undefined>(undefined);
+
+  const handleChange = (val: string) => {
+      // Add custom input to options if it's not already present
+      if (!options.some(option => option.value === val)) {
+          setState([...options, { label: val, value: val }]);
+      }
+      setValue(val);
+  };
+
+  return (
+      <BaseSelect
+          style={{ width: "100%" }}
+          // placeholder="Select or enter a value"
+          value={value}
+          options={options}
+          onChange={handleChange}
+          onSearch={(val) => setValue(val)} // Update state while typing
+          filterOption={(input, option) => 
+              (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
+          }
+      />
+  );
+};
+
 export const AlertsSearchFilterDrawer: FC<Props> = ({
   dataTestId,
   handlePageFilterDate,
@@ -66,8 +94,15 @@ export const AlertsSearchFilterDrawer: FC<Props> = ({
   const [form] = Form.useForm<Fields>();
   const [filterBy, setFilterBy] = useState<boolean>(0);
 
+
   const filters = useSelector((state: RootState) => state.filters);
   const date = new Date();
+
+  const [ getFilters, {data: filtersData} ] = useEventsFiltersMutation();
+
+  useEffect(() => {
+    getFilters({});
+  }, []);
 
   const handleReset = () => {
   const initialFilters = {
@@ -117,8 +152,10 @@ export const AlertsSearchFilterDrawer: FC<Props> = ({
 
   // const [ getFilters , {data: filtersData}]  = useEventsFiltersMutation();
 
-  
+
+
   const AllEventsData = useSelector((state: RootState) => state.events);
+  const showDateFilter = useAppSelector(getShowDateFilter);
 
   var vendors: any = [];
   var devices: any = [];
@@ -142,17 +179,14 @@ export const AlertsSearchFilterDrawer: FC<Props> = ({
         }
   });
 
-  // useEffect(() => {
-  //   (async () => {
-  //     await getFilters({});
-  //   })()
-  // }, []);
-
-  // useEffect(() => {
-  //   if ( filtersData ) {
-  //     console.log("FILTERS DATA: ", filtersData);
-  //   }
-  // }, [filtersData])
+  const [ devicesState, setDevices ] = useState<[]>();
+  const [ eventTypesState, setEventTypes ] = useState<[]>();
+  
+  useEffect(() => {
+    if ( filtersData?.eventTypes ) {
+      setEventTypes(selectOptions(filtersData?.eventTypes) || []);
+    }
+  }, []);
   
   return (
     <Drawer
@@ -221,28 +255,31 @@ export const AlertsSearchFilterDrawer: FC<Props> = ({
             className="select_input"
           />
         </Item>
-        <Item<Fields>
-          label="Date and Time"
-          name="datetime"
-          getValueFromEvent={getDateFromEvent}
-          getValueProps={getDateProps}
-        >
-          <RangePicker
-            showTime={{ format: "HH:mm" }}
-            format={APP_DATE_TIME_FORMAT}
-            className="date_input"
-          />
-        </Item>
+        {
+          showDateFilter && 
+            <Item<Fields>
+            label="Date and Time"
+            name="datetime"
+            getValueFromEvent={getDateFromEvent}
+            getValueProps={getDateProps}
+          >
+            <RangePicker
+              showTime={{ format: "HH:mm" }}
+              format={APP_DATE_TIME_FORMAT}
+              className="date_input"
+            />
+          </Item>
+        }
         <Item<Fields>
           label="Vendors"
           name="vendors"
           getValueProps={getMultipleSelectProps}
         >
           <BaseSelect
-            mode="multiple"
+            mode="tags"
             placeholder="Select Vendors"
             allowClear={true}
-            options={vendors}
+            options={selectOptions(filtersData?.vendors) || []}
             className="select_input"
           />
         </Item>
@@ -277,7 +314,8 @@ export const AlertsSearchFilterDrawer: FC<Props> = ({
               // mode="multiple"
               placeholder="Select device"
               allowClear={true}
-              options={devices}
+              // mode="tags"
+              options={selectOptions(filtersData?.devices) || []}
               className="select_input"
             />
           </Item> :
@@ -289,7 +327,8 @@ export const AlertsSearchFilterDrawer: FC<Props> = ({
           <BaseSelect
             placeholder="Select Event Type"
             allowClear={true}
-            options={eventTypes}
+            // mode="tags"
+            options={selectOptions(filtersData?.eventTypes) || []}
             className="select_input"
           />
         </Item>

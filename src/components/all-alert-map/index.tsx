@@ -55,6 +55,7 @@ import {
 import { AllAlertsMapTable } from "../alert-map-table";
 import { useLocation } from "react-router-dom";
 import { ThemeContext } from "@/theme";
+import { setShowDateFilter } from "@/store/slices/sites";
 type Fields = {
   search: string;
 };
@@ -164,6 +165,7 @@ setClearAll(true)
 
   const handleFilterClick = () => {
     dispatch(setShowEventsFilterModal(true));
+    dispatch(setShowDateFilter(true));
   };
   const handleSiteInfo = () => {
     dispatch(setShowSiteInfoModal(true));

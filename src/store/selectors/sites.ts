@@ -15,3 +15,5 @@ export const getSelectedSite = (state: RootState) => getState(state).selectedSit
 export const getSiteObject = (state: RootState) => getState(state).siteObject;
 export const getGroupObject = (state: RootState) => getState(state).groupObject;
 export const getOrgObject = (state: RootState) => getState(state).orgObject;
+
+export const getShowDateFilter = (state: RootState) => getState(state).showDateFilter;

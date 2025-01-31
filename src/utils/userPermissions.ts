@@ -17,6 +17,7 @@ export function hasPermission(user: User, key: string, action: props["action"]):
         return true; // Admins or users with no permissions object have full access
     }
 
+    console.log("PERMISSIONS: ", permission);
     // Normalize permission keys to lowercase for case-insensitive matching
     const normalizedPermissions = Object.keys(permission).reduce((acc, curr) => {
         acc[curr.toLowerCase()] = permission[curr];
