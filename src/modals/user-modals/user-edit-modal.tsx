@@ -55,7 +55,7 @@ const keyToLabelMap = {
   c: "Create",
   m: "Modify",
   d: "Delete",
-  e: "Execute",
+  e: "Export",
 };
 
 const OrganizationsSelect = ({ form, user }: { user: User | null; form: FormInstance<any> }) => {

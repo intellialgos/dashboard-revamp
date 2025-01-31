@@ -5,6 +5,7 @@ import type { AlarmLevel, DeviceEvent } from "@/types/device-event";
 import { getFormattedDateTime } from "@/utils/get-formatted-date-time";
 import { AlarmLevelTag } from "../alarm-level-tag";
 import { OrganisationSite } from "@/types/organisation";
+import { PermissionGuard } from "../permission-guard";
 
 const { Link } = Typography;
 
@@ -62,7 +63,9 @@ export const generateColumns = ({
     width: 130,
     fixed: "right",
     render(_, record) {
-      return <Link onClick={() => onProcess(record?.keyId)}>Recovery</Link>;
+      return <PermissionGuard keyName="maskSource" action="m">
+        <Link onClick={() => onProcess(record?.keyId)}>Recovery</Link>
+      </PermissionGuard>;
     },
   },
 ]};

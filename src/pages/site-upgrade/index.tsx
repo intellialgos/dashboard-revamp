@@ -5,6 +5,7 @@ import { useGetUploadsQuery } from "@/services";
 import { PackagesTable } from "./components/PackagesTable";
 import { SiteUpgradeTable } from "./components/SiteUpgradeTable";
 import { Breadcrumbs } from "@/breadcrumbs";
+import { PermissionGuard } from "@/components/permission-guard";
 
 
 export const SiteUpgrade: FC = () => {
@@ -33,8 +34,20 @@ export const SiteUpgrade: FC = () => {
         type="card"
         style={{ marginBottom: 32 }}
         items={[
-          { label: "Upload Packages", key: "packageUpload", children: <PackagesTable refetch={refetch} data={currentData} loading={isLoading} /> },
-          { label: "Site Upgrade", key: "siteUpgrade",  children: <SiteUpgradeTable packages={currentData} /> }
+          {
+            label: "Upload Packages",
+            key: "packageUpload",
+            children: <PermissionGuard keyName="siteUpgrade" action="v">
+              <PackagesTable refetch={refetch} data={currentData} loading={isLoading} />
+            </PermissionGuard>
+          },
+          {
+            label: "Site Upgrade",
+            key: "siteUpgrade",
+            children: <PermissionGuard keyName="siteUpgrade" action="m">
+            <SiteUpgradeTable packages={currentData} />
+            </PermissionGuard> 
+          }
         ]}
       />
       </Col>

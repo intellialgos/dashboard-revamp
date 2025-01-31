@@ -2,6 +2,7 @@ import { Col, Row } from "antd";
 import  { type FC,useContext } from "react";
 import { MaskedSourceTable } from "@/components/masked-source-table";
 import { ThemeContext } from "@/theme";
+import { PermissionGuard } from "@/components/permission-guard";
 
 
 export const MaskedSource: FC = () => {
@@ -10,7 +11,9 @@ export const MaskedSource: FC = () => {
   return (
     <Row gutter={[24, 24]}>
       <Col span={24}>
-        <MaskedSourceTable className={`${darkTheme ? "alerts_table" :"" }`}/>
+        <PermissionGuard keyName="maskSource" action="v">
+          <MaskedSourceTable className={`${darkTheme ? "alerts_table" :"" }`}/>
+        </PermissionGuard>
       </Col>
     </Row>
   );

@@ -20,6 +20,7 @@ import { getSiteObject } from "@/store/selectors/sites";
 import { EditSiteModal } from "../edit-site-modal";
 import { setShowConfigureSiteDrawer } from "@/store/slices/sites";
 import { useGetOrganizationsMutation } from "@/services";
+import { PermissionGuard } from "@/components/permission-guard";
 
 type Props = {
   dataTestId?: string;
@@ -70,7 +71,11 @@ export const SiteInfo: FC<Props> = ({ dataTestId, refetch }) => {
         onClose={()=>handleClose()}
         data-testid={dataTestId}
         style={{ background: `${darkTheme ? "#0C183B" :  ""}` }}
-        extra={<Button onClick={configureSite} className={`filter_btn ${darkTheme ? "filter_btn_bg":""}`} type="primary">Edit Site</Button>}
+        extra={
+          <PermissionGuard keyName="siteMap" action="m">
+            <Button onClick={configureSite} className={`filter_btn ${darkTheme ? "filter_btn_bg":""}`} type="primary">Edit Site</Button>
+          </PermissionGuard>
+        }
       >
         <div className={styles.container}>
           <>

@@ -7,6 +7,7 @@ import { Button, Col, Row, Space, Table, Tag } from "antd"
 import { useContext, useState } from "react";
 import DeletePackgeButton from "./DeletePackageButton";
 import { ThemeContext } from "@/theme";
+import { PermissionGuard } from "@/components/permission-guard";
 
 interface Props {
     loading: boolean;
@@ -24,15 +25,17 @@ export const PackagesTable = ({data, loading, refetch}: Props) => {
         <Row>
             <Col span={24}>
                 <Space style={{marginBottom: 20}}>
-                    <Button
-                        size="large"
-                        className="primary_button"
-                        type="primary"
-                        icon={<PlusOutlined color="white" />}
-                        onClick={() => setOpenUpload(true)}
-                    >
-                        Upload New Package
-                    </Button>
+                    <PermissionGuard keyName="siteUpgrade" action="c">
+                        <Button
+                            size="large"
+                            className="primary_button"
+                            type="primary"
+                            icon={<PlusOutlined color="white" />}
+                            onClick={() => setOpenUpload(true)}
+                        >
+                            Upload New Package
+                        </Button>
+                    </PermissionGuard>
                 </Space>
                 </Col>
             <Col span={24}>
@@ -72,13 +75,17 @@ export const PackagesTable = ({data, loading, refetch}: Props) => {
                     <Table.Column
                         title="Options"
                         render={(_, record) => <Space>
-                            <DeletePackgeButton id={record?.id} refetch={refetch} />
+                            <PermissionGuard keyName="siteUpgrade" action="d">
+                                <DeletePackgeButton id={record?.id} refetch={refetch} />
+                            </PermissionGuard>
                         </Space>}
                     />
                 </Table>
             </Col>
         </Row>
-        <UploadPackageModal refetch={refetch} setShow={setOpenUpload} show={openUpload} />
+        <PermissionGuard keyName="siteUpgrade" action="c">
+            <UploadPackageModal refetch={refetch} setShow={setOpenUpload} show={openUpload} />
+        </PermissionGuard>
         </>
     )
 }

@@ -8,6 +8,7 @@ import styles from './index.module.css';
 import { useGetSitesQuery } from "@/services";
 import { EditSiteModal } from "@/modals/edit-site-modal";
 import { SiteInfo } from "@/modals/site-info-modal";
+import { PermissionGuard } from "@/components/permission-guard";
 
 export const SiteMap: FC = () => {
   const [collapsed, setCollapsed] = useState<boolean>(false);
@@ -27,7 +28,9 @@ export const SiteMap: FC = () => {
   return (
     <Row gutter={[24, 24]}>
       <Col span={24}>
-        <SiteMapComp sites={sites} />
+        <PermissionGuard keyName="siteMap" action="v">
+          <SiteMapComp sites={sites} />
+        </PermissionGuard>
       </Col>
      
         <SiderTrigger

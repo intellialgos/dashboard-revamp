@@ -17,6 +17,7 @@ import { useAppSelector } from "@/hooks/use-app-selector";
 import { getSelectedSite } from "@/store/selectors/sites";
 import EditOrganizationModal from "@/modals/edit-organization-modal";
 import EditGroupModal from "@/modals/edit-group-modal";
+import { PermissionGuard } from "@/components/permission-guard";
 
 export const SiteConfiguration: FC = () => {
   const dispatch = useAppDispatch();
@@ -48,25 +49,30 @@ export const SiteConfiguration: FC = () => {
         </Col>
         <Col span={24}>
           <Space>
-            <Button
-              size="large"
-              className="primary_button"
-              type="primary"
-              icon={<PlusOutlined color="white" />}
-              onClick={()=>setAddSite(!addSite)}
-            >
-              Add Site/Organization
-            </Button>
-            <Button
-              size="large"
-              className="secondary_button"
-              type="primary"
-              icon={<GroupOutlined />}
-              // onClick={handleFilterClick}
-              onClick={()=>setAddGroup(true)}
-            >
-              Add Group
-            </Button>
+            <PermissionGuard keyName="siteConfiguration" action="c">
+              <Button
+                size="large"
+                className="primary_button"
+                type="primary"
+                icon={<PlusOutlined color="white" />}
+                onClick={()=>setAddSite(!addSite)}
+              >
+                Add Site/Organization
+              </Button>
+            </PermissionGuard>
+
+            <PermissionGuard keyName="siteConfiguration" action="c">
+              <Button
+                size="large"
+                className="secondary_button"
+                type="primary"
+                icon={<GroupOutlined />}
+                // onClick={handleFilterClick}
+                onClick={()=>setAddGroup(true)}
+              >
+                Add Group
+              </Button>
+            </PermissionGuard>
             {/* <LinkSitePopOver/> */}
           </Space>
         </Col>

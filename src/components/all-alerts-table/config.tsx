@@ -4,6 +4,7 @@ import type { ColumnType } from "antd/es/table";
 import type { AlarmLevel, DeviceEvent } from "@/types/device-event";
 import { getFormattedDateTime } from "@/utils/get-formatted-date-time";
 import { AlarmLevelTag } from "../alarm-level-tag";
+import { PermissionGuard } from "../permission-guard";
 
 const { Link } = Typography;
 
@@ -72,8 +73,8 @@ export const generateColumns = ({
     render(_, event) {
       return (
         <Space size={2} split={<Divider type="vertical" />}>
-          <Link onClick={()=>onMark(event)}>Clear</Link>
-          <Link onClick={() => onProcess(event)}>Acknowledge</Link>
+          <PermissionGuard action="m" keyName="record" ><Link onClick={()=>onMark(event)}>Clear</Link></PermissionGuard>
+          <PermissionGuard action="m" keyName="record" ><Link onClick={() => onProcess(event)}>Acknowledge</Link></PermissionGuard>
         </Space>
       );
     },

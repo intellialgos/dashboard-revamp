@@ -8,6 +8,7 @@ import { useAppDispatch } from "@/hooks/use-app-dispatch";
 import { setGroupObject, setOrgObject, setSelectedSite, setShowEditGroupDrawer, setShowEditOrgDrawer, setShowEditSiteDrawer } from "@/store/slices/sites";
 import { MutationTrigger } from "@reduxjs/toolkit/dist/query/react/buildHooks";
 import { MutationDefinition } from "@reduxjs/toolkit/query";
+import { PermissionGuard } from "../permission-guard";
 
 type ColumnParams = {
   onDelete: ({id, name, type}: {id: string, name: string, type: "organization"|"site"}) => void;
@@ -49,34 +50,42 @@ const SitesActions: React.FC<any> = ({
   </Space>
   } else if ( record?.isGroup ) {
     return <Space>
-    <Button
-      size="small"
-      onClick={() => editGroup(record)}
-    >Edit Group</Button>
+      <PermissionGuard keyName="siteConfiguration" action="m">
+        <Button
+          size="small"
+          onClick={() => editGroup(record)}
+        >Edit Group</Button>
+      </PermissionGuard>
     {
       !record?.children &&
-      <Button
-        type="primary"
-        size="small"
-        danger
-        onClick={() => onDelete}
-      ><DeleteOutlined /></Button>
+      <PermissionGuard keyName="siteConfiguration" action="d">
+        <Button
+          type="primary"
+          size="small"
+          danger
+          onClick={() => onDelete}
+        ><DeleteOutlined /></Button>
+      </PermissionGuard>
     }
   </Space>
   } else if ( record?.isOrganisation ) {
     return <Space>
-    <Button
-      size="small"
-      onClick={() => editOrg(record)}
-    >Edit Organizatiom</Button>
+      <PermissionGuard keyName="siteConfiguration" action="m">
+        <Button
+          size="small"
+          onClick={() => editOrg(record)}
+        >Edit Organizatiom</Button>
+      </PermissionGuard>
     {
       !record?.children &&
-      <Button
-        type="primary"
-        size="small"
-        danger
-        onClick={() => onDelete}
-      ><DeleteOutlined /></Button>
+      <PermissionGuard keyName="siteConfiguration" action="d">
+        <Button
+          type="primary"
+          size="small"
+          danger
+          onClick={() => onDelete}
+        ><DeleteOutlined /></Button>
+      </PermissionGuard>
     }
   </Space>
   }
