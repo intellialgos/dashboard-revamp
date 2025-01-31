@@ -40,6 +40,7 @@ import { useAppDispatch } from "@/hooks/use-app-dispatch";
 import { Form } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { RootState } from "@/types/store";
+import { setFilters } from "@/store/slices/filters";
 
 export const AlarmRecordCharts: FC = () => {
   const dispatch = useAppDispatch();
@@ -155,6 +156,14 @@ export const AlarmRecordCharts: FC = () => {
     })()
   }, [selectedSite, filters]
   )
+
+  useEffect(() => {
+    dispatch(setFilters({
+      ...filters,
+      startTime: formatDate(getLastWeekDate(new Date())),
+      endTime: formatDate(new Date())
+    }));
+  }, []);
   
   useEffect(() => {
     if ( dashboardStatistics ) {
@@ -171,15 +180,6 @@ export const AlarmRecordCharts: FC = () => {
       return "green";
     }
   }
-
-  useEffect(() => {
-    (async () => {
-      await getAssetsStatistics({
-        ...( (startDate && endDate) ? { startTime: startDate, endTime: endDate } : {} )
-      });
-    })()
-  }, [endDate, startDate]
-  )
 
   return (
     <Row gutter={[24, 24]}>
@@ -224,7 +224,7 @@ export const AlarmRecordCharts: FC = () => {
               }`}
               dataTestId="weekly-priority-alerts-chart"
               centerText={dashboardStatistics?.totalAssets.length}
-              data={dashboardStatistics?.totalAssets.map((item:any) => ({ value: item.count, name: item.name }))}
+              data={dashboardStatistics?.totalAssets.map((item:any) => ({ value: item.count, name: item.name })) || []}
               isLoading={dashboardLoading}
               legend={false}
               colors={priorityChartColors}
@@ -339,7 +339,7 @@ export const AlarmRecordCharts: FC = () => {
       </Col>
       
       <Col span={8}>
-        {/* <AlertsByMonth
+        <AlertsByMonth
           title="Alerts by Month"
           // tooltipText="TODO: Add tooltip text"
           className={`${styles.widget} ${
@@ -348,8 +348,8 @@ export const AlarmRecordCharts: FC = () => {
           dataTestId="weekly-alerts-by-month"
           data={dashboardStatistics?.allAlertsByMonths}
           isLoading={dashboardLoading}
-        /> */}
-        <AlertsByPriority
+        />
+        {/* <AlertsByPriority
           title="Weekly Alerts by System"
           // tooltipText="TODO: Add tooltip text"
           className={`${styles.widget} ${
@@ -364,7 +364,7 @@ export const AlarmRecordCharts: FC = () => {
               ? systemChartColors
               : systemChartColors
           }
-        />
+        /> */}
       </Col>
       <Col span={24}>
         <TopAlertsBySite

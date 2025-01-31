@@ -51,36 +51,31 @@ type Fields = {
 const { Item } = Form;
 const { RangePicker } = DatePicker;
 
-const processStatusOptions = [
-  { label: "Pending", value: ProcessStatus.Pending },
-  { label: "Completed", value: ProcessStatus.Accomplished },
-];
+// const CustomSelect = ({ options, setState }: { options: any[], setState: React.Dispatch<React.SetStateAction<any[]|undefined>> }) => {
+//   const [value, setValue] = useState<string | undefined>(undefined);
 
-const CustomSelect = ({ options, setState }: { options: any[], setState: React.Dispatch<React.SetStateAction<any[]|undefined>> }) => {
-  const [value, setValue] = useState<string | undefined>(undefined);
+//   const handleChange = (val: string) => {
+//       // Add custom input to options if it's not already present
+//       if (!options.some(option => option.value === val)) {
+//           setState([...options, { label: val, value: val }]);
+//       }
+//       setValue(val);
+//   };
 
-  const handleChange = (val: string) => {
-      // Add custom input to options if it's not already present
-      if (!options.some(option => option.value === val)) {
-          setState([...options, { label: val, value: val }]);
-      }
-      setValue(val);
-  };
-
-  return (
-      <BaseSelect
-          style={{ width: "100%" }}
-          // placeholder="Select or enter a value"
-          value={value}
-          options={options}
-          onChange={handleChange}
-          onSearch={(val) => setValue(val)} // Update state while typing
-          filterOption={(input, option) => 
-              (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
-          }
-      />
-  );
-};
+//   return (
+//       <BaseSelect
+//           style={{ width: "100%" }}
+//           // placeholder="Select or enter a value"
+//           value={value}
+//           options={options}
+//           onChange={handleChange}
+//           onSearch={(val) => setValue(val)} // Update state while typing
+//           filterOption={(input, option) => 
+//               (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
+//           }
+//       />
+//   );
+// };
 
 export const AlertsSearchFilterDrawer: FC<Props> = ({
   dataTestId,
@@ -135,8 +130,8 @@ export const AlertsSearchFilterDrawer: FC<Props> = ({
 
   const handleSubmit = (values: Fields) => {
     dispatch(setFilters({
-      startTime: values.datetime ? values.datetime[0] : "",
-      endTime: values.datetime ? values.datetime[1] : "",
+      startTime: values.datetime ? values.datetime[0] : filters.startTime,
+      endTime: values.datetime ? values.datetime[1] : filters.endTime,
       priority: values.priority ? values.priority.flat() : [],
       devices: values.devices || null,
       sites: values.sites || [],
@@ -149,10 +144,6 @@ export const AlertsSearchFilterDrawer: FC<Props> = ({
     label: site.name,
     value: site.id
   }) ) : [];
-
-  // const [ getFilters , {data: filtersData}]  = useEventsFiltersMutation();
-
-
 
   const AllEventsData = useSelector((state: RootState) => state.events);
   const showDateFilter = useAppSelector(getShowDateFilter);
@@ -179,14 +170,14 @@ export const AlertsSearchFilterDrawer: FC<Props> = ({
         }
   });
 
-  const [ devicesState, setDevices ] = useState<[]>();
-  const [ eventTypesState, setEventTypes ] = useState<[]>();
+  // const [ devicesState, setDevices ] = useState<[]>();
+  // const [ eventTypesState, setEventTypes ] = useState<[]>();
   
-  useEffect(() => {
-    if ( filtersData?.eventTypes ) {
-      setEventTypes(selectOptions(filtersData?.eventTypes) || []);
-    }
-  }, []);
+  // useEffect(() => {
+  //   if ( filtersData?.eventTypes ) {
+  //     setEventTypes(selectOptions(filtersData?.eventTypes) || []);
+  //   }
+  // }, []);
   
   return (
     <Drawer

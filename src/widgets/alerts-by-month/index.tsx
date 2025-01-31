@@ -1,15 +1,17 @@
 import type { FC } from "react";
-import { Bar, Legend, XAxis, YAxis } from "recharts";
+import { Bar, Legend, Tooltip, XAxis, YAxis } from "recharts";
 
 import { BaseBarChart } from "@/charts/base-bar-chart";
 import {
   ChartContainer,
   ChartContainerProps,
 } from "@/charts/chart-container";
-import { Empty, Spin } from "antd";
+import { Empty, Spin, theme } from "antd";
 import { LoadingOutlined } from "@ant-design/icons";
 
 import styles from "./index.module.css";
+import { CustomTooltip } from "@/charts/custom-tooltip";
+
 
 type Props = Pick<
   ChartContainerProps,
@@ -31,6 +33,11 @@ export const AlertsByMonth: FC<Props> = ({
   data,
   isLoading,
 }) => {
+
+  const {
+    token: { colorBgElevated, boxShadowSecondary, borderRadiusSM, paddingXS },
+  } = theme.useToken();
+
   return (
     <ChartContainer
       className={className}
@@ -50,7 +57,10 @@ export const AlertsByMonth: FC<Props> = ({
           />
         </div>
       ) : (
-        <BaseBarChart data={data}>
+        <BaseBarChart
+          data={data}
+          barSize={20}
+        >
           <XAxis
             // interval={0}
             dataKey="name"
@@ -59,11 +69,26 @@ export const AlertsByMonth: FC<Props> = ({
             // axisLine={false}
           />
           <YAxis />
-          <Legend />
+          <Legend
+            formatter={(value) => {
+              // const total = data.reduce((sum, item) => sum + (item[value] || 0), 0);
+              return `${value}`;
+            }}
+          />
+          <Tooltip
+            contentStyle={{
+              backgroundColor: colorBgElevated,
+              border: 0,
+              padding: paddingXS,
+              boxShadow: boxShadowSecondary,
+              borderRadius: borderRadiusSM,
+            }}
+            formatter={(value, name) => [`${value}`, name]}
+          />
 
-          <Bar width={10} dataKey="low" stackId="a" fill={COLORS[1]} />
-          <Bar width={10} dataKey="medium" stackId="a" fill={COLORS[0]} />
-          <Bar width={10} dataKey="high" stackId="a" fill={COLORS[2]} />
+          <Bar dataKey="low" stackId="a" fill={COLORS[0]} />
+          <Bar dataKey="medium" stackId="a" fill={COLORS[1]} />
+          <Bar dataKey="high" stackId="a" fill={COLORS[2]} />
         </BaseBarChart>
       )}
     </ChartContainer>
