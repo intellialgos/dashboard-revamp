@@ -6,6 +6,7 @@ import {
   setSelectedEvents,
   setSelectedEventsId,
   setShowProcesslarmModal,
+  setTotalAlertsGlobal,
 } from "@/store/slices/events";
 import { useDispatch, useSelector } from "react-redux";
 import { generateColumns } from "./config";
@@ -75,11 +76,13 @@ export const AllAlertsTable: FC<Props> = ({
 
   const handleProcessAlarm = useCallback(
     (selectedEvent: DeviceEvent) => {
+      console.log(selectedEvent);
       dispatch(setSelectedEvents([selectedEvent]));
       dispatch(setShowProcesslarmModal(true));
     },
-    [dispatch],
+    [dispatch, refetch],
   );
+
   const handleMark = async (selectedEvent: DeviceEvent) => {
     setIsLoading(true);
     const event: Array<number> = [];
@@ -123,6 +126,13 @@ export const AllAlertsTable: FC<Props> = ({
       });
     })()
 }, [filters, pageSize, pageIndex]);
+
+  useEffect(() => {
+    if ( events ) {
+      const total = events?.data?.totalCount || 0;
+      dispatch(setTotalAlertsGlobal(total));
+    }
+  }, [events])
 
   return (
     <>

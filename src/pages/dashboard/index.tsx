@@ -239,7 +239,7 @@ export const Dashboard: FC = () => {
               }`}
               dataTestId="weekly-priority-alerts-chart"
               centerText={dashboardStatistics?.totalAssets.length}
-              data={dashboardStatistics?.totalAssets.map((item:any) => ({ value: item.count, name: item.name }))}
+              data={dashboardStatistics?.totalAssets.map((item:any) => ({ value: item.count, name: item.name })) || []}
               isLoading={dashboardLoading}
               legend={false}
               colors={priorityChartColors}
@@ -269,41 +269,13 @@ export const Dashboard: FC = () => {
         <Row gutter={[24, 24]}>
           <Col span={6}>
             <AlertsByPriority
-              title="Offline Assets"
+              title="Offline Assets In the past 90 Days"
               className={`${styles.widget} ${
                 darkTheme ? styles.widget_bg : styles.widget_bg_light
               }`}
               dataTestId="weekly-priority-alerts-chart"
-              centerText={dashboardStatistics?.notRespondingTotal.length}
-              data={dashboardStatistics?.notRespondingTotal.map((item:any) => ({ value: item.count, name: item.name }))}
-              isLoading={dashboardLoading}
-              legend={false}
-              colors={dangerChartColors}
-            />
-          </Col>  
-          <Col span={6}>
-            <AlertsByPriority
-              title="Offline In the past 24 Hours"
-              className={`${styles.widget} ${
-                darkTheme ? styles.widget_bg : styles.widget_bg_light
-              }`}
-              dataTestId="weekly-priority-alerts-chart"
-              centerText={dashboardStatistics?.notResponding24HourAgo.length}
-              data={dashboardStatistics?.notResponding24HourAgo.map((item:any) => ({ value: item.count, name: item.name }))}
-              isLoading={dashboardLoading}
-              legend={false}
-              colors={dangerChartColors}
-            />
-          </Col>  
-          <Col span={6}>
-            <AlertsByPriority
-              title="Offline In the past 7 Days"
-              className={`${styles.widget} ${
-                darkTheme ? styles.widget_bg : styles.widget_bg_light
-              }`}
-              dataTestId="weekly-priority-alerts-chart"
-              centerText={dashboardStatistics?.notResponding7DaysAgo.length}
-              data={dashboardStatistics?.notResponding7DaysAgo.map((item:any) => ({ value: item.count, name: item.name }))}
+              centerText={dashboardStatistics?.notResponding90DaysAgo.length.toString()}
+              data={dashboardStatistics?.notResponding90DaysAgo.map((item:any) => ({ value: item.count, name: item.name })) || []}
               isLoading={dashboardLoading}
               legend={false}
               colors={dangerChartColors}
@@ -317,12 +289,40 @@ export const Dashboard: FC = () => {
               }`}
               dataTestId="weekly-priority-alerts-chart"
               centerText={dashboardStatistics?.notResponding30DaysAgo.length}
-              data={dashboardStatistics?.notResponding30DaysAgo.map((item:any) => ({ value: item.count, name: item.name }))}
+              data={dashboardStatistics?.notResponding30DaysAgo.map((item:any) => ({ value: item.count, name: item.name })) || []}
               isLoading={dashboardLoading}
               legend={false}
               colors={dangerChartColors}
             />
-          </Col>  
+          </Col>
+          <Col span={6}>
+            <AlertsByPriority
+              title="Offline In the past 7 Days"
+              className={`${styles.widget} ${
+                darkTheme ? styles.widget_bg : styles.widget_bg_light
+              }`}
+              dataTestId="weekly-priority-alerts-chart"
+              centerText={dashboardStatistics?.notResponding7DaysAgo.length.toString()}
+              data={dashboardStatistics?.notResponding7DaysAgo.map((item:any) => ({ value: item.count, name: item.name })) || []}
+              isLoading={dashboardLoading}
+              legend={false}
+              colors={dangerChartColors}
+            />
+          </Col> 
+          <Col span={6}>
+            <AlertsByPriority
+              title="Offline In the past 24 Hours"
+              className={`${styles.widget} ${
+                darkTheme ? styles.widget_bg : styles.widget_bg_light
+              }`}
+              dataTestId="weekly-priority-alerts-chart"
+              centerText={dashboardStatistics?.notResponding24HourAgo.length.toString()}
+              data={dashboardStatistics?.notResponding24HourAgo.map((item:any) => ({ value: item.count, name: item.name })) || []}
+              isLoading={dashboardLoading}
+              legend={false}
+              colors={dangerChartColors}
+            />
+          </Col>
         </Row>
       </Col>
 
@@ -386,8 +386,6 @@ export const Dashboard: FC = () => {
       <Col span={24}>
         <AllAlerts />
       </Col>
-
-      <SiteInfo />
     </Row>
   );
 };

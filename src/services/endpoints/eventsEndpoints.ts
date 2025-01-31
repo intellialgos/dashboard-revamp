@@ -20,4 +20,13 @@ export const eventsEndpoints = (builder: EndpointBuilder<any, any, any>) => ({
     transformResponse: (response: { data: any }, meta, arg) =>
       response.data,
   }),
+  eventsFilters: builder.mutation({
+    query: (body: any) => ({
+      url: ENDPOINTS.GET_FILTERS,
+      method: "POST",
+      body,
+    }),
+    transformResponse: (response: { data: any }, meta, arg) =>
+      response.data,
+  }),
 });

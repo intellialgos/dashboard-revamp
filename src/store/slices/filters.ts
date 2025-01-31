@@ -7,7 +7,7 @@ type State = {
     startTime: string;
     endTime: string;
     vendors: string[];
-    devices: string[];
+    devices: string|null;
     eventType: string|null;
 };
 
@@ -20,7 +20,7 @@ const initialState: State = {
     startTime: formatDate(getLastWeekDate(date)),
     endTime: formatDate(new Date()),
     vendors: [],
-    devices: [],
+    devices: null,
     eventType: null,
 };
 

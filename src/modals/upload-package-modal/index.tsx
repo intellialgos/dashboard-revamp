@@ -4,6 +4,7 @@ import { InboxOutlined } from "@ant-design/icons";
 import { QueryActionCreatorResult, QueryDefinition } from "@reduxjs/toolkit/query";
 import { Button, Drawer, Form, Input, Select, Upload, UploadProps, message } from "antd";
 import { useContext, useState, FC } from "react";
+import styles from "./index.module.css"
 
 type Props = {
   show: boolean;
@@ -88,7 +89,7 @@ export const UploadPackageModal: FC<Props> = ({ show, setShow, refetch }) => {
           name="fileName"
           rules={[{ required: true, message: "Enter Name" }]}
         >
-          <Input />
+          <Input className={styles.input_bg} />
         </Form.Item>
 
         <Form.Item
@@ -97,6 +98,7 @@ export const UploadPackageModal: FC<Props> = ({ show, setShow, refetch }) => {
           rules={[{ required: true, message: "Choose Box Type" }]}
         >
           <Select
+            className="select_input"
             options={[
               { value: 0, label: "Standard Version" },
               { value: 1, label: "Lite Version" },
@@ -110,6 +112,7 @@ export const UploadPackageModal: FC<Props> = ({ show, setShow, refetch }) => {
           rules={[{ required: true, message: "Choose Package Type" }]}
         >
           <Select
+            className="select_input"
             options={[
               { value: 0, label: "OS" },
               { value: 1, label: "Firmware" },
@@ -122,7 +125,7 @@ export const UploadPackageModal: FC<Props> = ({ show, setShow, refetch }) => {
           name="version"
           rules={[{ required: true, message: "Enter Version" }]}
         >
-          <Input />
+          <Input className={styles.input_bg} />
         </Form.Item>
 
         <Form.Item>

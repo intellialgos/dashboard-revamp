@@ -1,11 +1,11 @@
-import { Spin, Table, message } from "antd";
-import { useCallback, useState, type FC } from "react";
+import { Divider, Spin, Table, Typography, message } from "antd";
+import { useCallback, useEffect, useState, type FC } from "react";
 
 import { LoadingOutlined } from "@ant-design/icons";
 import { useDispatch } from "react-redux";
 import { useAppSelector } from "@/hooks/use-app-selector";
 import { ProcessAlarmMapModal } from "@/modals/alert-map-modal";
-import { useProcessEventMutation } from "@/services";
+import { useProcessEventMutation, useQueryEventsMutation } from "@/services";
 import {
   getAlertMapEvents,
   getSelectedRowIds,
@@ -19,6 +19,7 @@ import { DeviceEvent } from "@/types/device-event";
 import { ReqProcessEvent } from "@/types/process-event";
 import { generateColumns } from "./config";
 import { data } from './mock.ts'
+import { useLocation } from "react-router-dom";
 type Props = {
   className: string;
   dataTestId: string;
@@ -46,22 +47,26 @@ export const AlarmSelfRecoverySiteTable: FC<Props> = ({
   const [handleProcessEvents, {}] = useProcessEventMutation();
   const [isLoading, setIsLoading] = useState(false);
   const [messageApi, contextHolder] = message.useMessage();
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const siteId = queryParams.get("siteId");
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  // const rowSelection: TableProps<any>["rowSelection"] = {
-  //   onChange: (selectedRowKeys: React.Key[], selectedRows: unknown[]) => {
-  //     dispatch(setSelectedEventsId(selectedRowKeys));
-  //     console.log("Selected Row Keys",selectedRowKeys)
 
-  //   },
-  //   // selectedRowKeys: rowKey,
+  const [getEvents, {data: events, isLoading: tableLoading}] = useQueryEventsMutation();
+  useEffect(() => {
+      (async () => {
+        await getEvents({
+          // ...filters,
+          sites: [siteId],
+          pageSize,
+          pageIndex,
+          ...{
+            processed: 99
+          }
+        });
+      })()
+  }, [pageSize, pageIndex]);
 
-  //   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  //   getCheckboxProps: (record: any) => ({
-  //     disabled: record.name === "Disabled User", // Column configuration not to be checked
-  //     name: record.name,
-  //   }),
-  // };
   const onSelectChange = (selectedRowKeys: React.Key[]) => {
     dispatch(setSelectedEventsId({ selectedRowKeys, pageIndex }));
   };
@@ -112,26 +117,25 @@ export const AlarmSelfRecoverySiteTable: FC<Props> = ({
   return (
     <>
       {contextHolder}
+      <Typography.Title level={4}>Total Alerts {events?.data?.totalCount || 0}</Typography.Title>
+      <Divider />
       <Table
         rowKey="eventId"
         className={className}
         scroll={{ x: 1200 }}
         // dataSource={event.find((item) => item.pageIndex === pageIndex)?.data}
-        dataSource={tableData}
+        dataSource={events?.data?.event}
         sticky={true}
         columns={columns}
         rowSelection={rowSelection}
         showSorterTooltip={false}
-        loading={{
-          indicator: <Spin indicator={antIcon} />,
-          spinning: loading || isLoading,
-        }}
+        loading={tableLoading}
         pagination={{
           pageSize,
+          current: pageIndex,
+          total: events?.data?.totalCount,
           showQuickJumper: true,
           showSizeChanger: true,
-          total: Math.ceil(totalAlerts / pageSize),
-          current: pageIndex,
           onChange: handlePageChange,
         }}
         data-testid={dataTestId}

@@ -1,10 +1,10 @@
-import { Button, Card, Col, Divider, Drawer, Form, Input, message, Row, Space, Typography } from "antd";
+import { Button, Card, Col, DatePicker, Divider, Drawer, Form, Input, message, Row, Space, Typography } from "antd";
 import { type FC, useContext, useEffect, useState } from "react";
 
 import { ArrowLeftOutlined, PlusOutlined } from "@ant-design/icons";
 import { BaseSelect } from "@/components/base-select";
 import styles from "./index.module.css";
-import { useCreateSiteMutation, useGetOrganizationsMutation, usePostOrganizationMutation } from "@/services";
+import { useConfigureBoxMutation, useCreateSiteMutation, useGetOrganizationsMutation, usePostOrganizationMutation } from "@/services";
 import { Organisation } from "@/types/organisation";
 import { MessageInstance } from "antd/es/message/interface";
 import { MutationTrigger } from "@reduxjs/toolkit/dist/query/react/buildHooks";
@@ -12,7 +12,12 @@ import { ThemeContext } from "@/theme";
 import { useAppSelector } from "@/hooks/use-app-selector";
 import { getShowConfigureSiteDrawer, getSiteObject } from "@/store/selectors/sites";
 import { useAppDispatch } from "@/hooks/use-app-dispatch";
-import { setShowConfigureSiteDrawer } from "@/store/slices/sites";
+import { setShowConfigureSiteDrawer, setSiteObject } from "@/store/slices/sites";
+import { APP_DATE_TIME_FORMAT } from "@/const/common";
+import { getDateFromEvent } from "@/utils/form-helpers/get-date-from-event";
+import { getDateProps } from "@/utils/form-helpers/get-date-props";
+import { formatDate } from "@/utils/general-helpers";
+import { setShowSiteInfoModal } from "@/store/slices/events";
 
 type Props = {
   dataTestId?: string;
@@ -21,7 +26,7 @@ type Props = {
   setAddSite: React.Dispatch<React.SetStateAction<boolean>>;
   organizations: any;
   organizationsLoading: boolean;
-  getOrganizations: MutationTrigger<any>;
+  refetch: () => any;
 };
 
 type SiteFields = {
@@ -45,7 +50,7 @@ type SiteFields = {
 const { Item } = Form;
 const { TextArea } = Input;
 
-export const EditSiteModal: FC<Props> = ({ getOrganizations, dataTestId,}) => {
+export const EditSiteModal: FC<Props> = ({ refetch, dataTestId,}) => {
   const [messageApi, contextHolder] = message.useMessage();
   const show = useAppSelector(getShowConfigureSiteDrawer)
   const dispatch = useAppDispatch();
@@ -69,7 +74,7 @@ export const EditSiteModal: FC<Props> = ({ getOrganizations, dataTestId,}) => {
       style={{ background:`${darkTheme ? " #0C183B" :"" }`  }}
     >
       <EditSiteForm
-        getOrganizations={getOrganizations}
+        refetch={refetch}
         messageApi={messageApi}
         darkTheme={darkTheme}
       />
@@ -80,24 +85,31 @@ export const EditSiteModal: FC<Props> = ({ getOrganizations, dataTestId,}) => {
 const EditSiteForm = ({
   darkTheme,
   messageApi,
-  getOrganizations,
+  refetch,
 }: {
   darkTheme:boolean,
   messageApi: MessageInstance,
-  getOrganizations: MutationTrigger<any>;
+  refetch: () => any;
 }) => {
-  const [createSite, {isLoading: siteCreationLoading}] = useCreateSiteMutation();
+  const [configureBox, {isLoading}] = useConfigureBoxMutation();
   const [form] = Form.useForm();
   const siteObject = useAppSelector(getSiteObject);
+  const dispatch = useAppDispatch();
 
   const handleSubmitSite = async (data: any) => {
     try {
-    const result = await createSite(data);
+    const result = await configureBox({
+      ...data,
+      id: siteObject.id,
+      simExpirationTime: formatDate(new Date(data?.simExpirationTime)),
+      activate: formatDate(new Date(data?.activate)),
+      deactivate: formatDate(new Date(data?.deactivate))
+    });
       if ( result?.data && !result?.data?.error ) {
         messageApi.success(`Site has been updated successfully !`);
-        form.resetFields();
-        getOrganizations({});
-        // handleCancel();
+        dispatch(setShowConfigureSiteDrawer(false));
+        dispatch(setShowSiteInfoModal(false));
+        refetch();
       } else if ( result?.data?.error ) {
         messageApi.error(result?.data?.desc);
       }
@@ -119,7 +131,7 @@ const EditSiteForm = ({
       name="edit-site-form"
       onFinish={handleSubmitSite}
       data-testid="add-site-form"
-      disabled={siteCreationLoading}
+      disabled={isLoading}
     >
       {" "}
       <Item<SiteFields>
@@ -211,18 +223,30 @@ const EditSiteForm = ({
       <Row style={{marginBottom: 20}}>
         <Col span={12}>
           <Item<SiteFields>
-            label="Activate"
-            name="activate"
-          >
-            <Input placeholder="Type here..." className={darkTheme  ? styles.input_bg : ""} />
+              label="Activate"
+              name="activate"
+              getValueFromEvent={getDateFromEvent}
+              getValueProps={getDateProps}
+            >
+              <DatePicker
+                showTime={{ format: "HH:mm" }}
+                format={APP_DATE_TIME_FORMAT}
+                className="date_input"
+              />
           </Item>
         </Col>
         <Col span={12}>
           <Item<SiteFields>
             label="Deactivate"
             name="deactivate"
+            getValueFromEvent={getDateFromEvent}
+            getValueProps={getDateProps}
           >
-            <Input placeholder="Type here..." className={darkTheme  ? styles.input_bg : ""} />
+            <DatePicker
+              showTime={{ format: "HH:mm" }}
+              format={APP_DATE_TIME_FORMAT}
+              className="date_input"
+            />
           </Item>
         </Col>
       </Row>
@@ -238,7 +262,7 @@ const EditSiteForm = ({
         <Button
           type="primary"
           htmlType="submit"
-          loading={siteCreationLoading}
+          loading={isLoading}
           style={{
             borderRadius: "1px",
             flex: 1,

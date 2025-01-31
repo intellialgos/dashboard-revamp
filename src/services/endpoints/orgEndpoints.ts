@@ -108,6 +108,15 @@ export const orgEndpoints = (builder: EndpointBuilder<any, any, any>) => ({
     transformResponse: (response: { data: any }, meta, arg) =>
       response.data,
   }),
+  configureBox: builder.mutation({
+    query: (body: any) => ({
+      url: ENDPOINTS.CONFIGURE_BOX,
+      method: "POST",
+      body
+    }),
+    transformResponse: (response: { data: any }, meta, arg) =>
+      response.data,
+  }),
   deleteMaskedItem: builder.mutation({
     query: (body: any) => ({
       url: ENDPOINTS.DELETE_MASKED_ITEM,

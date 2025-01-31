@@ -2,12 +2,13 @@ import React, { FC, useContext, useEffect, useState } from "react";
 import { Button, Drawer, Form, Input, Select, Checkbox, Card, Row, Col, Switch, message, FormInstance } from "antd";
 import { useGetOrganizationsMutation, usePostUserMutation } from "@/services";
 import { Organisation, OrganisationSite } from "@/types/organisation";
-import { useAppSelector } from "@/hooks/use-app-selector";
 import { QueryActionCreatorResult, QueryDefinition } from "@reduxjs/toolkit/query";
 import { User } from "@/types/user";
 import { decodeBase64 } from "@/utils/decodeBase64";
 import { CheckboxGroupProps } from "antd/es/checkbox";
 import { ThemeContext } from "@/theme";
+import { camelToSentence } from "@/utils/camelCase";
+import styles from "./index.module.css"
 
 type Props = {
   Show: boolean;
@@ -117,6 +118,7 @@ const OrganizationsSelect = ({ form, user }: { user: User | null; form: FormInst
           <Select
             loading={isLoading}
             options={options}
+            className="select_input"
             onChange={(value) => {
               setOrganization(value);
               form.setFieldsValue({ organization: value, sites: [] }); // Reset sites when organization changes
@@ -125,7 +127,7 @@ const OrganizationsSelect = ({ form, user }: { user: User | null; form: FormInst
         </Form.Item>
         {sites?.length > 0 && (
           <Form.Item name="sites" label="Sites" style={{ width: "100%" }}>
-            <Select mode="multiple" loading={isLoading} options={sites} />
+            <Select className="select_input" mode="multiple" loading={isLoading} options={sites} />
           </Form.Item>
         )}
       </>
@@ -254,7 +256,7 @@ export const EditUserModal: FC<Props> = ({ Show, setEditUser, refetch, user }) =
                 name="userName"
                 rules={[{ required: true, message: "Please enter the name" }]}
               >
-                <Input placeholder="Enter name" />
+                <Input className={styles.input_bg} placeholder="Enter name" />
               </Form.Item>
             </Col>
             <Col span={12}>
@@ -263,7 +265,7 @@ export const EditUserModal: FC<Props> = ({ Show, setEditUser, refetch, user }) =
                 name="nickName"
                 initialValue={""}
               >
-                <Input placeholder="Enter Nickname" />
+                <Input className={styles.input_bg} placeholder="Enter Nickname" />
               </Form.Item>
             </Col>
             <Col span={12}>
@@ -272,7 +274,11 @@ export const EditUserModal: FC<Props> = ({ Show, setEditUser, refetch, user }) =
                 name="role"
                 rules={[{ required: true, message: "Please select a role" }]}
               >
-                <Select placeholder="Select role" onChange={setSelectedRole}>
+                <Select
+                  className="select_input"
+                  placeholder="Select role"
+                  onChange={setSelectedRole}
+                >
                   <Select.Option value="user">User</Select.Option>
                   <Select.Option value="customer">Customer</Select.Option>
                 </Select>
@@ -283,7 +289,7 @@ export const EditUserModal: FC<Props> = ({ Show, setEditUser, refetch, user }) =
                 label="Password"
                 name="password"
               >
-                <Input.Password placeholder="Enter Password" />
+                <Input.Password className={styles.input_bg} placeholder="Enter Password" />
               </Form.Item>
             </Col>
           </Row>
@@ -295,7 +301,7 @@ export const EditUserModal: FC<Props> = ({ Show, setEditUser, refetch, user }) =
                 name="remark"
                 initialValue={''}
               >
-                <Input placeholder="Write a remark (optional)" />
+                <Input className={styles.input_bg} placeholder="Write a remark (optional)" />
               </Form.Item>
             </Col>
           </Row>
@@ -332,9 +338,15 @@ export const EditUserModal: FC<Props> = ({ Show, setEditUser, refetch, user }) =
 
               return (
                 <Col span={12} key={key}>
-                  <Card size="small" title={key} bordered>
+                  <Card
+                    style={{ background:`${darkTheme ? "rgb(5, 15, 49)" :"" }`  }}
+                    size="small"
+                    title={camelToSentence(key)}
+                    bordered
+                  >
                     <Checkbox.Group
                         value={checkedValues}
+                        className={"filter_checkbox"}
                         options={availablePermissions}
                         onChange={(selectedPermission) => {
                             handlePermissionChange(key, selectedPermission as string[])
@@ -351,9 +363,13 @@ export const EditUserModal: FC<Props> = ({ Show, setEditUser, refetch, user }) =
 
         {/* Action Buttons */}
         <div style={{ display: "flex", justifyContent: "space-between", marginTop: 24 }}>
-          <Button type="default" onClick={() => {
-            handleCancel();
-          }}>
+          <Button
+            type="default"
+            className={styles.default_btn}
+            onClick={() => {
+              handleCancel();
+            }}
+          >
             Cancel
           </Button>
           <Button

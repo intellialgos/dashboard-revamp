@@ -191,7 +191,7 @@ export const AlarmRecordCharts: FC = () => {
               title="Open Tickets"
               loading={dashboardLoading}
               icon={<OpenTickets />}
-              value={dashboardStatistics?.openAlarmsCount}
+              value={dashboardStatistics?.openAlarmsCount ? dashboardStatistics?.openAlarmsCount : 0}
             />
           </Col>
           <Col span={8}>
@@ -199,7 +199,7 @@ export const AlarmRecordCharts: FC = () => {
               title="Closed Tickets"
               loading={dashboardLoading}
               icon={<ClosedTickets />}
-              value={dashboardStatistics?.closedAlarmsCount}
+              value={dashboardStatistics?.closedAlarmsCount ? dashboardStatistics?.closedAlarmsCount : 0}
             />
           </Col>
           <Col span={8}>
@@ -207,7 +207,7 @@ export const AlarmRecordCharts: FC = () => {
               title="Success Rate"
               loading={dashboardLoading}
               icon={<SuccessRate />}
-              value={`${dashboardStatistics?.successRate.toFixed(2)}%`}
+              value={`${(dashboardStatistics?.successRate) ? dashboardStatistics?.successRate.toFixed(2)+"%" : 0}`}
               color={successRateColor(dashboardStatistics?.successRate)}
             />
           </Col>
@@ -254,41 +254,13 @@ export const AlarmRecordCharts: FC = () => {
         <Row gutter={[24, 24]}>
           <Col span={6}>
             <AlertsByPriority
-              title="Offline Assets"
+              title="Offline Assets In the past 90 Days"
               className={`${styles.widget} ${
                 darkTheme ? styles.widget_bg : styles.widget_bg_light
               }`}
               dataTestId="weekly-priority-alerts-chart"
-              centerText={dashboardStatistics?.notRespondingTotal.length}
-              data={dashboardStatistics?.notRespondingTotal.map((item:any) => ({ value: item.count, name: item.name }))}
-              isLoading={dashboardLoading}
-              legend={false}
-              colors={dangerChartColors}
-            />
-          </Col>  
-          <Col span={6}>
-            <AlertsByPriority
-              title="Offline In the past 24 Hours"
-              className={`${styles.widget} ${
-                darkTheme ? styles.widget_bg : styles.widget_bg_light
-              }`}
-              dataTestId="weekly-priority-alerts-chart"
-              centerText={dashboardStatistics?.notResponding24HourAgo.length}
-              data={dashboardStatistics?.notResponding24HourAgo.map((item:any) => ({ value: item.count, name: item.name }))}
-              isLoading={dashboardLoading}
-              legend={false}
-              colors={dangerChartColors}
-            />
-          </Col>  
-          <Col span={6}>
-            <AlertsByPriority
-              title="Offline In the past 7 Days"
-              className={`${styles.widget} ${
-                darkTheme ? styles.widget_bg : styles.widget_bg_light
-              }`}
-              dataTestId="weekly-priority-alerts-chart"
-              centerText={dashboardStatistics?.notResponding7DaysAgo.length}
-              data={dashboardStatistics?.notResponding7DaysAgo.map((item:any) => ({ value: item.count, name: item.name }))}
+              centerText={dashboardStatistics?.notResponding90DaysAgo.length.toString()}
+              data={dashboardStatistics?.notResponding90DaysAgo.map((item:any) => ({ value: item.count, name: item.name })) || []}
               isLoading={dashboardLoading}
               legend={false}
               colors={dangerChartColors}
@@ -302,19 +274,46 @@ export const AlarmRecordCharts: FC = () => {
               }`}
               dataTestId="weekly-priority-alerts-chart"
               centerText={dashboardStatistics?.notResponding30DaysAgo.length}
-              data={dashboardStatistics?.notResponding30DaysAgo.map((item:any) => ({ value: item.count, name: item.name }))}
+              data={dashboardStatistics?.notResponding30DaysAgo.map((item:any) => ({ value: item.count, name: item.name })) || []}
               isLoading={dashboardLoading}
               legend={false}
               colors={dangerChartColors}
             />
-          </Col>  
+          </Col>
+          <Col span={6}>
+            <AlertsByPriority
+              title="Offline In the past 7 Days"
+              className={`${styles.widget} ${
+                darkTheme ? styles.widget_bg : styles.widget_bg_light
+              }`}
+              dataTestId="weekly-priority-alerts-chart"
+              centerText={dashboardStatistics?.notResponding7DaysAgo.length.toString()}
+              data={dashboardStatistics?.notResponding7DaysAgo.map((item:any) => ({ value: item.count, name: item.name })) || []}
+              isLoading={dashboardLoading}
+              legend={false}
+              colors={dangerChartColors}
+            />
+          </Col> 
+          <Col span={6}>
+            <AlertsByPriority
+              title="Offline In the past 24 Hours"
+              className={`${styles.widget} ${
+                darkTheme ? styles.widget_bg : styles.widget_bg_light
+              }`}
+              dataTestId="weekly-priority-alerts-chart"
+              centerText={dashboardStatistics?.notResponding24HourAgo.length.toString()}
+              data={dashboardStatistics?.notResponding24HourAgo.map((item:any) => ({ value: item.count, name: item.name })) || []}
+              isLoading={dashboardLoading}
+              legend={false}
+              colors={dangerChartColors}
+            />
+          </Col>
         </Row>
       </Col>
 
       <Col span={8}>
         <TopAlertsBySite
-          // title="All Weekly Alerts"
-          title="Alerts By Event Type"
+          title="Weekly Alerts By Event Type"
           className={`${styles.widget} ${
             darkTheme ? styles.widget_bg : styles.widget_bg_light
           }`}
@@ -351,7 +350,7 @@ export const AlarmRecordCharts: FC = () => {
           isLoading={dashboardLoading}
         /> */}
         <AlertsByPriority
-          title="Alerts by System"
+          title="Weekly Alerts by System"
           // tooltipText="TODO: Add tooltip text"
           className={`${styles.widget} ${
             darkTheme ? styles.widget_bg : styles.widget_bg_light

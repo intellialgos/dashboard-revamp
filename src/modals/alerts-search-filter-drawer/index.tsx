@@ -1,5 +1,5 @@
-import { useState, type FC } from "react";
-import { Button, Checkbox, DatePicker, Drawer, Form, Space } from "antd";
+import { useEffect, useState, type FC } from "react";
+import { Button, Card, Checkbox, DatePicker, Divider, Drawer, Form, Space, Switch, Typography } from "antd";
 
 import { BaseSelect } from "@/components/base-select";
 import { ALARM_LEVEL_OPTIONS, ALARM_LEVEL_MAP } from "@/const/alarm";
@@ -16,7 +16,7 @@ import { getDateFromEvent } from "@/utils/form-helpers/get-date-from-event";
 import { getDateProps } from "@/utils/form-helpers/get-date-props";
 import { getMultipleSelectProps } from "@/utils/form-helpers/get-multiple-select-props";
 import { DeviceEvent, ProcessStatus } from "@/types/device-event";
-import { useGetSitesQuery } from "@/services";
+import { useEventsFiltersMutation, useGetSitesQuery } from "@/services";
 import { useSelector } from "react-redux";
 import { RootState } from "@/types/store";
 import { setFilters } from "@/store/slices/filters";
@@ -35,7 +35,7 @@ type Props = {
 
 type Fields = {
   datetime: string[];
-  devices: string[];
+  devices: string;
   priority: number[];
   sites: string[];
   type: unknown[];
@@ -64,6 +64,7 @@ export const AlertsSearchFilterDrawer: FC<Props> = ({
   const dispatch = useAppDispatch();
   const show = useAppSelector(getShowEventsFilterModalState);
   const [form] = Form.useForm<Fields>();
+  const [filterBy, setFilterBy] = useState<boolean>(0);
 
   const filters = useSelector((state: RootState) => state.filters);
   const date = new Date();
@@ -73,7 +74,7 @@ export const AlertsSearchFilterDrawer: FC<Props> = ({
     startTime: formatDate(getLastWeekDate(date)),
     endTime: formatDate(new Date()),
     priority: [],
-    devices: [],
+    devices: null,
     sites: [],
     eventType: null,
     vendors: [],
@@ -102,7 +103,7 @@ export const AlertsSearchFilterDrawer: FC<Props> = ({
       startTime: values.datetime ? values.datetime[0] : "",
       endTime: values.datetime ? values.datetime[1] : "",
       priority: values.priority ? values.priority.flat() : [],
-      devices: values.devices || [],
+      devices: values.devices || null,
       sites: values.sites || [],
       eventType: values.eventType || null,
       vendors: values.vendors || []
@@ -114,7 +115,9 @@ export const AlertsSearchFilterDrawer: FC<Props> = ({
     value: site.id
   }) ) : [];
 
+  // const [ getFilters , {data: filtersData}]  = useEventsFiltersMutation();
 
+  
   const AllEventsData = useSelector((state: RootState) => state.events);
 
   var vendors: any = [];
@@ -138,6 +141,18 @@ export const AlertsSearchFilterDrawer: FC<Props> = ({
           eventTypes.push({ label: ev.obj.key, value: ev.obj.key });
         }
   });
+
+  // useEffect(() => {
+  //   (async () => {
+  //     await getFilters({});
+  //   })()
+  // }, []);
+
+  // useEffect(() => {
+  //   if ( filtersData ) {
+  //     console.log("FILTERS DATA: ", filtersData);
+  //   }
+  // }, [filtersData])
   
   return (
     <Drawer
@@ -231,23 +246,45 @@ export const AlertsSearchFilterDrawer: FC<Props> = ({
             className="select_input"
           />
         </Item>
-        <Item<Fields>
-          label="Device"
-          name="devices"
-          getValueProps={getMultipleSelectProps}
+        <Divider />
+        <Card
+          bodyStyle={{display: 'none'}}
+          style={{background: 'transparent'}}
+          headStyle={{borderBottom: 0, background: 'transparent'}}
+          title="Filter By:"
+          extra={
+            <Space>
+                <Typography.Text>Devices</Typography.Text>
+                <Switch
+                  onChange={setFilterBy}
+                  checked={filterBy}
+                  style={{ background: filterBy ? '#1568db' : '#dc5b16' }}
+                />
+                <Typography.Text>Event Type</Typography.Text>
+            </Space>
+          }
         >
-          <BaseSelect
-            mode="multiple"
-            placeholder="Select device"
-            allowClear={true}
-            options={devices}
-            className="select_input"
-          />
-        </Item>
-        <Item<Fields>
+        </Card>
+        <Divider style={{border: 0, marginBottom: 5}} />
+        {
+          !filterBy ?
+            <Item<Fields>
+            label="Device"
+            name="devices"
+            // getValueProps={getMultipleSelectProps}
+          >
+            <BaseSelect
+              // mode="multiple"
+              placeholder="Select device"
+              allowClear={true}
+              options={devices}
+              className="select_input"
+            />
+          </Item> :
+          <Item<Fields>
           label="Event Type"
           name="eventType"
-          getValueProps={getMultipleSelectProps}
+          // getValueProps={getMultipleSelectProps}
         >
           <BaseSelect
             placeholder="Select Event Type"
@@ -256,6 +293,7 @@ export const AlertsSearchFilterDrawer: FC<Props> = ({
             className="select_input"
           />
         </Item>
+        }
       </Form>
     </Drawer>
   );

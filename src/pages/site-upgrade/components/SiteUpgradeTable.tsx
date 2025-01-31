@@ -4,7 +4,8 @@ import { Button, Card, Col, Form, Input, message, Row, Select, Skeleton, Switch,
 import { TableRowSelection } from "antd/es/table/interface";
 import { TransferItem } from "antd/es/transfer";
 import dayjs from "dayjs";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useState } from "react";
+import styles from "./index.module.css"
 
 interface DataType {
     id: string;
@@ -115,6 +116,7 @@ export const SiteUpgradeTable = ({packages}: Props) => {
                             rules={[ { required: true, message: "Please choose a package" } ]}
                         >
                             <Select
+                                className="select_input"
                                 style={{ width: 300, background:`${darkTheme ? " #0C183B" :"" }`  }}
                                 onChange={onChoosePackage}
                                 options={packages ? packages.map((item) => ({
@@ -126,14 +128,14 @@ export const SiteUpgradeTable = ({packages}: Props) => {
                         <Form.Item
                             label="Package Version"
                         >
-                            <Input readOnly value={version} />
+                            <Input className={styles.input_bg} readOnly value={version} />
                         </Form.Item>
                         <Form.Item
                           label="Upgrade Time"
                           name={'time'}
                           rules={[ { required: true, message: "Please choose time" } ]}
                         >
-                            <TimePicker onChange={onChangeTime} defaultOpenValue={dayjs('00:00:00', 'HH:mm:ss')} />
+                            <TimePicker className={styles.input_bg} onChange={onChangeTime} defaultOpenValue={dayjs('00:00:00', 'HH:mm:ss')} />
                         </Form.Item>
                         <Button
                             type="primary"

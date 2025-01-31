@@ -47,7 +47,7 @@ export const DisconnectedSitesTable: FC<Props> = ({
   loading,
 }) => {
 
-  const { currentData, isLoading } = useGetSitesQuery({connectionState: false});
+  const { currentData, isLoading, refetch } = useGetSitesQuery({connectionState: false});
 
   const dispatch = useAppDispatch();
   const event = useAppSelector(getAlarmRecordEvents);
@@ -112,7 +112,7 @@ export const DisconnectedSitesTable: FC<Props> = ({
       />
 
      
-      <SiteInfo />
+      <SiteInfo refetch={refetch} />
 
     </>
   );

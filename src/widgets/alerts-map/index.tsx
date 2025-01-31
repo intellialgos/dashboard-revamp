@@ -160,7 +160,7 @@ export const AlertsMap: FC<Props> = ({ className, dataTestId, data, isLoading, s
               <Marker
                 key={site_id}
                 position={{ lat: lat, lng: lng }}
-                // onClick={() => onMarkerClick()}
+                onClick={() => handleNavigate(site_id)}
                 options={{
                   icon: window.google.maps.Icon
                 }}

@@ -136,5 +136,7 @@ export const {
   // OTHERS
     useQueryeventsiteMutation,
     useGetFastRecoveryMutation,
-    useMaskItemMutation
+    useMaskItemMutation,
+    useConfigureBoxMutation,
+    useEventsFiltersMutation
 } = api;

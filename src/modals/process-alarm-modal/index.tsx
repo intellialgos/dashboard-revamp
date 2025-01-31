@@ -113,18 +113,15 @@ export const ProcessAlarmModal: FC<Props> = ({ dataTestId, refetch }) => {
     }
   }
 
-  useDidUpdate(() => {
-    if (typeof event === "undefined") {
-      return;
+  useEffect(() => {
+    if ( event ) {
+      const { status, caseNum } = event.process;
+      form.setFieldsValue({
+        processStatus: status,
+        caseNumber: caseNum,
+      });
     }
-
-    const { status, caseNum } = event.process;
-
-    form.setFieldsValue({
-      processStatus: status,
-      caseNumber: caseNum,
-    });
-  }, [event]);
+  }, [event, refetch]);
 
   const onSubmit = async () => {
     setIsLoading(true);

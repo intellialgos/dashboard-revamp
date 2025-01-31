@@ -14,7 +14,7 @@ export const SiteMap: FC = () => {
   const [showOnlyDisconnected, setShowOnlyDisconnected] = useState(false);
   const [searchTerm, setSearchTerm] = useState<string>();
 
-  const { currentData: sites, isLoading: sitesLoading } = useGetSitesQuery({
+  const { currentData: sites, isLoading: sitesLoading, refetch } = useGetSitesQuery({
     ...( searchTerm ? { keyword: searchTerm } : {} )
   });
   const handleCollapseMenu = (newCollapsed: boolean) => {
@@ -38,7 +38,7 @@ export const SiteMap: FC = () => {
           className={`${styles.trigger} ${collapsed ? styles.trigger_expand : styles.trigger_collapse}`}
         />
       <SiteInfoModal sites={sites} collapse={collapsed} onClick={handleCollapseMenu} />
-      <SiteInfo />
+      <SiteInfo refetch={refetch} />
       <EditSiteMapModal />
     </Row>
   );

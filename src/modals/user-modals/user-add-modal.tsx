@@ -5,6 +5,8 @@ import { Organisation, OrganisationSite } from "@/types/organisation";
 import { useAppSelector } from "@/hooks/use-app-selector";
 import { QueryActionCreatorResult, QueryDefinition } from "@reduxjs/toolkit/query";
 import { ThemeContext } from "@/theme";
+import { camelToSentence } from "@/utils/camelCase";
+import styles from "./index.module.css"
 
 type Props = {
   Show: boolean;
@@ -221,7 +223,7 @@ export const AddUserModal: FC<Props> = ({ Show, setAddUser, refetch }) => {
                 name="userName"
                 rules={[{ required: true, message: "Please enter the name" }]}
               >
-                <Input placeholder="Enter name" />
+                <Input className={styles.input_bg} placeholder="Enter name" />
               </Form.Item>
             </Col>
             <Col span={12}>
@@ -230,7 +232,7 @@ export const AddUserModal: FC<Props> = ({ Show, setAddUser, refetch }) => {
                 name="nickName"
                 initialValue={""}
               >
-                <Input placeholder="Enter Nickname" />
+                <Input className={styles.input_bg} placeholder="Enter Nickname" />
               </Form.Item>
             </Col>
             <Col span={12}>
@@ -240,7 +242,7 @@ export const AddUserModal: FC<Props> = ({ Show, setAddUser, refetch }) => {
                 initialValue={selectedRole}
                 rules={[{ required: true, message: "Please select a role" }]}
               >
-                <Select placeholder="Select role" onChange={setSelectedRole}>
+                <Select className="select_input" placeholder="Select role" onChange={setSelectedRole}>
                   <Select.Option value="user">User</Select.Option>
                   <Select.Option value="customer">Customer</Select.Option>
                 </Select>
@@ -252,7 +254,7 @@ export const AddUserModal: FC<Props> = ({ Show, setAddUser, refetch }) => {
                 name="password"
                 rules={[{ required: true, message: "Please enter a password" }]}
               >
-                <Input.Password placeholder="Enter Password" />
+                <Input.Password className={styles.input_bg} placeholder="Enter Password" />
               </Form.Item>
             </Col>
           </Row>
@@ -264,7 +266,7 @@ export const AddUserModal: FC<Props> = ({ Show, setAddUser, refetch }) => {
                 name="remark"
                 initialValue={''}
               >
-                <Input placeholder="Write a remark (optional)" />
+                <Input className={styles.input_bg} placeholder="Write a remark (optional)" />
               </Form.Item>
             </Col>
           </Row>
@@ -302,7 +304,7 @@ export const AddUserModal: FC<Props> = ({ Show, setAddUser, refetch }) => {
                 <Col span={12} key={key}>
                   <Card
                     size="small"
-                    title={key}
+                    title={camelToSentence(key)}
                     bordered
                     style={{ background:`${darkTheme ? "rgb(5, 15, 49)" :"" }`  }}
                   >
@@ -324,7 +326,7 @@ export const AddUserModal: FC<Props> = ({ Show, setAddUser, refetch }) => {
 
         {/* Action Buttons */}
         <div style={{ display: "flex", justifyContent: "space-between", marginTop: 24 }}>
-          <Button type="default" onClick={() => {
+          <Button className={styles.default_btn} type="default" onClick={() => {
             setAddUser(false);
             handleCancel();
           }}>

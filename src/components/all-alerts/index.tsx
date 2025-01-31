@@ -146,6 +146,7 @@ export const AllAlerts: FC = () => {
   }, []);
   
   const filters = useSelector((state: RootState) => state.filters);
+  const { totalAlerts } = useSelector((state: RootState) => state.events);
   const [getAssetsStatistics, { data: dashboardStatistics, isLoading: dashboardLoading }] = useGetAssetsStatisticsMutation();
   
     useEffect(() => {
@@ -196,6 +197,9 @@ export const AllAlerts: FC = () => {
     if ( dashboardStatistics ) {
       setDataIntoStates(dashboardStatistics?.allAlerts);
     }
+    if ( dashboardStatistics ) {
+      console.log(dashboardStatistics);
+    }
   }, [dashboardStatistics]);
 
   return (
@@ -204,7 +208,7 @@ export const AllAlerts: FC = () => {
       <Row gutter={[24, 24]}>
         <Col span={24}>
           <header className={styles.header}>
-            <Title level={4}>All Alerts — {dashboardStatistics?.totalCount}</Title>
+            <Title level={4}>All Alerts — {totalAlerts}</Title>
 
             <Space size="middle" align="center">
               {/* <Form

@@ -34,4 +34,10 @@ export enum ENDPOINTS {
     UPLOAD = 'upload',
     GET_UPLOADS = 'uploads',
     FAST_RECOVERY = 'fastRecovery',
+
+    // CONFIGURE BOX
+    CONFIGURE_BOX = 'configureBox',
+
+    // GET FILTERS
+    GET_FILTERS = 'getFilters'
 }

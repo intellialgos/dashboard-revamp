@@ -19,9 +19,11 @@ import styles from "./index.module.css";
 import { getSiteObject } from "@/store/selectors/sites";
 import { EditSiteModal } from "../edit-site-modal";
 import { setShowConfigureSiteDrawer } from "@/store/slices/sites";
+import { useGetOrganizationsMutation } from "@/services";
 
 type Props = {
   dataTestId?: string;
+  refetch: () => any
 };
 
 type Fields = {
@@ -38,7 +40,7 @@ const initialValues: Fields = {
 
 
 
-export const SiteInfo: FC<Props> = ({ dataTestId }) => {
+export const SiteInfo: FC<Props> = ({ dataTestId, refetch }) => {
   const dispatch = useAppDispatch();
   const { appTheme } = useContext(ThemeContext);
   const darkTheme = appTheme === "dark";
@@ -75,7 +77,7 @@ export const SiteInfo: FC<Props> = ({ dataTestId }) => {
             <SiteInfoListMap site={siteObject} />
           </>
         </div>
-        <EditSiteModal />
+        <EditSiteModal refetch={refetch} />
       </Drawer>
     </>
   );
