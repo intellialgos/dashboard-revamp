@@ -276,7 +276,7 @@ export const Dashboard: FC = () => {
                 darkTheme ? styles.widget_bg : styles.widget_bg_light
               }`}
               dataTestId="weekly-priority-alerts-chart"
-              centerText={dashboardStatistics?.notResponding90DaysAgo.length.toString()}
+              centerText={dashboardStatistics?.notResponding90DaysAgo.length}
               data={dashboardStatistics?.notResponding90DaysAgo.map((item:any) => ({ value: item.count, name: item.name })) || []}
               isLoading={dashboardLoading}
               legend={false}

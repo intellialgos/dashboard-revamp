@@ -45,7 +45,7 @@ const baseQuery = fetchBaseQuery({
 const baseQueryWithRefreshToken = async (args: any, api: any, extraOptions: any) => {
   let result = await baseQuery(args, api, extraOptions);
 
-  if (result?.error && result?.error?.status === 401) {
+  if (result?.error && result?.error?.status === "FETCH_ERROR") {
     // Attempt to refresh the token
     const refreshResult = await baseQuery(
       {
@@ -57,8 +57,7 @@ const baseQueryWithRefreshToken = async (args: any, api: any, extraOptions: any)
       extraOptions
     );
 
-    console.log("REFRESH RES: ", refreshResult);
-    if (refreshResult?.data) {
+    if (refreshResult?.data && refreshResult?.data.error == 0) {
       const newToken = refreshResult.data.token;
       // Update the token in the store
       api.dispatch(setUserCredentials({ token: newToken }));
