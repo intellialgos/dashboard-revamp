@@ -19,6 +19,7 @@ import { DeviceEvent } from "@/types/device-event";
 import { ReqProcessEvent } from "@/types/process-event";
 import { generateColumns } from "./config";
 import { useLocation } from "react-router-dom";
+import { getRecoveryFiltersState } from "@/store/selectors/recovery";
 type Props = {
   className: string;
   dataTestId: string;
@@ -48,6 +49,7 @@ export const AlarmSelfRecoverySiteTable: FC<Props> = ({
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const siteId = queryParams.get("siteId");
+  const { startTime, endTime } = useAppSelector(getRecoveryFiltersState);
 
 
   const [getEvents, {data: events, isLoading: tableLoading}] = useQueryEventsMutation();
@@ -55,6 +57,8 @@ export const AlarmSelfRecoverySiteTable: FC<Props> = ({
       (async () => {
         await getEvents({
           // ...filters,
+          startTime,
+          endTime,
           sites: [siteId],
           pageSize,
           pageIndex,

@@ -66,10 +66,11 @@ const OrganizationsSelect = ({form}: {form: FormInstance<any>}) => {
 
   useEffect(() => {
     form.resetFields(["sites"]);
+    setSites([]);
     if ( organization && organizations?.orgs ) {
       const selectedOrg = organizations?.orgs.filter((org:any) => org.id == organization );
       if ( selectedOrg.length > 0) {
-        if ( selectedOrg[0]?.sites.length > 0 ) {
+        if ( selectedOrg[0]?.sites && selectedOrg[0]?.sites.length > 0 ) {
           const sitesOptions = selectedOrg[0].sites.map((site:OrganisationSite) => ({
             label: site.name,
             value: site.id
@@ -103,7 +104,7 @@ const OrganizationsSelect = ({form}: {form: FormInstance<any>}) => {
       />
     </Form.Item>
     {
-      (sites?.length > 0) &&
+      (sites && sites?.length > 0) &&
       <Form.Item
         name={'sites'}
         label={'Sites'}

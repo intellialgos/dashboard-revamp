@@ -18,6 +18,10 @@ import { useNavigate } from "react-router-dom";
 import dayjs from "dayjs";
 import { APP_DATE_TIME_FORMAT } from "@/const/common";
 import { ThemeContext } from "@/theme";
+import { useAppSelector } from "@/hooks/use-app-selector";
+import { getRecoveryFiltersState } from "@/store/selectors/recovery";
+import { useAppDispatch } from "@/hooks/use-app-dispatch";
+import { setRecoveryFilters } from "@/store/slices/recovery";
 type Props = {
   className: string;
   dataTestId: string;
@@ -43,8 +47,10 @@ export const AlarmSelfRecoveryTable: FC<Props> = ({
   loading,
 }: Props) => {
   const dispatch = useDispatch();
-  const [getAllEvents, { isLoading }] = useQueryeventsiteMutation();
   const [messageApi, contextHolder] = message.useMessage();
+
+
+  const { startTime, endTime } = useAppSelector(getRecoveryFiltersState);
 
   const [ getFastRecovery, {isLoading: recoveryLoading} ] = useGetFastRecoveryMutation();
   let date = new Date();
@@ -55,14 +61,17 @@ export const AlarmSelfRecoveryTable: FC<Props> = ({
     return [lastMonthDate, today];
   });
   const [body, setBody] = useState({
-    startTime: formatDate(getLastMonthDate(date)),
-      endTime: formatDate(date),
+    startTime: startTime,
+    endTime: endTime,
   });
 
-  const handleDateChange = (dates: [dayjs.Dayjs, dayjs.Dayjs] | null) => {
+  const handleDateChange = (dates: any) => {
     if (dates) {
       setSelectedDates(dates); // Update the state with the selected dates
-      console.log("DATE: ", selectedDates);
+      dispatch(setRecoveryFilters({
+            startTime: dates ? formatDate(dates[0].toDate()) : startTime,
+            endTime: dates ? formatDate(dates[1].toDate()) : endTime}
+        ))
     }
   };
 
@@ -85,11 +94,11 @@ export const AlarmSelfRecoveryTable: FC<Props> = ({
   useEffect(() => {
     if (selectedDates) {
       setBody({
-        startTime: formatDate(selectedDates[0].toDate()), // Convert Dayjs to Date
-        endTime: formatDate(selectedDates[1].toDate()), // Convert Dayjs to Date
+        startTime: startTime, // Convert Dayjs to Date
+        endTime: endTime, // Convert Dayjs to Date
       });
     }
-  }, [selectedDates]);
+  }, [startTime, endTime]);
 
   const onSelectChange = (selectedRowKeys: React.Key[]) => {
     dispatch(setSelectedEventsId({ selectedRowKeys, pageIndex }));
@@ -148,10 +157,7 @@ export const AlarmSelfRecoveryTable: FC<Props> = ({
         dataSource={alertsSite}
         // rowSelection={rowSelection}
         showSorterTooltip={false}
-        loading={{
-          indicator: <Spin indicator={antIcon} />,
-          spinning: isLoading,
-        }}
+        loading={recoveryLoading}
         // pagination={{
         //   pageSize,
         //   showQuickJumper: true,

@@ -7,6 +7,7 @@ import { events } from "./slices/events";
 import { authState } from "./slices/authSlice";
 import { sites } from "./slices/sites";
 import { filters } from "./slices/filters";
+import { recoveryFilters } from "./slices/recovery";
 
 export const store = configureStore({
   reducer: {
@@ -14,6 +15,7 @@ export const store = configureStore({
     authState,
     sites,
     filters,
+    recoveryFilters,
     [api.reducerPath]: api.reducer,
   },
   middleware: (getDefaultMiddleware) =>

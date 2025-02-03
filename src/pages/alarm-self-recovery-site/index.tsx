@@ -8,6 +8,8 @@ import { SearchOutlined } from "@ant-design/icons";
 import { APP_DATE_TIME_FORMAT } from "@/const/common";
 import styles from './index.module.css'
 import { useQueryEventsMutation } from "@/services";
+import { useAppSelector } from "@/hooks/use-app-selector";
+import { getRecoveryFiltersState } from "@/store/selectors/recovery";
 
 const { RangePicker } = DatePicker;
 
@@ -16,6 +18,7 @@ export const AlarmSelfRecoverySite: FC = () => {
   const { appTheme } = useContext(ThemeContext);
   const [pageIndex, setPageIndex] = useState(1);
   const [pageSize, setPageSize] = useState(20);
+
   const handlePageChange = (page: number, pageSize: number) => {
     setPageIndex(page);
     setPageSize(pageSize);
