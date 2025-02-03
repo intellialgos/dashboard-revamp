@@ -1,4 +1,4 @@
-import { Button, Card, Col, DatePicker, Divider, Drawer, Form, Input, message, Row, Space, Typography } from "antd";
+import { Button, Card, Col, DatePicker, Divider, Drawer, Form, Input, InputNumber, message, Row, Space, Typography } from "antd";
 import { type FC, useContext, useEffect, useState } from "react";
 
 import { ArrowLeftOutlined, PlusOutlined } from "@ant-design/icons";
@@ -207,7 +207,7 @@ const EditSiteForm = ({
             label="Longitude"
             name="longitude"
           >
-            <Input placeholder="Type here..." className={darkTheme  ? styles.input_bg : ""} />
+            <InputNumber placeholder="Type here..." className={darkTheme  ? styles.input_bg : ""} />
           </Item>
         </Col>
         <Col span={12}>
@@ -215,7 +215,7 @@ const EditSiteForm = ({
             label="Latitude"
             name="latitude"
           >
-            <Input placeholder="Type here..." className={darkTheme  ? styles.input_bg : ""} />
+            <InputNumber placeholder="Type here..." className={darkTheme  ? styles.input_bg : ""} />
           </Item>
         </Col>
       </Row>
