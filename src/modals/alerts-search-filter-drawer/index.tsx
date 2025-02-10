@@ -95,9 +95,9 @@ export const AlertsSearchFilterDrawer: FC<Props> = ({
 
   const [ getFilters, {data: filtersData} ] = useEventsFiltersMutation();
 
-  useEffect(() => {
-    getFilters({});
-  }, []);
+  // useEffect(() => {
+  //   getFilters({});
+  // }, []);
 
   const handleReset = () => {
   const initialFilters = {
@@ -222,7 +222,7 @@ export const AlertsSearchFilterDrawer: FC<Props> = ({
         onFinish={handleSubmit}
         data-testid="alerts-search-form"
       >
-        <Item<Fields>
+        {/* <Item<Fields>
           label="Priority"
           name="priority"
           getValueProps={getCheckboxGroupProps}
@@ -231,7 +231,7 @@ export const AlertsSearchFilterDrawer: FC<Props> = ({
             options={ALARM_LEVEL_OPTIONS}
             className={"filter_checkbox"}
           />
-        </Item>
+        </Item> */}
         <Item<Fields>
           label="Site"
           name="sites"
@@ -274,8 +274,8 @@ export const AlertsSearchFilterDrawer: FC<Props> = ({
             className="select_input"
           />
         </Item> */}
-        <Divider />
-        <Card
+        {/* <Divider /> */}
+        {/* <Card
           bodyStyle={{display: 'none'}}
           style={{background: 'transparent'}}
           headStyle={{borderBottom: 0, background: 'transparent'}}
@@ -292,20 +292,17 @@ export const AlertsSearchFilterDrawer: FC<Props> = ({
             </Space>
           }
         >
-        </Card>
-        <Divider style={{border: 0, marginBottom: 5}} />
+        </Card> */}
+        {/* <Divider style={{border: 0, marginBottom: 5}} />
         {
           !filterBy ?
             <Item<Fields>
             label="Device"
             name="devices"
-            // getValueProps={getMultipleSelectProps}
           >
             <BaseSelect
-              // mode="multiple"
               placeholder="Select device"
               allowClear={true}
-              // mode="tags"
               options={selectOptions(filtersData?.devices) || []}
               className="select_input"
             />
@@ -313,17 +310,15 @@ export const AlertsSearchFilterDrawer: FC<Props> = ({
           <Item<Fields>
           label="Event Type"
           name="eventType"
-          // getValueProps={getMultipleSelectProps}
         >
           <BaseSelect
             placeholder="Select Event Type"
             allowClear={true}
-            // mode="tags"
             options={selectOptions(filtersData?.eventTypes) || []}
             className="select_input"
           />
         </Item>
-        }
+        } */}
       </Form>
     </Drawer>
   );
