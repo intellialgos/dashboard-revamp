@@ -53,7 +53,8 @@ export const BaseAreaChart: FC<BasePieChartProps> = ({
   }) => {
     const { appTheme } = useContext(ThemeContext);
     const darkTheme = appTheme === "dark";
-    const filtered_data = data ? data.filter(item => item.seconds > 0 && item.seconds <= 100) : [];
+    // const filtered_data = data ? data.filter(item => item.seconds > 0 && item.seconds <= 100) : [];
+    const filtered_data = data ? data : [];
 
     // useEffect(() => {
     // if ( data ) {

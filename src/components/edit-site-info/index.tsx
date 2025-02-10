@@ -7,10 +7,11 @@ import styles from "./index.module.css";
 import { DeleteOutlined, PlusOutlined, PoweroffOutlined, RedoOutlined } from "@ant-design/icons";
 import { BaseSelect } from "../base-select";
 import { ThemeContext } from "@/theme";
-import { useGetBoxStatusMutation, useGetIoEventsMutation, useGetMaskedItemMutation, useRestartBoxMutation, useUpdateIoEventsMutation } from "@/services";
+import { useDeleteMaskedItemMutation, useGetBoxStatusMutation, useGetIoEventsMutation, useGetMaskedItemMutation, useRestartBoxMutation, useUpdateIoEventsMutation } from "@/services";
 import useMessage from "antd/es/message/useMessage";
 import { useAppSelector } from "@/hooks/use-app-selector";
 import { getSelectedSite } from "@/store/selectors/sites";
+import { DeviceEvent } from "@/types/device-event";
 
 type Props = {
   className?: string;
@@ -39,6 +40,10 @@ export const EditSiteInfo: FC<Props> = ({
   const [filteredMaskedItems, setMaskedItems] = useState([]);
 
   const [form] = Form.useForm();
+
+
+  const [ deleteMasked, {isLoading: isRecovering} ] = useDeleteMaskedItemMutation();
+  
   const handleRestart = async () => {
     try {
       const response = await restartBox({siteId: site});
@@ -52,7 +57,6 @@ export const EditSiteInfo: FC<Props> = ({
       console.log("ERROR: ", error);
     }
   }
-
   const handleUpdateIoEvents = async (data: any) => {
     try {
       const response = await updateIoEvents({
@@ -68,7 +72,21 @@ export const EditSiteInfo: FC<Props> = ({
       messageApi.error("There was an error");
     }
   }
-
+  const handleRecovery = async (keyId: number) => {
+    const res = await deleteMasked({keyId: keyId});
+    if (res.data?.error === 0) {
+      setMaskedItems((prevItems: any[]) => prevItems.filter((item) => item.keyId !== keyId));
+      messageApi.open({
+        type: "success",
+        content: "Recovered Successfully !",
+      });
+    } else {
+      messageApi.open({
+        type: "error",
+        content: "There was an error",
+      });
+    }
+  }
   useEffect(() => {
     if (maskedItem?.list) {
       setMaskedItems(maskedItem.list.filter((i:any) => i.siteId == site));
@@ -109,7 +127,7 @@ export const EditSiteInfo: FC<Props> = ({
             { label: "Source ID", value: item?.objId || "N/A" },
             { label: "Ignore ID", value: item?.keyId || "N/A" },
             { label: "Item Key", value: item?.key || "N/A" },
-            { label: "Action", value: <Button type="primary" size="small" icon={<RedoOutlined />}>Recovery</Button> }
+            { label: "Action", value: <Button onClick={() => handleRecovery(item?.keyId)} type="primary" size="small" icon={<RedoOutlined />}>Recovery</Button> }
           ])
         : [],
     [site, maskedItem, filteredMaskedItems],
