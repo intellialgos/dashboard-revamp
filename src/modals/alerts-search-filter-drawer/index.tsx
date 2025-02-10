@@ -261,7 +261,7 @@ export const AlertsSearchFilterDrawer: FC<Props> = ({
             />
           </Item>
         }
-        <Item<Fields>
+        {/* <Item<Fields>
           label="Vendors"
           name="vendors"
           getValueProps={getMultipleSelectProps}
@@ -273,7 +273,7 @@ export const AlertsSearchFilterDrawer: FC<Props> = ({
             options={selectOptions(filtersData?.vendors) || []}
             className="select_input"
           />
-        </Item>
+        </Item> */}
         <Divider />
         <Card
           bodyStyle={{display: 'none'}}
