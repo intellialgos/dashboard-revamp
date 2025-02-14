@@ -106,16 +106,16 @@ export const Dashboard: FC = () => {
         ];
       }
 
-      const findAlert = weeklyAlerts.find((item) => item.name === ev.obj.value);
+      const findAlert = weeklyAlerts.find((item) => item.name === ev.obj.key);
       if (!findAlert) {
-        weeklyAlerts.push({ name: ev.obj.value, count: 1 });
+        weeklyAlerts.push({ name: ev.obj.key, count: 1 });
       } else {
         let newweeklyAlerts = weeklyAlerts.filter(
-          (item) => item.name !== ev.obj.value,
+          (item) => item.name !== ev.obj.key,
         );
         weeklyAlerts = [
           ...newweeklyAlerts,
-          { name: ev.obj.value, count: findAlert.count + 1 },
+          { name: ev.obj.key, count: findAlert.count + 1 },
         ];
       }
     });
